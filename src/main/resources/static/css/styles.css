@@ -1,0 +1,109 @@
+body {
+    font-family: 'Merriweather', serif; /* Fuente similar a la de la plantilla */
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Un fondo de respaldo */
+}
+
+.masthead {
+    position: relative;
+    background: url('../../img/main.jpg') no-repeat center center; /* Ruta a la imagen */
+    background-color: #6c757d; /* Fondo de respaldo si la imagen no carga */
+    background-size: cover;
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+    margin-bottom: 0;
+    color: white;
+}
+
+.masthead h1 {
+    font-size: 2.25rem;
+    line-height: 2.25rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 992px) {
+    .masthead h1 {
+        font-size: 3.5rem;
+        line-height: 3.5rem;
+    }
+}
+
+.divider {
+    border-top: 0.2rem solid #f8f9fa;
+    border-bottom: 0.2rem solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-container {
+    max-width: 400px;
+    margin: 2rem auto; /* Ajustar el margen para que no esté pegado al título */
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 0.9em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: calc(100% - 12px);
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    width: 100%;
+    display: block;
+    margin-top: 15px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.form-switch {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #777;
+}
+
+.form-switch a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.form-switch a:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
