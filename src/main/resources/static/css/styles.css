@@ -1,14 +1,14 @@
 body {
-    font-family: 'Merriweather', serif; /* Fuente similar a la de la plantilla */
+    font-family: 'Merriweather', serif; 
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Un fondo de respaldo */
+    background-color: #f4f4f4; 
 }
 
 .masthead {
     position: relative;
-    background: url('../../img/main.jpg') no-repeat center center; /* Ruta a la imagen */
-    background-color: #6c757d; /* Fondo de respaldo si la imagen no carga */
+    background: url('../../img/main.jpg') no-repeat center center; 
+    background-color: #6c757d; 
     background-size: cover;
     padding-top: 8rem;
     padding-bottom: 8rem;
@@ -36,8 +36,8 @@ body {
 
 .auth-container {
     max-width: 400px;
-    margin: 2rem auto; /* Ajustar el margen para que no esté pegado al título */
-    background-color: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente */
+    margin: 2rem auto; 
+    background-color: rgba(255, 255, 255, 0.8); 
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);

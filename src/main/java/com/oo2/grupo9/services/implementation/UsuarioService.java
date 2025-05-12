@@ -1,6 +1,7 @@
 package com.oo2.grupo9.services.implementation;
 
 import com.oo2.grupo9.entities.Contacto;
+import com.oo2.grupo9.entities.Localidad; // ¡Importante!
 import com.oo2.grupo9.entities.Rol;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.repositories.ContactoRepository;
@@ -10,6 +11,7 @@ import com.oo2.grupo9.services.IUsuarioService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,43 +21,39 @@ import java.util.Optional;
 @Transactional
 public class UsuarioService implements IUsuarioService {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private UsuarioRepository usuarioRepository;
     private RolRepository rolRepository;
     private ContactoRepository contactoRepository;
 
 
-    @Autowired
     public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository, ContactoRepository contactoRepository, ModelMapper modelMapper) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.contactoRepository = contactoRepository;
-        
+
     }
 
+
+
     @Override
-    public long agregar(String nombre, String apellido, int dni, String email, String telefono, String nombreUsuario, String contrasenia, Long rolId) {
-        if (usuarioRepository.existsByDniAndActivoTrue(dni)) {
-            throw new IllegalArgumentException("Ya existe un usuario activo con el DNI ingresado.");
-        }
-        Optional<Contacto> contactoPorEmail = contactoRepository.findByEmail(email);
-        if (contactoPorEmail.isPresent() && contactoPorEmail.get().getUsuario() != null && contactoPorEmail.get().getUsuario().isActivo()) {
-            throw new IllegalArgumentException("Ya existe un usuario activo asociado al mismo email.");
-        }
-        if (usuarioRepository.findByNombreUsuarioAndActivoTrue(nombreUsuario).isPresent()) {
-            throw new IllegalArgumentException("Ya existe un usuario activo con el mismo nombre de usuario.");
-        }
+    public long agregar(String nombre, String apellido, int dni, String email, String telefono, String nombreUsuario, String contrasenia, String domicilio, Localidad localidad, Long rolId) {
+        // ... (validaciones) ...
 
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombre(nombre);
         nuevoUsuario.setApellido(apellido);
         nuevoUsuario.setDni(dni);
         nuevoUsuario.setNombreUsuario(nombreUsuario);
-        nuevoUsuario.setContraseña(contrasenia);
+        String encodedPassword = passwordEncoder.encode(contrasenia);
+        nuevoUsuario.setContraseña(encodedPassword); // <--- ¡Línea corregida!
         nuevoUsuario.setActivo(true);
 
         Optional<Rol> rolOptional = rolRepository.findById(rolId);
         if (rolOptional.isEmpty()) {
-            throw new IllegalArgumentException("No se encontró el rol con ID: " + rolId);
+            throw new IllegalArgumentException("No se encontro el rol con ID: " + rolId);
         }
         nuevoUsuario.setRol(rolOptional.get());
 
@@ -64,13 +62,17 @@ public class UsuarioService implements IUsuarioService {
         try {
             nuevoContacto.setTelefono(Integer.parseInt(telefono));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("El teléfono debe ser un número válido.");
+            throw new IllegalArgumentException("El telefono debe ser un numero valido.");
         }
+        nuevoContacto.setLocalidad(localidad);
+        nuevoContacto.setDomicilio(domicilio);
+
         contactoRepository.save(nuevoContacto);
         nuevoUsuario.setContacto(nuevoContacto);
 
         return usuarioRepository.save(nuevoUsuario).getIdUsuario();
     }
+
 
     @Override
     public void modificar(Usuario usuario) {
@@ -105,7 +107,7 @@ public class UsuarioService implements IUsuarioService {
         contactoExistente.setTelefono(usuario.getContacto().getTelefono());
         contactoExistente.setDomicilio(usuario.getContacto().getDomicilio());
         if (usuario.getContacto().getLocalidad() != null) {
-            contactoExistente.setLocalidad(usuario.getContacto().getLocalidad()); // Asumimos que la Localidad ya viene con el ID correcto
+            contactoExistente.setLocalidad(usuario.getContacto().getLocalidad()); // Asumimos que la Localidad ya viene con el objeto correcto
         }
         contactoRepository.save(contactoExistente);
         usuarioExistente.setContacto(contactoExistente);

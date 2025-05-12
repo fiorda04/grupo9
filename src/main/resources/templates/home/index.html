@@ -1,83 +1,104 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión Tickets Spring Grupo 9</title>
-    <link rel="stylesheet" href="../../css/styles.css">
-    </head>
+    <title>Gestión de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        body {
+            margin: 0; /* Elimina el margen predeterminado del body */
+            font-family: sans-serif; /* Fuente de texto genérica */
+        }
+
+        .masthead {
+            /* Asegúrate de que la ruta a la imagen sea correcta */
+            background-image: url('/img/main.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 0; /* Ajusta el espaciado vertical según necesites */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .masthead h1 {
+            color: black !important; /* Asegura que el título sea negro */
+            margin-bottom: 20px;
+        }
+
+        .menu-solapa {
+            background-color: #f8f9fa; /* Color de fondo de la solapa */
+            padding: 10px 0;
+            display: flex;
+            justify-content: flex-start; /* Alinea los elementos de izquierda a derecha */
+            align-items: center;
+            width: 100%; /* Ocupa todo el ancho */
+        }
+
+        .menu-solapa a, .menu-solapa button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-left: 10px; /* Espacio entre los botones/enlaces */
+            border: 1px solid #ccc; /* Borde opcional */
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 16px;
+            background-color: white; /* Fondo blanco para los botones/enlaces */
+        }
+
+        .menu-solapa a:hover, .menu-solapa button:hover {
+            background-color: #007bff; /* Color al pasar el ratón */
+            color: white;
+            border-color: #007bff;
+        }
+
+        .menu-solapa button {
+            border: 1px solid red;
+            color: red;
+            background-color: white;
+        }
+
+        .menu-solapa button:hover {
+            background-color: red;
+            color: white;
+            border-color: red;
+        }
+
+        .options-container {
+            /* Oculta el contenedor anterior de botones */
+            display: none;
+        }
+    </style>
+
+</head>
 <body>
-
     <header class="masthead">
-        <div class="container px-4 px-lg-5 h-100">
-            <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
-                <div class="col-lg-8 align-self-end">
-                    <h1 class="text-white font-weight-bold">Gestión Tickets Spring Grupo 9</h1>
-                    <hr class="divider" />
-                </div>
-                <div class="col-lg-8 align-self-baseline">
-                    <main class="auth-container">
-                        <div id="login-form">
-                            <h2>Iniciar Sesión</h2>
-                            <form action="/login" method="post"> <div class="form-group">
-                                    <label for="username">Usuario o Email:</label>
-                                    <input type="text" id="username" name="username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="password">Contraseña:</label>
-                                    <input type="password" id="password" name="password" required>
-                                </div>
-                                <button type="submit">Iniciar Sesión</button>
-                            </form>
-                            <div class="form-switch">
-                                ¿No tienes cuenta? <a href="#" onclick="showRegisterForm()">Regístrate aquí</a>
-                            </div>
-                        </div>
-
-                        <div id="register-form" class="hidden">
-                            <h2>Registrarse</h2>
-                            <form action="/register" method="post"> <div class="form-group">
-                                    <label for="reg-username">Usuario:</label>
-                                    <input type="text" id="reg-username" name="reg-username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="reg-email">Email:</label>
-                                    <input type="email" id="reg-email" name="reg-email" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="reg-password">Contraseña:</label>
-                                    <input type="password" id="reg-password" name="reg-password" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="confirm-password">Confirmar Contraseña:</label>
-                                    <input type="password" id="confirm-password" name="confirm-password" required>
-                                </div>
-                                <button type="submit">Registrarse</button>
-                            </form>
-                            <div class="form-switch">
-                                ¿Ya tienes una cuenta? <a href="#" onclick="showLoginForm()">Inicia sesión aquí</a>
-                            </div>
-                        </div>
-                    </main>
-                    </div>
+        <div class="container px-4 px-lg-5 h-100 align-items-center justify-content-center text-center">
+            <div class="col-lg-8 align-self-end">
+                <h1 class="font-weight-bold" style="color: black !important;">Gestión de Usuarios Spring Grupo 9</h1>
+                <hr class="divider" />
             </div>
         </div>
     </header>
 
-    <script>
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-
-        function showRegisterForm() {
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-        }
-
-        function showLoginForm() {
-            registerForm.classList.add('hidden');
-            loginForm.classList.remove('hidden');
-        }
-    </script>
-
+    <main class="auth-container">
+        <div class="menu-solapa">
+            <div sec:authorize="!isAuthenticated()">
+                <a th:href="@{/usuarios/login}">Ingresar</a>
+                <a th:href="@{/usuarios/inscribirse}">Inscribirse</a>
+            </div>
+            <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()" style="display: inline;">
+                <button type="submit">Logout</button>
+            </form>
+        </div>
+        <div class="options-container">
+            </div>
+    </main>
 </body>
 </html>
