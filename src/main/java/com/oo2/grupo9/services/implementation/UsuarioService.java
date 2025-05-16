@@ -44,16 +44,6 @@ public class UsuarioService implements IUsuarioService {
 
         Usuario nuevoUsuario = new Usuario();
 
-        if (usuarioRepository.findByNombreUsuarioAndIdUsuarioNotAndActivoTrue(nuevoUsuario.getNombreUsuario(), nuevoUsuario.getIdUsuario()).isPresent()) {
-            throw new IllegalArgumentException("El nuevo nombre de usuario ya pertenece a otro usuario activo.");
-        }
-        if (usuarioRepository.findByDniAndContacto_Usuario_IdUsuarioNotAndActivoTrue(nuevoUsuario.getDni(), nuevoUsuario.getIdUsuario()).isPresent()) {
-            throw new IllegalArgumentException("El nuevo DNI ya pertenece a otro usuario activo.");
-        }
-        if (usuarioRepository.findByContacto_EmailAndContacto_Usuario_IdUsuarioNotAndActivoTrue(nuevoUsuario.getContacto().getEmail(), nuevoUsuario.getIdUsuario()).isPresent()) {
-            throw new IllegalArgumentException("El nuevo email ya pertenece a otro usuario activo.");
-        }
-
         nuevoUsuario.setNombre(nombre);
         nuevoUsuario.setApellido(apellido);
         nuevoUsuario.setDni(dni);
