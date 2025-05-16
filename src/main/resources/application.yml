@@ -11,3 +11,8 @@ spring:
             dialect: org.hibernate.dialect.MySQL5Dialect
     thymeleaf:
         cache: false
+logging:
+    level:
+        org:
+            springframework:
+                security: DEBUG
