@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Nuevo Ticket - Gestión de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <header class="masthead">
+        <div class="container px-4 px-lg-5 h-100 align-items-center justify-content-center text-center">
+            <div class="col-lg-8 align-self-end">
+                <h1 class="font-weight-bold" style="color: black !important;">Gestión de Tickets Spring Grupo 9</h1>
+                <hr class="divider" />
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-container" style="margin-top: 20px;">
+        <div class="dashboard-header" sec:authorize="hasRole('Cliente')">
+            <h2>Panel de Cliente - Crear Ticket</h2>
+            <div class="user-actions">
+                <span class="welcome-message" th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Cliente</span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="logout-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                        </svg>
+                        Salir
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        
+        <div class="dashboard-menu" sec:authorize="hasRole('Cliente')">
+            <a th:href="@{/}" class="menu-button">Resumen</a>
+            <a th:href="@{/tickets/crear}" class="menu-button">Crear Ticket</a>
+            <a th:href="@{/tickets/mis-tickets}" class="menu-button">Mis Tickets</a>
+        </div>
+        
+        
+        <h2>Ingrese los detalles de su ticket</h2>
+        <form th:action="@{/tickets/guardar}" method="post" class="form-horizontal">
+            <div class="form-group">
+                <label for="titulo" class="col-sm-2 control-label">Título:</label>
+                <div class="col-sm-10">
+                    <input type="text" id="titulo" name="titulo" class="form-control" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="descripcion" class="col-sm-2 control-label">Descripción:</label>
+                <div class="col-sm-10">
+                    <textarea id="descripcion" name="descripcion" rows="5" class="form-control" required></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="categoria" class="col-sm-2 control-label">Categoría:</label>
+                <div class="col-sm-10">
+                    <input type="text" id="categoria" name="categoria" class="form-control" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="tipo" class="col-sm-2 control-label">Tipo:</label>
+                <div class="col-sm-10">
+                    <input type="text" id="tipo" name="tipo" class="form-control" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary">Crear Ticket</button>
+                    <a th:href="@{/}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

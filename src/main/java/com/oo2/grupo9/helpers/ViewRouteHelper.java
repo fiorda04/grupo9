@@ -6,7 +6,7 @@ public class ViewRouteHelper {
     public final static String USUARIO_INSCRIBIRSE = "usuarios/inscribirse";
     public final static String USUARIO_LOGIN = "usuarios/Login";
     public final static String USUARIO_LISTA = "usuarios/ListaUsuario";
-
+    public final static String TICKET_CREAR = "tickets/crear";
 
     //Redirects
     public final static String ROUTE_INDEX = "/";

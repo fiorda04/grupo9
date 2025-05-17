@@ -1,109 +1,436 @@
-body {
-    font-family: 'Merriweather', serif; 
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4; 
+/* Estilos generales para el dashboard */
+.dashboard-container {
+    font-family: sans-serif;
+    padding: 20px;
+    background-color: #f4f6f8;
+    min-height: 100vh;
 }
 
-.masthead {
-    position: relative;
-    background: url('../../img/main.jpg') no-repeat center center; 
-    background-color: #6c757d; 
-    background-size: cover;
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-    margin-bottom: 0;
+.dashboard-header {
+    display: flex;
+    justify-content: space-between; /* Alinea el título a la izquierda y las acciones del usuario a la derecha */
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.dashboard-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.welcome-message {
+    font-weight: bold;
+    color: #555;
+}
+
+.logout-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+}
+
+/* Estilos para el menú de botones */
+.dashboard-menu {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.dashboard-menu button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-menu button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para las tarjetas de resumen */
+.summary-cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.summary-cards .card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    text-align: center;
+}
+
+.summary-cards h3 {
+    margin-top: 0;
+    color: #555;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.summary-cards .number {
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.summary-cards .indicator {
+    font-size: 0.9em;
+    color: #777;
+}
+
+.summary-cards .attention {
+    color: #ffc107; /* Amarillo para atención */
+}
+
+.summary-cards .success {
+    color: #28a745; /* Verde para éxito */
+}
+
+/* Estilos para la sección de tickets recientes */
+.recent-tickets {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recent-tickets h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.4em;
+    margin-bottom: 5px;
+}
+
+.recent-tickets .subtitle {
+    color: #777;
+    font-size: 0.95em;
+    margin-bottom: 15px;
+}
+
+.recent-tickets .search-bar {
+    margin-bottom: 15px;
+}
+
+.recent-tickets .search-bar input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+/* Estilos para la tabla de tickets */
+.tickets-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tickets-table th, .tickets-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.tickets-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #555;
+}
+
+.tickets-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.85em;
     color: white;
 }
 
-.masthead h1 {
-    font-size: 2.25rem;
-    line-height: 2.25rem;
-    margin-bottom: 2rem;
+.status.abierto {
+    background-color: #007bff; /* Azul */
 }
 
-@media (min-width: 992px) {
-    .masthead h1 {
-        font-size: 3.5rem;
-        line-height: 3.5rem;
-    }
-}
-
-.divider {
-    border-top: 0.2rem solid #f8f9fa;
-    border-bottom: 0.2rem solid rgba(255, 255, 255, 0.2);
-}
-
-.auth-container {
-    max-width: 400px;
-    margin: 2rem auto; 
-    background-color: rgba(255, 255, 255, 0.8); 
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-h2 {
-    text-align: center;
+.status.en-proceso {
+    background-color: #ffc107; /* Amarillo */
     color: #333;
+}
+
+.status.cerrado {
+    background-color: #28a745; /* Verde */
+}
+
+.priority {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    color: white;
+}
+
+.priority.baja {
+    background-color: #28a745; /* Verde */
+}
+
+.priority.media {
+    background-color: #ffc107; /* Amarillo */
+    color: #333;
+}
+
+.priority.alta {
+    background-color: #dc3545; /* Rojo */
+}
+
+/* Estilos para el menú de login/registro (cuando no está logueado) */
+.menu-solapa {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.menu-solapa a {
+    margin: 0 10px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.menu-solapa a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para los enlaces del menú (para que se vean como botones) */
+.dashboard-menu a.menu-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    text-decoration: none; /* Para quitar el subrayado */
+    transition: background-color 0.3s ease;
+    display: inline-block; /* Para que el padding y los márgenes funcionen correctamente */
+    margin-right: 10px; /* Para mantener la separación entre los botones */
+}
+
+.dashboard-menu a.menu-button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para la página de login (añadidos) */
+body.login-page {
+    background-color: #282c34; /* Fondo oscuro para la página de login */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: white; /* Color de texto para elementos fuera del formulario de login */
+    font-family: sans-serif;
+}
+
+.login-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-header {
     margin-bottom: 20px;
+    text-align: center;
+}
+
+.login-header h1 {
+    font-size: 2.5em;
+    margin-bottom: 5px;
+}
+
+.login-header p {
+    font-size: 1.1em;
+    color: #ccc;
+}
+
+.login-container {
+    background-color: #fff; /* Fondo blanco del formulario de login */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: left;
+    color: #333; /* Color de texto dentro del formulario de login */
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.login-container .form-group {
+    margin-bottom: 20px;
+}
+
+.login-container .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.login-container .form-group input {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.login-container .btn-primary {
+    background-color: #282c34; /* Botón oscuro */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.login-container .btn-primary:hover {
+    background-color: #1a1e24;
+}
+
+.login-container .alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.login-container .alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.login-container .alert-info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+.login-container .menu-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-container .menu-link:hover {
+    text-decoration: underline;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
 }
 
 .form-group {
     margin-bottom: 15px;
 }
 
-label {
+.form-group label {
     display: block;
     margin-bottom: 5px;
+    font-weight: bold;
     color: #555;
-    font-size: 0.9em;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-    width: calc(100% - 12px);
+.form-group input[type="text"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
     font-size: 1em;
 }
 
-button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1em;
-    width: 100%;
-    display: block;
-    margin-top: 15px;
+.form-group textarea {
+    resize: vertical; /* Permite redimensionar verticalmente el textarea */
+    min-height: 100px;
 }
 
-button:hover {
+.form-actions {
+    margin-top: 20px;
+}
+
+.form-actions button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+}
+
+.form-actions button:hover {
     background-color: #0056b3;
 }
 
-.form-switch {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 0.9em;
-    color: #777;
-}
-
-.form-switch a {
-    color: #007bff;
+.form-actions a.cancel-button {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
     text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
-.form-switch a:hover {
-    text-decoration: underline;
-}
-
-.hidden {
-    display: none;
+.form-actions a.cancel-button:hover {
+    background-color: #545b62;
 }

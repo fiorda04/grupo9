@@ -78,7 +78,7 @@ public class UsuarioController {
 
     @GetMapping("/logout")
     public String logout(Model model) {
-        return "redirect:" + ViewRouteHelper.USUARIO_LOGIN + "?logout"; 
+        return "redirect:" + ViewRouteHelper.ROUTE_INDEX + "?logout"; 
     }
 
     @GetMapping("/loginsuccess")

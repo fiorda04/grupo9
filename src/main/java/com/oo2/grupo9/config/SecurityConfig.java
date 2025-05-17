@@ -30,7 +30,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Deshabilitamos CSRF por ahora (ya lo habilitaremos correctamente)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/css/**", "/imgs/**", "/js/**", "/vendor/**", "/", "/img/**").permitAll();  // Permitimos acceso a recursos estáticos y a la raíz
+                    auth.requestMatchers( "/","/css/**", "/imgs/**", "/js/**", "/vendor/**", "/img/**").permitAll();  // Permitimos acceso a recursos estáticos y a la raíz
                     auth.requestMatchers("/usuarios/inscribirse").permitAll(); // Permitimos acceso a la página de inscripción sin autenticación
                     auth.requestMatchers("/usuarios/login").permitAll();
                     auth.requestMatchers("/usuarios/agregar").permitAll();
@@ -46,7 +46,7 @@ public class SecurityConfig {
                 })
                 .logout(logout -> {
                     logout.logoutUrl("/logout"); // URL para realizar el logout
-                    logout.logoutSuccessUrl("/login?logout"); // URL a la que se redirige después del logout
+                    logout.logoutSuccessUrl("/"); // URL a la que se redirige después del logout
                     logout.permitAll(); // Permitimos acceso a la URL de logout
                 })
                 .build();
