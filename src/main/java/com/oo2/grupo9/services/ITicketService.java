@@ -5,13 +5,10 @@ import java.util.List;
 
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Categoria;
-import com.oo2.grupo9.entities.Intervencion;
 
 public interface ITicketService {
 
-	long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idPrioridad,
-			LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
-			List<Intervencion> lstIntervenciones);
+	long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idTipo);
 
 	void modificar(Ticket ticket);
 

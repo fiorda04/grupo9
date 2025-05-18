@@ -3,6 +3,9 @@ package com.oo2.grupo9.entities;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,11 +45,12 @@ public class Ticket {
     @JoinColumn(name = "id_prioridad")
     private Prioridad prioridad;
 
+    @CreationTimestamp
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDate fechaCreacion;
-
     
     //Pensar en fechaModEstado como fechaCierre asi no hay que asignarle null 
+    @UpdateTimestamp
     @Column(name = "fecha_cierre", nullable = true)
     private LocalDate fechaCierre;
 
