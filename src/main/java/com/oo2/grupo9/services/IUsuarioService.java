@@ -11,7 +11,7 @@ public interface IUsuarioService {
 
     void modificar(Usuario usuario);
 
-    void eliminar(long idUsuario);
+    void eliminar(Long id); 
 
     void eliminar(String nombreUsuario);
 

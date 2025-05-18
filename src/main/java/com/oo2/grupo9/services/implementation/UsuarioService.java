@@ -1,5 +1,13 @@
 package com.oo2.grupo9.services.implementation;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.oo2.grupo9.entities.Contacto;
 import com.oo2.grupo9.entities.Localidad; // ¡Importante!
 import com.oo2.grupo9.entities.Rol;
@@ -8,14 +16,8 @@ import com.oo2.grupo9.repositories.ContactoRepository;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.services.IUsuarioService;
-import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import jakarta.transaction.Transactional;
 
 @Service("usuarioService")
 @Transactional
@@ -28,19 +30,17 @@ public class UsuarioService implements IUsuarioService {
     private RolRepository rolRepository;
     private ContactoRepository contactoRepository;
 
-
-    public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository, ContactoRepository contactoRepository, ModelMapper modelMapper) {
+    public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository,
+            ContactoRepository contactoRepository, ModelMapper modelMapper) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.contactoRepository = contactoRepository;
 
     }
 
-
-
     @Override
-    public long agregar(String nombre, String apellido, int dni, String email, String telefono, String nombreUsuario, String contrasenia, String domicilio, Localidad localidad, Long rolId) {
-        
+    public long agregar(String nombre, String apellido, int dni, String email, String telefono, String nombreUsuario,
+            String contrasenia, String domicilio, Localidad localidad, Long rolId) {
 
         Usuario nuevoUsuario = new Usuario();
 
@@ -74,7 +74,6 @@ public class UsuarioService implements IUsuarioService {
         return usuarioRepository.save(nuevoUsuario).getIdUsuario();
     }
 
-
     @Override
     public void modificar(Usuario usuario) {
         Optional<Usuario> usuarioExistenteOptional = usuarioRepository.findById(usuario.getIdUsuario());
@@ -83,13 +82,18 @@ public class UsuarioService implements IUsuarioService {
         }
         Usuario usuarioExistente = usuarioExistenteOptional.get();
 
-        if (usuarioRepository.findByNombreUsuarioAndIdUsuarioNotAndActivoTrue(usuario.getNombreUsuario(), usuario.getIdUsuario()).isPresent()) {
+        if (usuarioRepository
+                .findByNombreUsuarioAndIdUsuarioNotAndActivoTrue(usuario.getNombreUsuario(), usuario.getIdUsuario())
+                .isPresent()) {
             throw new IllegalArgumentException("El nuevo nombre de usuario ya pertenece a otro usuario activo.");
         }
-        if (usuarioRepository.findByDniAndContacto_Usuario_IdUsuarioNotAndActivoTrue(usuario.getDni(), usuario.getIdUsuario()).isPresent()) {
+        if (usuarioRepository
+                .findByDniAndContacto_Usuario_IdUsuarioNotAndActivoTrue(usuario.getDni(), usuario.getIdUsuario())
+                .isPresent()) {
             throw new IllegalArgumentException("El nuevo DNI ya pertenece a otro usuario activo.");
         }
-        if (usuarioRepository.findByContacto_EmailAndContacto_Usuario_IdUsuarioNotAndActivoTrue(usuario.getContacto().getEmail(), usuario.getIdUsuario()).isPresent()) {
+        if (usuarioRepository.findByContacto_EmailAndContacto_Usuario_IdUsuarioNotAndActivoTrue(
+                usuario.getContacto().getEmail(), usuario.getIdUsuario()).isPresent()) {
             throw new IllegalArgumentException("El nuevo email ya pertenece a otro usuario activo.");
         }
 
@@ -108,23 +112,29 @@ public class UsuarioService implements IUsuarioService {
         contactoExistente.setTelefono(usuario.getContacto().getTelefono());
         contactoExistente.setDomicilio(usuario.getContacto().getDomicilio());
         if (usuario.getContacto().getLocalidad() != null) {
-            contactoExistente.setLocalidad(usuario.getContacto().getLocalidad()); // Asumimos que la Localidad ya viene con el objeto correcto
+            contactoExistente.setLocalidad(usuario.getContacto().getLocalidad()); // Asumimos que la Localidad ya viene
+                                                                                  // con el objeto correcto
         }
         contactoRepository.save(contactoExistente);
         usuarioExistente.setContacto(contactoExistente);
 
         usuarioRepository.save(usuarioExistente);
     }
-
-    @Override
-    public void eliminar(long idUsuario) {
-        Optional<Usuario> usuarioOptional = usuarioRepository.findByIdUsuarioAndActivoTrue(idUsuario);
-        if (usuarioOptional.isEmpty()) {
-            throw new IllegalArgumentException("No existe un usuario activo con el ID proporcionado.");
+    
+    public void eliminar(Long id) {
+        try {
+            Optional<Usuario> usuarioOptional = usuarioRepository.findByIdUsuarioAndActivoTrue(id);
+            if (usuarioOptional.isEmpty()) {
+                throw new IllegalArgumentException("No existe un usuario activo con el ID proporcionado.");
+            }
+            Usuario usuario = usuarioOptional.get();
+            usuario.setActivo(false);
+            usuarioRepository.save(usuario);
+        } catch (Exception e) {
+            System.err.println("¡ERROR EN EL SERVICIO AL ELIMINAR USUARIO!");
+            e.printStackTrace();
+            throw e;
         }
-        Usuario usuario = usuarioOptional.get();
-        usuario.setActivo(false);
-        usuarioRepository.save(usuario);
     }
 
     @Override
@@ -141,7 +151,8 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public Usuario traer(long idUsuario) {
         return usuarioRepository.findByIdUsuarioAndActivoTrue(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró un usuario activo con el ID proporcionado."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No se encontró un usuario activo con el ID proporcionado."));
     }
 
     @Override
@@ -153,19 +164,22 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public Usuario traer(String nombreUsuario) {
         return usuarioRepository.findByNombreUsuarioAndActivoTrue(nombreUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró un usuario activo con el nombre de usuario proporcionado."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No se encontró un usuario activo con el nombre de usuario proporcionado."));
     }
 
     @Override
     public Usuario traerPorDni(int dni) {
         return usuarioRepository.findByDniAndActivoTrue(dni)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró un usuario activo con el DNI proporcionado."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No se encontró un usuario activo con el DNI proporcionado."));
     }
 
     @Override
     public Usuario traerPorEmail(String email) {
         return usuarioRepository.findByContacto_EmailAndActivoTrue(email)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró un usuario activo con el email proporcionado."));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No se encontró un usuario activo con el email proporcionado."));
     }
 
     @Override

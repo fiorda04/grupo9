@@ -30,10 +30,11 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Deshabilitamos CSRF por ahora (ya lo habilitaremos correctamente)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers( "/","/css/**", "/imgs/**", "/js/**", "/vendor/**", "/img/**").permitAll();  // Permitimos acceso a recursos estáticos y a la raíz
+                    auth.requestMatchers( "/","/css/**", "/imgs/**", "/js/**", "/vendor/**", "/img/**", "/swagger-ui/index.html").permitAll();  // Permitimos acceso a recursos estáticos y a la raíz
                     auth.requestMatchers("/usuarios/inscribirse").permitAll(); // Permitimos acceso a la página de inscripción sin autenticación
                     auth.requestMatchers("/usuarios/login").permitAll();
                     auth.requestMatchers("/usuarios/agregar").permitAll();
+                    auth.requestMatchers("/usuarios/admin/**").permitAll();
                     auth.anyRequest().authenticated(); // Cualquier otra petición requiere autenticación
                 })
                 .formLogin(login -> {
