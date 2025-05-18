@@ -23,6 +23,7 @@ public class TicketDTO {
 	    private String descripcion;
 		
 	    private List<Long> categoriasId;
+
 	    
 	    @NotNull(message = "La prioridad del ticket no puede estar vacia")
 	    private Long prioridadId;

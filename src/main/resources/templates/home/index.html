@@ -233,7 +233,7 @@
                                 <a th:href="@{/usuarios/admin/modificar/{id}(id=${usuario.idUsuario})}"
                                     class="action-button modificar-button">Modificar</a>
                                 <form th:if="${usuario.activo}"
-                                    th:action="@{/usuarios/admin/dar-de-baja/{id}(id=${usuario.idUsuario})}"
+                                    th:action="@{/{id}(id=${usuario.idUsuario})}"
                                     method="post" style="display:inline;">
                                     <button type="submit" class="action-button dar-baja-button">Dar de Baja</button>
                                 </form>
