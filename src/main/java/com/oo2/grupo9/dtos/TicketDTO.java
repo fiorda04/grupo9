@@ -19,7 +19,6 @@ public class TicketDTO {
 		@NotEmpty(message = "La descripcion del ticket no puede estar vacio")
 	    private String descripcion;
 		
-		
 	    private List<Categoria> lstCategorias;
 	    
 	    @NotEmpty(message = "La prioridad del ticket no puede estar vacio")

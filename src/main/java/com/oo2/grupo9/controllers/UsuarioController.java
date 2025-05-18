@@ -5,6 +5,9 @@ import com.oo2.grupo9.entities.Localidad;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
+
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @Operation(summary = "Lista todos los usuarios y localidades para la vista")
     public String listarUsuarios(Model model) {
         List<Usuario> usuarios = usuarioService.traerTodos();
         List<Localidad> localidades = localidadService.traerTodas();
@@ -85,23 +88,6 @@ public class UsuarioController {
     @GetMapping("/loginsuccess")
     public String loginCheck() {
         return "redirect:" + ViewRouteHelper.ROUTE_INDEX;
-    }
-
-    @PostMapping("/admin/usuarios/dar-de-baja/{id}")
-    public String darDeBajaUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        System.out.println("ID RECIBIDO EN DAR DE BAJA: " + id);
-        try {
-            usuarioService.eliminar(id);
-            redirectAttributes.addFlashAttribute("mensaje", "Usuario dado de baja exitosamente.");
-            return "redirect:/";
-        } catch (Exception e) {
-            System.err.println("¡ERROR AL DAR DE BAJA USUARIO!");
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("error", "Error al dar de baja al usuario: " + e.getMessage());
-            return "redirect:/";
-        }
-        // redirectAttributes.addFlashAttribute("mensaje", "Prueba de redirección exitosa.");
-        // return "redirect:/";
     }
 
     @GetMapping("/admin/usuarios/modificar/{id}")
