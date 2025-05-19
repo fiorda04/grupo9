@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.oo2.grupo9.entities.Categoria;
 
-@Repository
+@Repository("categoriaRepository")
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 	Categoria findByIdCategoria(Long idCategoria);
 	

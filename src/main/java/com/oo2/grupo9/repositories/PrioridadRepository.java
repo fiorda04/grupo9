@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.oo2.grupo9.entities.Prioridad;
 
-@Repository
+@Repository("prioridadRepository")
 public interface PrioridadRepository extends JpaRepository<Prioridad, Long> {
 	Prioridad findByIdPrioridad(Long idPrioridad);
 	

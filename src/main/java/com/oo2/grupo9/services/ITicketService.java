@@ -2,20 +2,19 @@ package com.oo2.grupo9.services;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import com.oo2.grupo9.entities.Ticket;
-import com.oo2.grupo9.entities.Categoria;
 
 public interface ITicketService {
 
-	long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idTipo);
+	long agregar(String titulo, String descripcion, List<Long> categoriasId, Long idTipo, Long idEstado,
+			Long idPrioridad, Long idUsuario);
 
 	void modificar(Ticket ticket);
 
 	void eliminar(long idTicket);
-	
+
 	Ticket traer(long idTicket);
-	
+
 	List<Ticket> traerTodos();
 
 	List<Ticket> traerTicketsPorTipo(long idTipo);
@@ -29,8 +28,7 @@ public interface ITicketService {
 	List<Ticket> traerTicketPorPrioridad(long idPrioridad);
 
 	List<Ticket> traerPorFecha(LocalDate fecha);
-	
+
 	List<Ticket> traerTicketEntreFechas(LocalDate fechaCreacion1, LocalDate fechaCreacion2);
-	
-	
+
 }

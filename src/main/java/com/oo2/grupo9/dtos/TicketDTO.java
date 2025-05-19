@@ -3,16 +3,15 @@ package com.oo2.grupo9.dtos;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.oo2.grupo9.entities.Categoria;
-import com.oo2.grupo9.entities.Intervencion;
-
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class TicketDTO {
 	
 		@NotEmpty(message = "El titulo del ticket no puede estar vacio")
@@ -23,8 +22,7 @@ public class TicketDTO {
 	    private String descripcion;
 		
 	    private List<Long> categoriasId;
-
-	    
+  
 	    @NotNull(message = "La prioridad del ticket no puede estar vacia")
 	    private Long prioridadId;
 	    

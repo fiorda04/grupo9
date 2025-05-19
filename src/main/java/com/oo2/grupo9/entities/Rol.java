@@ -2,6 +2,7 @@ package com.oo2.grupo9.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
@@ -21,4 +22,5 @@ public class Rol implements GrantedAuthority {
     public String getAuthority() {
         return "ROLE_" + nombreRol;
     }
+    
 }
