@@ -1,5 +1,7 @@
 package com.oo2.grupo9.dtos;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -26,4 +28,6 @@ public class UsuarioDTO {
     private Long contactoId;
     private Long rolId;
     private boolean activo;
+
+     private List<Long> idsTicketsCliente;
 }

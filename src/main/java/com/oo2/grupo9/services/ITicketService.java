@@ -9,31 +9,31 @@ import com.oo2.grupo9.entities.Intervencion;
 
 public interface ITicketService {
 
-	long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idPrioridad,
-			LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
-			List<Intervencion> lstIntervenciones);
+    long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idPrioridad,
+                LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
+                List<Intervencion> lstIntervenciones);
 
-	void modificar(Ticket ticket);
+    void guardar(Ticket ticket);
 
-	void eliminar(long idTicket);
-	
-	Ticket traer(long idTicket);
-	
-	List<Ticket> traerTodos();
+    void modificar(Ticket ticket);
 
-	List<Ticket> traerTicketsPorTipo(long idTipo);
+    void eliminar(long idTicket);
 
-	List<Ticket> traerPorCliente(long idUsuario);
+    Ticket traer(long idTicket);
 
-	List<Ticket> traerPorEmpleado(long idAutor); // se fija en las intervenciones
+    List<Ticket> traerTodos();
 
-	List<Ticket> traerTicketPorEstado(long idEstado);
+    List<Ticket> traerTicketsPorTipo(long idTipo);
 
-	List<Ticket> traerTicketPorPrioridad(long idPrioridad);
+    List<Ticket> traerPorCliente(long idUsuario);
 
-	List<Ticket> traerPorFecha(LocalDate fecha);
-	
-	List<Ticket> traerTicketEntreFechas(LocalDate fechaCreacion1, LocalDate fechaCreacion2);
-	
-	
+    List<Ticket> traerPorEmpleado(long idAutor); // se fija en las intervenciones
+
+    List<Ticket> traerTicketPorEstado(long idEstado);
+
+    List<Ticket> traerTicketPorPrioridad(long idPrioridad);
+
+    List<Ticket> findByFechaCreacion(LocalDate fecha); // ¡Asegúrate de que el nombre sea EXACTAMENTE este!
+
+    List<Ticket> findByFechaCreacionBetween(LocalDate fechaCreacion1, LocalDate fechaCreacion2); // ¡Asegúrate de que el nombre sea EXACTAMENTE este!
 }

@@ -1,9 +1,12 @@
 package com.oo2.grupo9.repositories;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.oo2.grupo9.entities.Ticket;
@@ -28,6 +31,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
 	// 30. +traerTicketPorPrioridad(Prioridad prioridad): List<Ticket>
 	List<Ticket> findByPrioridad_IdPrioridad(Long idPrioridad);
+
+    @Query("SELECT t FROM Ticket t WHERE t.fechaCreacion = :fecha")
+    List<Ticket> findByFechaCreacion(@Param("fecha") LocalDate fecha);
+
+    @Query("SELECT t FROM Ticket t WHERE t.fechaCreacion BETWEEN :fechaInicio AND :fechaFin")
+    List<Ticket> findByFechaCreacionBetween(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
 
 	// 31. +traerPorFecha(LocalDate fecha): List<Ticket>
 	//List<Ticket> findByFechaCreacion(LocalDate fecha);

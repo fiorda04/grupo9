@@ -1,5 +1,6 @@
 package com.oo2.grupo9.services.implementation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,6 +71,7 @@ public class UsuarioService implements IUsuarioService {
 
         contactoRepository.save(nuevoContacto);
         nuevoUsuario.setContacto(nuevoContacto);
+        nuevoUsuario.setTicketsCliente(new ArrayList<>());
 
         return usuarioRepository.save(nuevoUsuario).getIdUsuario();
     }

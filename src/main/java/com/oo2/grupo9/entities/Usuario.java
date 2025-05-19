@@ -56,6 +56,9 @@ public class Usuario implements UserDetails {
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
+    @OneToMany(mappedBy = "usuarioCliente")
+    private List<Ticket> ticketsCliente;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.getNombreRol()));
