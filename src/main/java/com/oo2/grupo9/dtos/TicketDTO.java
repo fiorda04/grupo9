@@ -8,8 +8,11 @@ import com.oo2.grupo9.entities.Intervencion;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class TicketDTO {
 	
 		@NotEmpty(message = "El titulo del ticket no puede estar vacio")
@@ -19,26 +22,27 @@ public class TicketDTO {
 		@NotEmpty(message = "La descripcion del ticket no puede estar vacio")
 	    private String descripcion;
 		
-	    private List<Categoria> lstCategorias;
+	    private List<Long> categoriasId;
+
 	    
-	    @NotEmpty(message = "La prioridad del ticket no puede estar vacio")
+	    @NotNull(message = "La prioridad del ticket no puede estar vacia")
 	    private Long prioridadId;
 	    
-	    @NotEmpty(message = "La fecha de creacion del ticket no puede estar vacio")
+	    @NotNull(message = "La fecha de creacion del ticket no puede estar vacia")
 	    private LocalDate fechaCreacion;
 	    
 	    @Future(message = "La fecha de cierre del ticket se va a dar cuando el ticket se cierre")
 	    private LocalDate fechaCierre;
 	    
-	    @NotEmpty(message = "El estado del ticket no puede estar vacio")
+	    @NotNull(message = "El estado del ticket no puede estar vacio")
 	    private Long estadoId;
 	    
-	    @NotEmpty(message = "El tipo del ticket no puede estar vacio")
+	    @NotNull(message = "El tipo del ticket no puede estar vacio")
 	    private Long tipoId;   
 	    
-	    @NotEmpty(message = "El usuario del ticket no puede estar vacio")
+	    @NotNull(message = "El usuario del ticket no puede estar vacio")
 	    private Long usuarioIdCliente; 
 	    
-	    private List<Intervencion> lstIntervenciones; 
+	    private List<Long> intervencionesId; 
 
 }

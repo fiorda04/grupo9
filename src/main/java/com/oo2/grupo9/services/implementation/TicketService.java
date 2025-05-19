@@ -20,7 +20,8 @@ public class TicketService implements ITicketService {
     @Autowired
     private TicketRepository ticketRepository;
 
-    @Override
+    
+    @Override 
     public long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idPrioridad,
                         LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
                         List<Intervencion> lstIntervenciones) {
@@ -41,7 +42,6 @@ public class TicketService implements ITicketService {
         nuevoTicket.setLstIntervenciones(lstIntervenciones);
         return ticketRepository.save(nuevoTicket).getIdTicket();
     }
-
     @Override
     public void guardar(Ticket ticket) {
         ticketRepository.save(ticket);
@@ -106,3 +106,4 @@ public class TicketService implements ITicketService {
         return ticketRepository.findByFechaCreacionBetween(fechaCreacion1, fechaCreacion2);
     }
 }
+
