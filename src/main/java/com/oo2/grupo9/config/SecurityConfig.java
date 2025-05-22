@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -28,27 +29,43 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // Deshabilitamos CSRF por ahora (ya lo habilitaremos correctamente)
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers( "/","/css/**", "/imgs/**", "/js/**", "/vendor/**", "/img/**", "/swagger-ui/index.html").permitAll();  // Permitimos acceso a recursos estáticos y a la raíz
-                    auth.requestMatchers("/usuarios/inscribirse").permitAll(); // Permitimos acceso a la página de inscripción sin autenticación
-                    auth.requestMatchers("/usuarios/login").permitAll();
-                    auth.requestMatchers("/usuarios/agregar").permitAll();
-                    auth.requestMatchers("/usuarios/admin/**").permitAll();
-                    auth.anyRequest().authenticated(); // Cualquier otra petición requiere autenticación
+                    auth.requestMatchers(
+                            "/",                                
+                            "/css/**",                           
+                            "/imgs/**",                          
+                            "/js/**",                           
+                            "/vendor/**",                        
+                            "/swagger-ui/**", "/v3/api-docs/**", 
+                            "/error",                            
+                            "/usuarios/inscribirse",             
+                            "/usuarios/agregar",                
+                            "/login",                            
+                            "/loginprocess"                      
+                    ).permitAll()
+                    .requestMatchers("/tickets/crear").hasRole("Cliente") // Solo CLIENTE puede ver el formulario de creación (GET)
+                    .requestMatchers("/tickets/guardar").hasRole("Cliente") // Solo CLIENTE puede enviar el formulario de creación (POST)
+                    .anyRequest().authenticated();
                 })
                 .formLogin(login -> {
-                    login.loginPage("/usuarios/login"); // Especificamos nuestra página de login personalizada
-                    login.loginProcessingUrl("/loginprocess"); // URL a la que se enviarán las credenciales del login
-                    login.usernameParameter("nombreUsuario"); // Nombre del parámetro del formulario para el nombre de usuario
-                    login.passwordParameter("contraseña"); // Nombre del parámetro del formulario para la contraseña
-                    login.defaultSuccessUrl("/", true); // URL a la que se redirige después de un login exitoso
-                    login.permitAll(); // Permitimos acceso a la página de login sin autenticación
+                    // Configuración del formulario de login
+                    login.loginPage("/usuarios/login");                
+                    login.loginProcessingUrl("/loginprocess"); 
+                    login.usernameParameter("username");       
+                    login.passwordParameter("password");       
+                    login.defaultSuccessUrl("/", true);                                              
+                    login.failureUrl("/login?error");          
+                    login.permitAll();                        
                 })
                 .logout(logout -> {
-                    logout.logoutUrl("/logout"); // URL para realizar el logout
-                    logout.logoutSuccessUrl("/"); // URL a la que se redirige después del logout
-                    logout.permitAll(); // Permitimos acceso a la URL de logout
+                    // Configuración del cierre de sesión
+                    logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout")); 
+                    logout.logoutSuccessUrl("/"); 
+                    logout.invalidateHttpSession(true);      
+                    logout.deleteCookies("JSESSIONID");      // Elimina la cookie de sesión
+                    logout.permitAll();                      
                 })
                 .build();
     }

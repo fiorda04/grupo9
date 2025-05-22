@@ -1,22 +1,25 @@
 package com.oo2.grupo9.controllers;
 
 import com.oo2.grupo9.entities.*;
+import com.oo2.grupo9.dtos.TicketCreacionDTO; 
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.*;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 @Controller
@@ -40,56 +43,87 @@ public class TicketController {
     @Autowired
     private ITicketService ticketService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @GetMapping("/tickets/crear")
-    public String mostrarFormularioCrearTicket(Model model) {
-        model.addAttribute("nuevoTicket", new Ticket()); // Para el binding del formulario
-        model.addAttribute("categoriasDisponibles", categoriaService.traerTodas());
-        model.addAttribute("tiposDisponibles", tipoService.traerTodas());
-        return ViewRouteHelper.TICKET_CREAR;
+    public ModelAndView mostrarFormularioCrearTicket() {
+        ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKET_CREAR);
+        mAV.addObject("nuevoTicketDTO", new TicketCreacionDTO()); // Pasa el nuevo DTO vacío
+        mAV.addObject("categoriasDisponibles", categoriaService.traerTodas());
+        mAV.addObject("tiposDisponibles", tipoService.traerTodas());
+        return mAV;
     }
 
     @PostMapping("/tickets/guardar")
-    public String guardarNuevoTicket(@ModelAttribute("nuevoTicket") Ticket nuevoTicket,
-                                     @RequestParam(value = "categorias", required = false) List<Long> categoriaIds,
-                                     @RequestParam("tipo") Long tipoId,
-                                     Model model,
-                                     HttpServletRequest request) {
+    public ModelAndView guardarNuevoTicket(@ModelAttribute("nuevoTicketDTO") @Valid TicketCreacionDTO nuevoTicketDTO,
+                                             BindingResult bindingResult) {
 
-        if (categoriaIds == null || categoriaIds.isEmpty()) {
-            model.addAttribute("errorCategorias", "Debe seleccionar al menos una categoría.");
-            model.addAttribute("categoriasDisponibles", categoriaService.traerTodas());
-            model.addAttribute("tiposDisponibles", tipoService.traerTodas());
-            return ViewRouteHelper.TICKET_CREAR; // Volver al formulario con error
+        ModelAndView mAV = new ModelAndView();
+
+        if (bindingResult.hasErrors()) {
+            mAV.setViewName(ViewRouteHelper.TICKET_CREAR);
+            mAV.addObject("categoriasDisponibles", categoriaService.traerTodas());
+            mAV.addObject("tiposDisponibles", tipoService.traerTodas());
+            return mAV;
         }
 
-        // Obtener el usuario autenticado
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Usuario cliente = usuarioService.traer(username);
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            Usuario cliente = usuarioService.traer(username); // Asumo que este método trae el Usuario por nombre de usuario
 
-        // Obtener las entidades necesarias
-        Tipo tipo = tipoService.traer(tipoId);
-        Prioridad prioridad = prioridadService.traer(1L); // Prioridad predeterminada: 1
-        Estado estadoAbierto = estadoService.traer(1L);   // Estado "Abierto": 1
+            if (cliente == null) {
+                mAV.setView(new RedirectView(ViewRouteHelper.ROUTE_INDEX + "?error=No se pudo encontrar el usuario autenticado.", true));
+                return mAV;
+            }
 
-        // Obtener las categorías seleccionadas
-        List<Categoria> categoriasSeleccionadas = categoriaIds.stream()
-                .map(categoriaService::traer)
-                .collect(Collectors.toList());
+            // *******************************************************************
+            // ¡CAMBIO CLAVE AQUÍ: Mapeo manual en lugar de ModelMapper para depurar!
+            // *******************************************************************
+            Ticket nuevoTicket = new Ticket();
+            nuevoTicket.setTitulo(nuevoTicketDTO.getTitulo());
+            nuevoTicket.setDescripcion(nuevoTicketDTO.getDescripcion());
 
-        // Setear los atributos del nuevo ticket
-        nuevoTicket.setUsuarioCliente(cliente);
-        nuevoTicket.setLstCategorias(categoriasSeleccionadas);
-        nuevoTicket.setTipo(tipo);
-        nuevoTicket.setPrioridad(prioridad);
-        nuevoTicket.setEstado(estadoAbierto);
-        nuevoTicket.setFechaCreacion(LocalDate.now());
-        nuevoTicket.setFechaCierre(null);
+            // Las fechas de creación y cierre, y el estado inicial, se configuran
+            // en el constructor de la entidad Ticket o se asignan aquí.
+            // Si la entidad Ticket tiene @CreationTimestamp en fechaCreacion, no necesitas esto.
+            // Si la entidad Ticket tiene @UpdateTimestamp en fechaCierre, no necesitas esto.
+            nuevoTicket.setFechaCreacion(LocalDate.now()); // Asegúrate de que no estás duplicando @CreationTimestamp
+            nuevoTicket.setFechaCierre(null); // Asegúrate de que no estás duplicando @UpdateTimestamp
 
-        // Guardar el nuevo ticket
-        ticketService.guardar(nuevoTicket);
+            Tipo tipo = tipoService.traer(nuevoTicketDTO.getTipoId());
+            Prioridad prioridad = prioridadService.traer(1L); // Prioridad predeterminada: 1 (ej. "Baja")
+            Estado estadoAbierto = estadoService.traer(1L);   // Estado "Abierto": 1
 
-        return ViewRouteHelper.TICKET_CREAR; // Redirigir a la lista de tickets del cliente
+            List<Categoria> categoriasSeleccionadas = nuevoTicketDTO.getCategoriasId().stream()
+                    .map(categoriaService::traer)
+                    .collect(Collectors.toList());
+
+            nuevoTicket.setUsuarioCliente(cliente);
+            nuevoTicket.setLstCategorias(categoriasSeleccionadas);
+            nuevoTicket.setTipo(tipo);
+            nuevoTicket.setPrioridad(prioridad);
+            nuevoTicket.setEstado(estadoAbierto);
+
+            // *******************************************************************
+            // ¡FIN DEL CAMBIO!
+            // *******************************************************************
+
+            ticketService.guardar(nuevoTicket);
+
+            mAV.setView(new RedirectView(ViewRouteHelper.ROUTE_INDEX + "?mensaje=Ticket creado exitosamente!", true));
+            return mAV;
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Imprime la traza completa para depurar
+            mAV.setViewName(ViewRouteHelper.TICKET_CREAR);
+            mAV.addObject("nuevoTicketDTO", nuevoTicketDTO);
+            mAV.addObject("categoriasDisponibles", categoriaService.traerTodas());
+            mAV.addObject("tiposDisponibles", tipoService.traerTodas());
+            mAV.addObject("error", "Error al crear el ticket: " + e.getMessage());
+            return mAV;
+        }
     }
 }

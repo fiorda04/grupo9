@@ -1,11 +1,35 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Nuevo Ticket - Gestión de Usuarios</title>
+    <title>Crear Nuevo Ticket - Gestión de Tickets</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        .error {
+            color: red;
+            font-size: 0.85em;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+        .alert-danger {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+    </style>
 </head>
 
 <body>
@@ -29,7 +53,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
-                                d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
+                                d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
                             <path fill-rule="evenodd"
                                 d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
                         </svg>
@@ -45,25 +69,37 @@
             <a th:href="@{/tickets/mis-tickets}" class="menu-button">Mis Tickets</a>
         </div>
 
+        <div th:if="${param.mensaje}" class="alert alert-success">
+            <span th:text="${param.mensaje}"></span>
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger">
+            <span th:text="${param.error}"></span>
+        </div>
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
+        </div>
+
         <h2>Ingrese los detalles de su ticket</h2>
-        <form th:action="@{/tickets/guardar}" method="post" th:object="${nuevoTicket}" class="form-horizontal">
+        <form th:action="@{/tickets/guardar}" method="post" th:object="${nuevoTicketDTO}" class="form-horizontal">
             <div class="form-group">
                 <label for="titulo" class="col-sm-2 control-label">Título:</label>
                 <div class="col-sm-10">
-                    <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required />
+                    <input type="text" id="titulo" th:field="*{titulo}" class="form-control" />
+                    <p th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}" class="error"></p>
                 </div>
             </div>
             <div class="form-group">
                 <label for="descripcion" class="col-sm-2 control-label">Descripción:</label>
                 <div class="col-sm-10">
-                    <textarea id="descripcion" th:field="*{descripcion}" rows="5" class="form-control" required></textarea>
+                    <textarea id="descripcion" th:field="*{descripcion}" rows="5" class="form-control"></textarea>
+                    <p th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}" class="error"></p>
                 </div>
             </div>
             <div>
                 <label>Categorías:</label>
-                <div th:if="${errorCategorias}" class="error" th:text="${errorCategorias}"></div>
+                <p th:if="${#fields.hasErrors('categoriasId')}" th:errors="*{categoriasId}" class="error"></p>
                 <div th:each="categoria : ${categoriasDisponibles}">
-                    <input type="checkbox" name="categorias" th:value="${categoria.idCategoria}"
+                    <input type="checkbox" th:field="*{categoriasId}" th:value="${categoria.idCategoria}"
                         th:id="${'categoria_' + categoria.idCategoria}" />
                     <label th:for="${'categoria_' + categoria.idCategoria}"
                         th:text="${categoria.nombreCategoria}"></label>
@@ -72,11 +108,12 @@
             <div class="form-group">
                 <label for="tipo" class="col-sm-2 control-label">Tipo:</label>
                 <div class="col-sm-10">
-                    <select id="tipo" name="tipo" class="form-control" required>
+                    <select id="tipo" th:field="*{tipoId}" class="form-control">
                         <option value="">Seleccione un tipo</option>
                         <option th:each="tipo : ${tiposDisponibles}" th:value="${tipo.idTipo}"
                             th:text="${tipo.nombreTipo}"></option>
                     </select>
+                    <p th:if="${#fields.hasErrors('tipoId')}" th:errors="*{tipoId}" class="error"></p>
                 </div>
             </div>
             <div class="form-group">

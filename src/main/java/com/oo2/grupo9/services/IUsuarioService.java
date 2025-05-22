@@ -1,14 +1,15 @@
 package com.oo2.grupo9.services;
 
-import com.oo2.grupo9.entities.Localidad;
+import com.oo2.grupo9.dtos.ContactoDTO;
+import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.entities.Usuario;
 
 import java.util.List;
 
 public interface IUsuarioService {
 
-    long agregar(String nombre, String apellido, int dni, String email, String telefono, String nombreUsuario, String contrasenia, String domicilio, Localidad localidad, Long rolId);
-
+    Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception;
+    
     void modificar(Usuario usuario);
 
     void eliminar(Long id); 

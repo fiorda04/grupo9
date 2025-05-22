@@ -2,16 +2,18 @@ package com.oo2.grupo9.dtos;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import com.oo2.grupo9.entities.Categoria;
-import com.oo2.grupo9.entities.Intervencion;
-
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 @Data
 public class TicketDTO {
 	

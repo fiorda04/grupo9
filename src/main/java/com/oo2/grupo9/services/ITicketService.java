@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Categoria;
+import com.oo2.grupo9.entities.Intervencion;
 
 public interface ITicketService {
 

@@ -91,10 +91,20 @@
     </header>
 
     <main class="dashboard-container">
-        <div th:if="${mensaje}" class="alert alert-success">
+
+        <div th:if="${param.success}" class="alert alert-success">
+            <span th:text="${param.success}"></span>
+        </div>
+        <div th:if="${param.mensaje}" class="alert alert-success">
+            <span th:text="${param.mensaje}"></span>
+        </div>
+        <div th:if="${param.error}" class="alert alert-danger">
+            <span th:text="${param.error}"></span>
+        </div>
+        <div th:unless="${param.success or param.mensaje}" th:if="${mensaje}" class="alert alert-success">
             <span th:text="${mensaje}"></span>
         </div>
-        <div th:if="${error}" class="alert alert-danger">
+        <div th:unless="${param.error}" th:if="${error}" class="alert alert-danger">
             <span th:text="${error}"></span>
         </div>
 
@@ -148,7 +158,12 @@
                     <h3>Tickets Recientes</h3>
                     <p class="subtitle">Tus tickets más recientes y su estado actual</p>
                     <div class="search-bar">
-                        <input type="text" placeholder="Buscar tickets...">
+                        <form th:action="@{/}" method="get" class="search-form">
+                            <input type="text" name="keyword" th:value="${keyword}"
+                                placeholder="Buscar tickets por título...">
+                            <button type="submit" class="action-button">Buscar</button>
+                            <a th:href="@{/}" class="action-button">Limpiar Filtro</a>
+                        </form>
                     </div>
                     <table class="tickets-table">
                         <thead>
@@ -163,12 +178,16 @@
                             <tr th:each="ticket : ${tickets}">
                                 <td th:text="${ticket.titulo}">Título del Ticket</td>
                                 <td><span class="status"
-                                        th:classappend="${ticket.estado.equalsIgnoreCase('Abierto') ? 'abierto' : (ticket.estado.equalsIgnoreCase('En Proceso') ? 'en-proceso' : 'cerrado')}"
-                                        th:text="${ticket.estado}">Estado</span></td>
+                                        th:classappend="${ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('Abierto') ? 'abierto' : (ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('En Proceso') ? 'en-proceso' : 'cerrado')}"
+                                        th:text="${ticket.estado != null ? ticket.estado.nombreEstado : ''}">Estado</span>
+                                </td>
                                 <td><span class="priority"
-                                        th:classappend="${ticket.prioridad.equalsIgnoreCase('Alta') ? 'alta' : (ticket.prioridad.equalsIgnoreCase('Media') ? 'media' : 'baja')}"
-                                        th:text="${ticket.prioridad}">Prioridad</span></td>
-                                <td th:text="${#dates.format(ticket.fechaCreacion, 'yyyy-MM-dd')}">Fecha</td>
+                                        th:classappend="${ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Alta') ? 'alta' : (ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Media') ? 'media' : 'baja')}"
+                                        th:text="${ticket.prioridad != null ? ticket.prioridad.nombrePrioridad : ''}">Prioridad</span>
+                                </td>
+                                <td
+                                    th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'yyyy-MM-dd') : ''}">
+                                    Fecha</td>
                             </tr>
                             <tr th:if="${tickets != null and tickets.isEmpty()}">
                                 <td colspan="4">No hay tickets para mostrar.</td>
@@ -226,14 +245,15 @@
                         <tr th:each="usuario : ${usuarios}">
                             <td th:text="${usuario.nombreUsuario}"></td>
                             <td th:text="${usuario.rol != null ? usuario.rol.nombreRol : ''}"></td>
-                            <td th:text="${#temporals.format(usuario.fechaCreacion, 'yyyy-MM-dd')}"></td>
+                            <td
+                                th:text="${usuario.fechaCreacion != null ? #temporals.format(usuario.fechaCreacion, 'yyyy-MM-dd') : ''}">
+                            </td>
                             <td th:class="${usuario.activo ? 'status-activo' : 'status-inactivo'}"
                                 th:text="${usuario.activo ? 'Sí' : 'No'}"></td>
                             <td>
                                 <a th:href="@{/usuarios/admin/modificar/{id}(id=${usuario.idUsuario})}"
                                     class="action-button modificar-button">Modificar</a>
-                                <form th:if="${usuario.activo}"
-                                    th:action="@{/{id}(id=${usuario.idUsuario})}"
+                                <form th:if="${usuario.activo}" th:action="@{/{id}(id=${usuario.idUsuario})}"
                                     method="post" style="display:inline;">
                                     <button type="submit" class="action-button dar-baja-button">Dar de Baja</button>
                                 </form>

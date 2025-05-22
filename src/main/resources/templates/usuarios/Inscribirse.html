@@ -7,6 +7,7 @@
     <title>Agregar Nuevo Usuario - Gestión de Usuarios</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <style>
+        /* Puedes mover estos estilos a tu styles.css para que sean globales */
         .full-width-button {
             display: block;
             width: 100%;
@@ -24,67 +25,92 @@
         </div>
         <div class="login-container">
             <h2>Agregar Nuevo Usuario</h2>
-            <form action="/usuarios/agregar" method="post" th:object="${nuevoUsuario}" class="form-horizontal">
+
+            <div th:if="${success}" class="success-message" th:text="${success}"></div>
+            <div th:if="${error}" class="general-error-message" th:text="${error}"></div>
+
+            <form action="/usuarios/agregar" method="post" class="form-horizontal">
                 <div class="form-group">
                     <label for="nombre" class="col-sm-2 control-label">Nombre:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="nombre" th:field="*{nombre}" class="form-control" required />
+                        <input type="text" id="nombre" th:field="${nuevoUsuario.nombre}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.nombre')}" th:errors="${nuevoUsuario.nombre}"
+                            class="error-message"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="apellido" class="col-sm-2 control-label">Apellido:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="apellido" th:field="*{apellido}" class="form-control" required />
+                        <input type="text" id="apellido" th:field="${nuevoUsuario.apellido}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.apellido')}" th:errors="${nuevoUsuario.apellido}"
+                            class="error-message"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="dni" class="col-sm-2 control-label">DNI:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="dni" th:field="*{dni}" class="form-control" />
+                        <input type="text" id="dni" th:field="${nuevoUsuario.dni}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.dni')}" th:errors="${nuevoUsuario.dni}"
+                            class="error-message"></span>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="email" class="col-sm-2 control-label">Email:</label>
                     <div class="col-sm-10">
-                        <input type="email" id="email" th:field="*{contacto.email}" class="form-control" required />
+                        <input type="email" id="email" th:field="${nuevoContacto.email}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoContacto.email')}" th:errors="${nuevoContacto.email}"
+                            class="error-message"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="telefono" class="col-sm-2 control-label">Teléfono:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="telefono" th:field="*{contacto.telefono}" class="form-control" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="nombreUsuario" class="col-sm-2 control-label">Nombre de Usuario:</label>
-                    <div class="col-sm-10">
-                        <input type="text" id="nombreUsuario" th:field="*{nombreUsuario}" class="form-control"
-                            required />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="contrasenia" class="col-sm-2 control-label">Contraseña:</label>
-                    <div class="col-sm-10">
-                        <input type="password" id="contrasenia" th:field="*{contraseña}" class="form-control"
-                            required />
+                        <input type="text" id="telefono" th:field="${nuevoContacto.telefono}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoContacto.telefono')}"
+                            th:errors="${nuevoContacto.telefono}" class="error-message"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="domicilio" class="col-sm-2 control-label">Domicilio:</label>
                     <div class="col-sm-10">
-                        <input type="text" id="domicilio" th:field="*{contacto.domicilio}" class="form-control" />
+                        <input type="text" id="domicilio" th:field="${nuevoContacto.domicilio}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoContacto.domicilio')}"
+                            th:errors="${nuevoContacto.domicilio}" class="error-message"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="localidad" class="col-sm-2 control-label">Localidad:</label>
                     <div class="col-sm-10">
-                        <select id="localidad" th:field="*{contacto.localidad}" class="form-control">
+                        <select id="localidad" th:field="${nuevoContacto.localidadId}" class="form-control">
                             <option value="">Seleccione una localidad</option>
-                            <option th:each="localidad : ${localidades}" th:value="${localidad.idLocalidad}"
-                                th:text="${localidad.nombreLocalidad}"></option>
+                            <option th:each="loc : ${localidades}" th:value="${loc.idLocalidad}"
+                                th:text="${loc.nombreLocalidad}"></option>
                         </select>
+                        <span th:if="${#fields.hasErrors('nuevoContacto.localidadId')}"
+                            th:errors="${nuevoContacto.localidadId}" class="error-message"></span>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="nombreUsuario" class="col-sm-2 control-label">Nombre de Usuario:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="nombreUsuario" th:field="${nuevoUsuario.nombreUsuario}"
+                            class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.nombreUsuario')}"
+                            th:errors="${nuevoUsuario.nombreUsuario}" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenia" class="col-sm-2 control-label">Contraseña:</label>
+                    <div class="col-sm-10">
+                        <input type="password" id="contrasenia" th:field="${nuevoUsuario.contraseña}"
+                            class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.contraseña')}"
+                            th:errors="${nuevoUsuario.contraseña}" class="error-message"></span>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="submit" class="btn btn-primary full-width-button">Agregar Usuario</button>

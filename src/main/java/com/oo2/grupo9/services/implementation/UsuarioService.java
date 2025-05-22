@@ -1,21 +1,21 @@
 package com.oo2.grupo9.services.implementation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.oo2.grupo9.dtos.ContactoDTO;
+import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.entities.Contacto;
-import com.oo2.grupo9.entities.Localidad; // ¡Importante!
+import com.oo2.grupo9.entities.Localidad;
 import com.oo2.grupo9.entities.Rol;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.repositories.ContactoRepository;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
+import com.oo2.grupo9.repositories.LocalidadRepository;
 import com.oo2.grupo9.services.IUsuarioService;
 
 import jakarta.transaction.Transactional;
@@ -24,56 +24,68 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class UsuarioService implements IUsuarioService {
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
-
-    private UsuarioRepository usuarioRepository;
-    private RolRepository rolRepository;
-    private ContactoRepository contactoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final RolRepository rolRepository;
+    private final ContactoRepository contactoRepository;
+    private final LocalidadRepository localidadRepository;
+    private final ModelMapper modelMapper;
 
     public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository,
-            ContactoRepository contactoRepository, ModelMapper modelMapper) {
+            ContactoRepository contactoRepository, LocalidadRepository localidadRepository,
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.contactoRepository = contactoRepository;
+        this.localidadRepository = localidadRepository;
+        this.passwordEncoder = passwordEncoder;
 
+        // --- INICIALIZACIÓN Y CONFIGURACIÓN DE MODELMAPPER ---
+        this.modelMapper = new ModelMapper();
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        this.modelMapper.createTypeMap(UsuarioDTO.class, Usuario.class)
+                .addMappings(mapper -> {
+                    mapper.skip(Usuario::setIdUsuario);
+                    mapper.skip(Usuario::setContacto);
+                    mapper.skip(Usuario::setRol);
+                    
+                });
+
+        this.modelMapper.createTypeMap(ContactoDTO.class, Contacto.class)
+                .addMappings(mapper -> {
+                    mapper.skip(Contacto::setIdContacto);
+                    mapper.skip(Contacto::setLocalidad);
+                });
+        // --- FIN CONFIGURACIÓN DE MODELMAPPER ---
     }
 
     @Override
-    public long agregar(String nombre, String apellido, int dni, String email, String telefono, String nombreUsuario,
-            String contrasenia, String domicilio, Localidad localidad, Long rolId) {
-
-        Usuario nuevoUsuario = new Usuario();
-
-        nuevoUsuario.setNombre(nombre);
-        nuevoUsuario.setApellido(apellido);
-        nuevoUsuario.setDni(dni);
-        nuevoUsuario.setNombreUsuario(nombreUsuario);
-        String encodedPassword = passwordEncoder.encode(contrasenia);
-        nuevoUsuario.setContraseña(encodedPassword); // <--- ¡Línea corregida!
-        nuevoUsuario.setActivo(true);
-
-        Optional<Rol> rolOptional = rolRepository.findById(rolId);
-        if (rolOptional.isEmpty()) {
-            throw new IllegalArgumentException("No se encontro el rol con ID: " + rolId);
+    public Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception {
+        if (usuarioRepository.findByNombreUsuario(usuarioDto.getNombreUsuario()).isPresent()) {
+            throw new Exception("El nombre de usuario '" + usuarioDto.getNombreUsuario() + "' ya existe.");
         }
-        nuevoUsuario.setRol(rolOptional.get());
 
-        Contacto nuevoContacto = new Contacto();
-        nuevoContacto.setEmail(email);
-        try {
-            nuevoContacto.setTelefono(Integer.parseInt(telefono));
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("El telefono debe ser un numero valido.");
-        }
+        Localidad localidad = localidadRepository.findById(contactoDto.getLocalidadId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Localidad no encontrada con ID: " + contactoDto.getLocalidadId()));
+
+        Contacto nuevoContacto = this.modelMapper.map(contactoDto, Contacto.class);
         nuevoContacto.setLocalidad(localidad);
-        nuevoContacto.setDomicilio(domicilio);
 
-        contactoRepository.save(nuevoContacto);
+        nuevoContacto = contactoRepository.save(nuevoContacto);
+
+        Rol rolUsuario = rolRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Rol por defecto no encontrado (ID: 1)."));
+
+        Usuario nuevoUsuario = this.modelMapper.map(usuarioDto, Usuario.class);
+        nuevoUsuario.setContraseña(passwordEncoder.encode(usuarioDto.getContraseña()));
+        nuevoUsuario.setActivo(true);
         nuevoUsuario.setContacto(nuevoContacto);
-        nuevoUsuario.setTicketsCliente(new ArrayList<>());
+        nuevoUsuario.setRol(rolUsuario);
 
-        return usuarioRepository.save(nuevoUsuario).getIdUsuario();
+        nuevoUsuario = usuarioRepository.save(nuevoUsuario);
+        return nuevoUsuario;
     }
 
     @Override
@@ -104,7 +116,7 @@ public class UsuarioService implements IUsuarioService {
         usuarioExistente.setDni(usuario.getDni());
         usuarioExistente.setNombreUsuario(usuario.getNombreUsuario());
         usuarioExistente.setContraseña(usuario.getContraseña());
-        usuarioExistente.setRol(usuario.getRol()); // Asumimos que el Rol ya viene con el ID correcto
+        usuarioExistente.setRol(usuario.getRol());
 
         Contacto contactoExistente = usuarioExistente.getContacto();
         if (contactoExistente == null) {
@@ -114,15 +126,15 @@ public class UsuarioService implements IUsuarioService {
         contactoExistente.setTelefono(usuario.getContacto().getTelefono());
         contactoExistente.setDomicilio(usuario.getContacto().getDomicilio());
         if (usuario.getContacto().getLocalidad() != null) {
-            contactoExistente.setLocalidad(usuario.getContacto().getLocalidad()); // Asumimos que la Localidad ya viene
-                                                                                  // con el objeto correcto
+            contactoExistente.setLocalidad(usuario.getContacto().getLocalidad());
         }
         contactoRepository.save(contactoExistente);
         usuarioExistente.setContacto(contactoExistente);
 
         usuarioRepository.save(usuarioExistente);
     }
-    
+
+    @Override
     public void eliminar(Long id) {
         try {
             Optional<Usuario> usuarioOptional = usuarioRepository.findByIdUsuarioAndActivoTrue(id);
