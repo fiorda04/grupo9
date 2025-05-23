@@ -92,19 +92,10 @@
 
     <main class="dashboard-container">
 
-        <div th:if="${param.success}" class="alert alert-success">
-            <span th:text="${param.success}"></span>
-        </div>
-        <div th:if="${param.mensaje}" class="alert alert-success">
-            <span th:text="${param.mensaje}"></span>
-        </div>
-        <div th:if="${param.error}" class="alert alert-danger">
-            <span th:text="${param.error}"></span>
-        </div>
-        <div th:unless="${param.success or param.mensaje}" th:if="${mensaje}" class="alert alert-success">
+        <div th:if="${mensaje}" class="alert alert-success">
             <span th:text="${mensaje}"></span>
         </div>
-        <div th:unless="${param.error}" th:if="${error}" class="alert alert-danger">
+        <div th:if="${error}" class="alert alert-danger">
             <span th:text="${error}"></span>
         </div>
 
@@ -132,7 +123,7 @@
             <div class="dashboard-menu">
                 <a th:href="@{/}" class="menu-button">Resumen</a>
                 <a th:href="@{/tickets/crear}" class="menu-button">Crear Ticket</a>
-                <a th:href="@{/tickets/mis-tickets}" class="menu-button">Mis Tickets</a>
+                <a th:href="@{/tickets/crear}" class="menu-button">Mis Tickets</a>
             </div>
 
             <div class="dashboard-content" th:if="${tickets != null}">
