@@ -100,7 +100,30 @@ public class HomeController {
                 List<Usuario> todosUsuarios = usuarioService.traerTodos();
                 model.addAttribute("usuarios", todosUsuarios);
                 return ViewRouteHelper.INDEX;
+                
+            // Lógica para el rol 'Empleado'
+            } else if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equalsIgnoreCase("ROLE_Empleado"))) {
+                String username = auth.getName();
+                try {
+                	Usuario empleado = usuarioService.traer(username);
+                	if (empleado != null) {
+                	    List<Ticket> ticketsAsignados = ticketService.traerPorCliente(empleado.getIdUsuario()); //.traerTodos(); no anda
+                	    if (keyword != null && !keyword.trim().isEmpty()) {
+                            String lowerCaseKeyword = keyword.trim().toLowerCase();
+                            ticketsAsignados = ticketsAsignados.stream()
+                                             .filter(t -> t.getTitulo() != null && t.getTitulo().toLowerCase().contains(lowerCaseKeyword))
+                                             .collect(Collectors.toList());
+                            model.addAttribute("keyword", keyword); // Mantener la palabra clave en el input
+                        }
 
+                	    model.addAttribute("tickets", ticketsAsignados);
+                	}
+
+                } catch (Exception e) {
+                    model.addAttribute("error", "No se pudo obtener los tickets del empleado: " + e.getMessage());
+                }
+                return ViewRouteHelper.INDEX;
+                
             } else {
                 return ViewRouteHelper.INDEX;
             }

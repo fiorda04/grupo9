@@ -259,6 +259,60 @@
                 </table>
             </div>
         </div>
+		
+		<div sec:authorize="hasRole('Empleado')">
+		    <div class="dashboard-header">
+		        <h2>Panel de Empleado</h2>
+		        <div class="user-actions">
+		            <span class="welcome-message" th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Empleado</span>
+		            <form th:action="@{/logout}" method="post" style="display: inline;">
+		                <button type="submit" class="logout-button">Salir</button>
+		            </form>
+		        </div>
+		    </div>
+
+		    <div class="dashboard-content">
+		        <h3>Tickets Asignados</h3>
+		        <table class="user-table">
+		            <thead>
+		                <tr>
+		                    <th>Título</th>
+		                    <th>Descripción</th>
+		                    <th>Estado</th>
+		                    <th>Prioridad</th>
+		                    <th>Última Modificación</th>
+		                    <th>Fecha de Creación</th>
+		                    <th>Acciones</th>
+		                </tr>
+		            </thead>
+					<tbody>
+					    <tr th:each="ticket : ${tickets}">
+					        <td th:text="${ticket.titulo}">Título del Ticket</td>
+					        <td th:text="${ticket.descripcion}">Descripción</td>
+					        <td>
+					            <span class="status"
+					                  th:classappend="${ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('Abierto') ? 'abierto' : (ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('En Proceso') ? 'en-proceso' : 'cerrado')}"
+					                  th:text="${ticket.estado != null ? ticket.estado.nombre : ''}">Estado</span>
+					        </td>
+					        <td>
+					            <span class="priority"
+					                  th:classappend="${ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Alta') ? 'alta' : (ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Media') ? 'media' : 'baja')}"
+					                  th:text="${ticket.prioridad != null ? ticket.prioridad.nombre : ''}">Prioridad</span>
+					        </td>
+					        <td th:text="${ticket.fechaModificacion != null ? #temporals.format(ticket.fechaModificacion, 'yyyy-MM-dd') : ''}">Última Modificación</td>
+					        <td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'yyyy-MM-dd') : ''}">Fecha de Creación</td>
+					        <td>
+					            <!-- Acciones si las hay -->
+					        </td>
+					    </tr>
+
+					    <tr th:if="${tickets == null or tickets.isEmpty()}">
+					        <td colspan="7">No hay tickets asignados.</td>
+					    </tr>
+					</tbody>
+		        </table>
+		    </div>
+		</div>
 
         <div class="menu-solapa" sec:authorize="!isAuthenticated()">
             <a th:href="@{/usuarios/login}">Ingresar</a>
