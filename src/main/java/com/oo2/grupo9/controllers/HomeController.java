@@ -55,7 +55,6 @@ public class HomeController {
 
         // Verificar si el usuario está autenticado y no es anónimo
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-            
             // Lógica para el rol 'Cliente'
             if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_Cliente"))) {
                 String username = auth.getName();
@@ -107,7 +106,7 @@ public class HomeController {
                 try {
                 	Usuario empleado = usuarioService.traer(username);
                 	if (empleado != null) {
-                	    List<Ticket> ticketsAsignados = ticketService.traerPorCliente(empleado.getIdUsuario()); //.traerTodos(); no anda
+                	    List<Ticket> ticketsAsignados = ticketService.traerTodos(); //.traerTodos(); no anda
                 	    if (keyword != null && !keyword.trim().isEmpty()) {
                             String lowerCaseKeyword = keyword.trim().toLowerCase();
                             ticketsAsignados = ticketsAsignados.stream()

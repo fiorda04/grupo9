@@ -280,30 +280,22 @@
 		                    <th>Descripción</th>
 		                    <th>Estado</th>
 		                    <th>Prioridad</th>
-		                    <th>Última Modificación</th>
 		                    <th>Fecha de Creación</th>
 		                    <th>Acciones</th>
 		                </tr>
 		            </thead>
 					<tbody>
 					    <tr th:each="ticket : ${tickets}">
-					        <td th:text="${ticket.titulo}">Título del Ticket</td>
-					        <td th:text="${ticket.descripcion}">Descripción</td>
-					        <td>
-					            <span class="status"
-					                  th:classappend="${ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('Abierto') ? 'abierto' : (ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('En Proceso') ? 'en-proceso' : 'cerrado')}"
-					                  th:text="${ticket.estado != null ? ticket.estado.nombre : ''}">Estado</span>
-					        </td>
-					        <td>
-					            <span class="priority"
-					                  th:classappend="${ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Alta') ? 'alta' : (ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Media') ? 'media' : 'baja')}"
-					                  th:text="${ticket.prioridad != null ? ticket.prioridad.nombre : ''}">Prioridad</span>
-					        </td>
-					        <td th:text="${ticket.fechaModificacion != null ? #temporals.format(ticket.fechaModificacion, 'yyyy-MM-dd') : ''}">Última Modificación</td>
-					        <td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'yyyy-MM-dd') : ''}">Fecha de Creación</td>
-					        <td>
-					            <!-- Acciones si las hay -->
-					        </td>
+							<td th:text="${ticket.titulo != null ? ticket.titulo : ''}">Título</td>
+							<td th:text="${ticket.descripcion != null ? ticket.descripcion : ''}">Descripción</td>
+							<td th:text="${ticket.estado != null ? ticket.estado.nombreEstado : ''}">Estado</td>
+							<td th:text="${ticket.prioridad != null ? ticket.prioridad.nombrePrioridad : ''}">Prioridad</td>
+							<td th:text="${ticket.fechaCreacion != null ? ticket.fechaCreacion : ''}">Fecha de Creación</td>
+							<td>
+								<form th:action="@{/tickets/resolver/{id}(id=${ticket.idTicket})}" method="post">
+									<button type="submit" class="action-button dar-alta-button">Intervenir</button>
+								</form>
+							</td>
 					    </tr>
 
 					    <tr th:if="${tickets == null or tickets.isEmpty()}">
