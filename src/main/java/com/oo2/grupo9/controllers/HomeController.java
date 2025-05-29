@@ -132,7 +132,7 @@ public class HomeController {
         }
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/dar-de-baja/{id}")
     public String darDeBajaUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         System.out.println("ID RECIBIDO EN DAR DE BAJA: " + id);
         try {
@@ -143,6 +143,21 @@ public class HomeController {
             System.err.println("¡ERROR AL DAR DE BAJA USUARIO!");
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Error al dar de baja al usuario: " + e.getMessage());
+            return "redirect:/";
+        }
+    }
+
+    @PostMapping("/dar-de-alta/{id}") 
+    public String darDeAltaUsuario(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        System.out.println("ID RECIBIDO EN DAR DE ALTA (HomeController): " + id);
+        try {
+            usuarioService.darDeAlta(id); 
+            redirectAttributes.addFlashAttribute("mensaje", "Usuario dado de alta exitosamente.");
+            return "redirect:/"; 
+        } catch (Exception e) {
+            System.err.println("¡ERROR AL DAR DE ALTA USUARIO!");
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Error al dar de alta al usuario: " + e.getMessage());
             return "redirect:/";
         }
     }

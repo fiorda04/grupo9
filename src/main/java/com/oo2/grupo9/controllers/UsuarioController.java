@@ -1,21 +1,23 @@
 package com.oo2.grupo9.controllers;
 
-import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.dtos.ContactoDTO;
 import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
+import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
 import jakarta.validation.Valid;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 
@@ -25,10 +27,12 @@ public class UsuarioController {
 
     private UsuarioService usuarioService;
     private ILocalidadService localidadService;
+    private RolRepository rolRepository;
 
-    public UsuarioController(UsuarioService usuarioService, ILocalidadService localidadService) {
+    public UsuarioController(UsuarioService usuarioService, ILocalidadService localidadService, RolRepository rolRepository) {
         this.usuarioService = usuarioService;
         this.localidadService = localidadService;
+        this.rolRepository = rolRepository;
     }
 
     @GetMapping("/inscribirse")
@@ -79,6 +83,64 @@ public class UsuarioController {
         }
     }
 
+
+    //MOSTRAR EL FORMULARIO DE CREACIÓN POR ADMINISTRADOR! 
+    @PreAuthorize("hasRole('ROLE_Admin')") 
+    @GetMapping("/admin/crear")
+    public ModelAndView mostrarFormularioCreacionUsuarioAdmin() {
+        ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_CREAR); 
+        mAV.addObject("nuevoUsuario", new UsuarioDTO());
+        mAV.addObject("nuevoContacto", new ContactoDTO());
+        mAV.addObject("localidades", localidadService.traerTodas());
+        mAV.addObject("roles", rolRepository.findAll()); 
+        return mAV;
+    }
+
+    // CREACIÓN DE USUARIOS POR ADMINISTRADOR! 
+    @PreAuthorize("hasRole('ROLE_Admin')") 
+    @PostMapping("/admin/agregar")
+    public ModelAndView agregarUsuarioAdmin(
+            @ModelAttribute("nuevoUsuario") @Valid UsuarioDTO usuarioDto,
+            BindingResult usuarioBindingResult,
+            @ModelAttribute("nuevoContacto") @Valid ContactoDTO contactoDto,
+            BindingResult contactoBindingResult,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (usuarioBindingResult.hasErrors() || contactoBindingResult.hasErrors()) {
+            ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_CREAR); // Vuelve a la vista admin
+            mAV.addObject("nuevoUsuario", usuarioDto);
+            mAV.addObject("nuevoContacto", contactoDto);
+            mAV.addObject("localidades", localidadService.traerTodas());
+            mAV.addObject("roles", rolRepository.findAll()); // Recarga los roles
+            mAV.addObject("error", "Por favor, corrige los errores en el formulario.");
+            return mAV;
+        }
+
+        try {
+            // Llama al método del servicio específico para administradores
+            usuarioService.agregarUsuarioPorAdmin(usuarioDto, contactoDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Usuario creado exitosamente por el administrador!");
+            // Redirige a una vista donde el admin pueda ver la lista de usuarios, por ejemplo
+            // Asumo que tienes una ruta como /admin/usuarios/listar o similar. Si no, ajusta.
+            return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
+
+        } catch (Exception e) {
+            ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_CREAR); // Vuelve a la vista admin
+            mAV.addObject("nuevoUsuario", usuarioDto);
+            mAV.addObject("nuevoContacto", contactoDto);
+            mAV.addObject("localidades", localidadService.traerTodas());
+            mAV.addObject("roles", rolRepository.findAll()); // Recarga los roles
+            mAV.addObject("errorMessage", "Error al crear el usuario (Admin): " + e.getMessage());
+            return mAV;
+        }
+    }
+
+
+    
+
+
+
+
     @GetMapping("/login")
     public ModelAndView login(@RequestParam(name = "error", required = false) String error,
                               @RequestParam(name = "logout", required = false) String logout) {
@@ -98,25 +160,5 @@ public class UsuarioController {
         return "redirect:" + ViewRouteHelper.ROUTE_INDEX;
     }
 
-    @GetMapping("/admin/usuarios/modificar/{id}")
-    public ModelAndView mostrarFormularioModificarUsuario(@PathVariable Long id) {
-        ModelAndView mAV = new ModelAndView();
-        Usuario usuario = usuarioService.traer(id); // Obtiene la entidad Usuario
-
-        if (usuario != null) {
-            // Aquí, para un formulario de modificación, lo ideal sería mapear la entidad
-            // Usuario a un UsuarioDTO de EDICIÓN (que puede ser diferente al de registro)
-            // y pasar ese DTO a la vista. Por simplicidad, por ahora pasamos la entidad.
-            // UsuarioDTO usuarioParaModificar = modelMapper.map(usuario, UsuarioDTO.class);
-            mAV.addObject("usuario", usuario); // Pasa la entidad al modelo para que la vista la use
-            mAV.addObject("localidades", localidadService.traerTodas()); // Para el dropdown de localidades
-            mAV.setViewName("admin/modificar-usuario"); // Define el nombre de la vista
-        } else {
-            // Si el usuario no se encuentra, redirigimos o mostramos un error
-            mAV.setViewName(ViewRouteHelper.ROUTE_INDEX); // Redirigir al inicio o a una página de error
-            mAV.addObject("error", "Usuario no encontrado para modificar.");
-        }
-        return mAV;
-    }
 
 }

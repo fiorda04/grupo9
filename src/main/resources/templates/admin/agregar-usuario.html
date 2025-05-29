@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Nuevo Usuario - Gestión de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        /* Puedes mover estos estilos a tu styles.css para que sean globales */
+        .full-width-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-wrapper {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px; /* Ajustado para formularios más grandes */
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label {
+            flex: 0 0 120px; /* Ancho fijo para las etiquetas */
+            padding-right: 15px;
+            text-align: right;
+            color: #555;
+        }
+
+        .form-group .col-sm-10 {
+            flex-grow: 1;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .error-message {
+            color: #d9534f;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .success-message {
+            color: #5cb85c;
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .general-error-message {
+            color: #d9534f;
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none; /* Para enlaces */
+            display: inline-block; /* Para que los enlaces se parezcan a botones */
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body class="login-page">
+    <div class="login-wrapper">
+        <div class="login-header">
+            <h1>Gestión de Tickets Spring Grupo 9</h1>
+            <p>Ingrese los datos del nuevo usuario</p>
+        </div>
+        <div class="login-container">
+            <h2>Agregar Nuevo Usuario</h2>
+
+            <div th:if="${mensaje}" class="success-message" th:text="${mensaje}"></div>
+            <div th:if="${error}" class="general-error-message" th:text="${error}"></div>
+
+            <form th:action="@{/usuarios/admin/agregar}" method="post" class="form-horizontal">
+                <div class="form-group">
+                    <label for="nombre" class="col-sm-2 control-label">Nombre:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="nombre" th:field="${nuevoUsuario.nombre}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.nombre')}" th:errors="nuevoUsuario.nombre" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="apellido" class="col-sm-2 control-label">Apellido:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="apellido" th:field="${nuevoUsuario.apellido}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.apellido')}" th:errors="nuevoUsuario.apellido" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="dni" class="col-sm-2 control-label">DNI:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="dni" th:field="${nuevoUsuario.dni}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.dni')}" th:errors="nuevoUsuario.dni" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="col-sm-2 control-label">Email:</label>
+                    <div class="col-sm-10">
+                        <input type="email" id="email" th:field="${nuevoContacto.email}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoContacto.email')}" th:errors="nuevoContacto.email" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="telefono" class="col-sm-2 control-label">Teléfono:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="telefono" th:field="${nuevoContacto.telefono}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoContacto.telefono')}" th:errors="nuevoContacto.telefono" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="domicilio" class="col-sm-2 control-label">Domicilio:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="domicilio" th:field="${nuevoContacto.domicilio}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoContacto.domicilio')}" th:errors="nuevoContacto.domicilio" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="localidadId" class="col-sm-2 control-label">Localidad:</label>
+                    <div class="col-sm-10">
+                        <select id="localidadId" th:field="${nuevoContacto.localidadId}" class="form-control">
+                            <option value="">Seleccione una localidad</option>
+                            <option th:each="loc : ${localidades}" th:value="${loc.idLocalidad}" th:text="${loc.nombreLocalidad}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('nuevoContacto.localidadId')}" th:errors="nuevoContacto.localidadId" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombreUsuario" class="col-sm-2 control-label">Nombre de Usuario:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="nombreUsuario" th:field="${nuevoUsuario.nombreUsuario}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.nombreUsuario')}" th:errors="nuevoUsuario.nombreUsuario" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenia" class="col-sm-2 control-label">contrasenia:</label>
+                    <div class="col-sm-10">
+                        <input type="password" id="contrasenia" th:field="${nuevoUsuario.contrasenia}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.contrasenia')}" th:errors="nuevoUsuario.contrasenia" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rolId" class="col-sm-2 control-label">Rol:</label>
+                    <div class="col-sm-10">
+                        <select id="rolId" th:field="${nuevoUsuario.rolId}" class="form-control">
+                            <option value="">Seleccione un rol</option>
+                            <option th:each="rol : ${roles}" th:value="${rol.idRol}" th:text="${rol.nombreRol}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('nuevoUsuario.rolId')}" th:errors="nuevoUsuario.rolId" class="error-message"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary full-width-button">Agregar Usuario</button>
+                        <a th:href="@{/}" class="btn btn-primary full-width-button" style="margin-top: 10px;">Volver al Menú Admin</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 package com.oo2.grupo9.services.implementation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
@@ -79,10 +80,47 @@ public class UsuarioService implements IUsuarioService {
                 .orElseThrow(() -> new IllegalArgumentException("Rol por defecto no encontrado (ID: 1)."));
 
         Usuario nuevoUsuario = this.modelMapper.map(usuarioDto, Usuario.class);
-        nuevoUsuario.setContraseña(passwordEncoder.encode(usuarioDto.getContraseña()));
+        nuevoUsuario.setContrasenia(passwordEncoder.encode(usuarioDto.getContrasenia()));
         nuevoUsuario.setActivo(true);
         nuevoUsuario.setContacto(nuevoContacto);
         nuevoUsuario.setRol(rolUsuario);
+
+        nuevoUsuario = usuarioRepository.save(nuevoUsuario);
+        return nuevoUsuario;
+    }
+
+    @Override
+    public Usuario agregarUsuarioPorAdmin(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception {
+        // Validaciones de unicidad para el admin
+        if (usuarioRepository.findByNombreUsuario(usuarioDto.getNombreUsuario()).isPresent()) {
+            throw new Exception("El nombre de usuario '" + usuarioDto.getNombreUsuario() + "' ya existe.");
+        }
+        // CAMBIO AQUÍ: findByDni ahora usa int
+        if (usuarioRepository.findByDni(usuarioDto.getDni()).isPresent()) {
+            throw new Exception("El DNI '" + usuarioDto.getDni() + "' ya está registrado.");
+        }
+        if (usuarioRepository.findByContacto_Email(contactoDto.getEmail()).isPresent()) {
+            throw new Exception("El email '" + contactoDto.getEmail() + "' ya está registrado.");
+        }
+
+        Localidad localidad = localidadRepository.findById(contactoDto.getLocalidadId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Localidad no encontrada con ID: " + contactoDto.getLocalidadId()));
+
+        Contacto nuevoContacto = this.modelMapper.map(contactoDto, Contacto.class);
+        nuevoContacto.setLocalidad(localidad);
+        nuevoContacto = contactoRepository.save(nuevoContacto);
+
+        Rol rolSeleccionado = rolRepository.findById(usuarioDto.getRolId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Rol no encontrado con ID: " + usuarioDto.getRolId()));
+
+        Usuario nuevoUsuario = this.modelMapper.map(usuarioDto, Usuario.class);
+        nuevoUsuario.setContrasenia(passwordEncoder.encode(usuarioDto.getContrasenia()));
+        nuevoUsuario.setActivo(true);
+        nuevoUsuario.setContacto(nuevoContacto);
+        nuevoUsuario.setRol(rolSeleccionado);
+        nuevoUsuario.setFechaCreacion(LocalDateTime.now());
 
         nuevoUsuario = usuarioRepository.save(nuevoUsuario);
         return nuevoUsuario;
@@ -115,7 +153,7 @@ public class UsuarioService implements IUsuarioService {
         usuarioExistente.setApellido(usuario.getApellido());
         usuarioExistente.setDni(usuario.getDni());
         usuarioExistente.setNombreUsuario(usuario.getNombreUsuario());
-        usuarioExistente.setContraseña(usuario.getContraseña());
+        usuarioExistente.setContrasenia(usuario.getContrasenia());
         usuarioExistente.setRol(usuario.getRol());
 
         Contacto contactoExistente = usuarioExistente.getContacto();
@@ -214,4 +252,17 @@ public class UsuarioService implements IUsuarioService {
         }
         return usuarioRepository.findByRol_IdRolAndActivoTrue(idRol);
     }
+
+    @Override
+    public boolean darDeAlta(long idUsuario) throws Exception {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                                         .orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + idUsuario));
+        if (!usuario.isActivo()) { 
+            usuario.setActivo(true);
+            usuarioRepository.save(usuario);
+            return true;
+        }
+        return false; 
+    }
+    
 }

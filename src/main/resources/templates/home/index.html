@@ -217,7 +217,7 @@
             </div>
 
             <div class="dashboard-menu">
-                <a th:href="@{/admin/usuarios/agregar}" class="menu-button">Agregar Usuario</a>
+                <a th:href="@{/usuarios/admin/crear}" class="menu-button">Agregar Usuario</a>
             </div>
 
             <div class="dashboard-content">
@@ -244,13 +244,13 @@
                             <td>
                                 <a th:href="@{/usuarios/admin/modificar/{id}(id=${usuario.idUsuario})}"
                                     class="action-button modificar-button">Modificar</a>
-                                <form th:if="${usuario.activo}" th:action="@{/{id}(id=${usuario.idUsuario})}"
+                                <form th:if="${usuario.activo}" th:action="@{/dar-de-baja/{id}(id=${usuario.idUsuario})}"
                                     method="post" style="display:inline;">
                                     <button type="submit" class="action-button dar-baja-button">Dar de Baja</button>
                                 </form>
                                 <form th:unless="${usuario.activo}"
-                                    th:action="@{/usuarios/admin/dar-de-alta/{id}(id=${usuario.idUsuario})}"
-                                    method="get" style="display:inline;">
+                                    th:action="@{/dar-de-alta/{id}(id=${usuario.idUsuario})}"
+                                    method="post" style="display:inline;">
                                     <button type="submit" class="action-button dar-alta-button">Dar de Alta</button>
                                 </form>
                             </td>

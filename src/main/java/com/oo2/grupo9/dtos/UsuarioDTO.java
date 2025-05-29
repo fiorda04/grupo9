@@ -16,13 +16,12 @@ import lombok.Setter;
 @Data
 public class UsuarioDTO {
     
-
     @NotEmpty(message = "El nombre de usuario no puede estar vacio")
     private String nombreUsuario;
 
-    @NotEmpty(message = "La contraseña no puede estar vacia")
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
-    private String contraseña;
+    @NotEmpty(message = "La contrasenia no puede estar vacia")
+    @Size(min = 6, message = "La contrasenia debe tener al menos 6 caracteres")
+    private String contrasenia;
 
     @NotEmpty(message = "El nombre no puede estar vacio")
     private String nombre;

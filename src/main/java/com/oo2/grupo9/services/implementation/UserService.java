@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User( // Usamos el nombre completo de la clase User
                 usuario.getNombreUsuario(),
-                usuario.getContraseña(),
+                usuario.getContrasenia(),
                 usuario.isActivo(),
                 true, // accountNonExpired
                 true, // accountNonLocked

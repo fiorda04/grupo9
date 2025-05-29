@@ -38,8 +38,8 @@ public class Usuario implements UserDetails {
     @Column(name = "nombre_usuario", unique = true, nullable = false)
     private String nombreUsuario;
 
-    @Column(name = "contraseña", nullable = false)
-    private String contraseña;
+    @Column(name = "contrasenia", nullable = false)
+    private String contrasenia;
 
     @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
@@ -71,7 +71,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getPassword() {
-        return contraseña;
+        return contrasenia;
     }
 
     @Override

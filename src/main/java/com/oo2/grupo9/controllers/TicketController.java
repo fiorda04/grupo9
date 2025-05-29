@@ -5,7 +5,6 @@ import com.oo2.grupo9.dtos.TicketCreacionDTO;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.*;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,8 +42,6 @@ public class TicketController {
     @Autowired
     private ITicketService ticketService;
 
-    @Autowired
-    private ModelMapper modelMapper;
 
 
     @GetMapping("/tickets/crear")

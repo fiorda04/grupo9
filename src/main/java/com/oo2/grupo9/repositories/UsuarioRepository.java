@@ -42,4 +42,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByDniAndContacto_Usuario_IdUsuarioNotAndActivoTrue(int dni, Long idUsuario);
 
     Optional<Usuario> findByNombreUsuario(String nombreUsuario);
+
+    Optional<Usuario> findByDni(int dni);
+
+    Optional<Usuario> findByContacto_Email(String email);
 }

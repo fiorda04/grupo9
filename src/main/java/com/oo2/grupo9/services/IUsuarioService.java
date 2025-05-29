@@ -9,6 +9,8 @@ import java.util.List;
 public interface IUsuarioService {
 
     Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception;
+
+    Usuario agregarUsuarioPorAdmin(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception;
     
     void modificar(Usuario usuario);
 
@@ -31,4 +33,7 @@ public interface IUsuarioService {
     List<Usuario> traerTodos();
 
     List<Usuario> traerPorRol(long idRol);
+
+    boolean darDeAlta(long idUsuario) throws Exception;
+
 }
