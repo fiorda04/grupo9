@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.oo2.grupo9.dtos.ContactoDTO;
 import com.oo2.grupo9.dtos.UsuarioDTO;
+import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Contacto;
 import com.oo2.grupo9.entities.Localidad;
 import com.oo2.grupo9.entities.Rol;
@@ -263,6 +264,88 @@ public class UsuarioService implements IUsuarioService {
             return true;
         }
         return false; 
+    }
+    
+
+    public UsuarioModificacionDTO obtenerUsuarioParaModificar(long idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+        if (usuario == null) {
+            return null;
+        }
+        Contacto contacto = usuario.getContacto(); 
+        UsuarioModificacionDTO dto = new UsuarioModificacionDTO();
+        dto.setIdUsuario(usuario.getIdUsuario());
+        dto.setNombre(usuario.getNombre());
+        dto.setApellido(usuario.getApellido());
+        dto.setDni(usuario.getDni());
+        dto.setNombreUsuario(usuario.getNombreUsuario());
+        if (usuario.getRol() != null) { 
+            dto.setRolId(usuario.getRol().getIdRol());
+        }
+        if (contacto != null) {
+            dto.setEmail(contacto.getEmail());
+            dto.setTelefono(contacto.getTelefono());
+            dto.setDomicilio(contacto.getDomicilio());
+            if (contacto.getLocalidad() != null) { 
+                dto.setLocalidadId(contacto.getLocalidad().getIdLocalidad());
+            }
+        } else {
+        
+        }
+        return dto;
+    }
+
+    public void actualizarUsuarioAdmin(UsuarioModificacionDTO usuarioModDto) throws Exception {
+        Long idUsuario = usuarioModDto.getIdUsuario();
+        if (idUsuario == null) {
+            throw new Exception("El ID del usuario es necesario para la modificación.");
+        }
+        Usuario usuarioExistente = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + idUsuario));
+
+        Contacto contactoExistente = usuarioExistente.getContacto();
+        if (contactoExistente == null) {
+            throw new Exception("Contacto no encontrado para el usuario con ID: " + idUsuario
+                    + " y se esperaban datos de contacto.");
+        }
+        usuarioExistente.setNombre(usuarioModDto.getNombre());
+        usuarioExistente.setApellido(usuarioModDto.getApellido());
+        if (usuarioModDto.getDni() != null) {
+            usuarioExistente.setDni(usuarioModDto.getDni()); 
+        } else {
+            usuarioExistente.setDni(0);
+        }
+        usuarioExistente.setNombreUsuario(usuarioModDto.getNombreUsuario());
+        if (usuarioModDto.getContrasenia() != null && !usuarioModDto.getContrasenia().isEmpty()) {
+            usuarioExistente.setContrasenia(passwordEncoder.encode(usuarioModDto.getContrasenia())); 
+        }
+
+        if (usuarioModDto.getRolId() != null) {
+            Rol rol = rolRepository.findById(usuarioModDto.getRolId()) 
+                    .orElseThrow(() -> new Exception("Rol no encontrado con ID: " + usuarioModDto.getRolId()));
+            usuarioExistente.setRol(rol);
+        } 
+        
+        if (contactoExistente != null) { 
+            contactoExistente.setEmail(usuarioModDto.getEmail());
+
+            
+            if (usuarioModDto.getTelefono() != null) {
+                contactoExistente.setTelefono(usuarioModDto.getTelefono());
+            } else {
+                contactoExistente.setTelefono(0);
+            }
+            contactoExistente.setDomicilio(usuarioModDto.getDomicilio());
+            if (usuarioModDto.getLocalidadId() != null) {
+                Localidad localidad = localidadRepository.findById(usuarioModDto.getLocalidadId()) // Asumiendo que
+                                                                                                   // localidadRepository
+                                                                                                   // existe
+                        .orElseThrow(() -> new Exception(
+                                "Localidad no encontrada con ID: " + usuarioModDto.getLocalidadId()));
+                contactoExistente.setLocalidad(localidad);
+            } 
+        }
+        usuarioRepository.save(usuarioExistente);
     }
     
 }

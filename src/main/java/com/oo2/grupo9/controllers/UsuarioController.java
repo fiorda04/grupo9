@@ -1,24 +1,27 @@
 package com.oo2.grupo9.controllers;
 
-import com.oo2.grupo9.dtos.ContactoDTO;
-import com.oo2.grupo9.dtos.UsuarioDTO;
-import com.oo2.grupo9.helpers.ViewRouteHelper;
-import com.oo2.grupo9.repositories.RolRepository;
-import com.oo2.grupo9.services.ILocalidadService;
-import com.oo2.grupo9.services.implementation.UsuarioService;
-import jakarta.validation.Valid;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
+
+import com.oo2.grupo9.dtos.ContactoDTO;
+import com.oo2.grupo9.dtos.UsuarioDTO;
+import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
+import com.oo2.grupo9.helpers.ViewRouteHelper;
+import com.oo2.grupo9.repositories.RolRepository;
+import com.oo2.grupo9.services.ILocalidadService;
+import com.oo2.grupo9.services.implementation.UsuarioService;
+
+import jakarta.validation.Valid;
 
 
 @Controller
@@ -117,11 +120,9 @@ public class UsuarioController {
         }
 
         try {
-            // Llama al método del servicio específico para administradores
+           
             usuarioService.agregarUsuarioPorAdmin(usuarioDto, contactoDto);
             redirectAttributes.addFlashAttribute("successMessage", "Usuario creado exitosamente por el administrador!");
-            // Redirige a una vista donde el admin pueda ver la lista de usuarios, por ejemplo
-            // Asumo que tienes una ruta como /admin/usuarios/listar o similar. Si no, ajusta.
             return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
 
         } catch (Exception e) {
@@ -135,10 +136,63 @@ public class UsuarioController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/admin/modificar/{id}")
+    public ModelAndView mostrarFormularioModificacionUsuarioAdmin(@PathVariable("id") long idUsuario,
+            RedirectAttributes redirectAttributes) {
+        ModelAndView mAV = new ModelAndView();
+        try {
+            UsuarioModificacionDTO usuarioModDto = usuarioService.obtenerUsuarioParaModificar(idUsuario);
 
-    
+            if (usuarioModDto == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Usuario no encontrado.");
+                mAV.setViewName("redirect:" + ViewRouteHelper.ROUTE_INDEX); 
+                return mAV;
+            }
+            mAV.setViewName(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR); 
+            mAV.addObject("usuarioMod", usuarioModDto); 
+            mAV.addObject("localidades", localidadService.traerTodas());
+            mAV.addObject("roles", rolRepository.findAll());
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Error al cargar el usuario para modificar: " + e.getMessage());
+            mAV.setViewName("redirect:" + ViewRouteHelper.ROUTE_INDEX); 
+        }
+        return mAV;
+    }
 
 
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @PostMapping("/admin/guardarModificacion")
+    public ModelAndView guardarModificacionUsuarioAdmin(
+            @ModelAttribute("usuarioMod") @Valid UsuarioModificacionDTO usuarioModDto, 
+            BindingResult bindingResult, 
+            RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR); 
+            mAV.addObject("usuarioMod", usuarioModDto);
+            mAV.addObject("localidades", localidadService.traerTodas());
+            mAV.addObject("roles", rolRepository.findAll());
+            mAV.addObject("errorMessage", "Error de validación. Por favor, corrige los campos marcados.");
+            return mAV;
+        }
+
+        try {
+            usuarioService.actualizarUsuarioAdmin(usuarioModDto);
+
+            redirectAttributes.addFlashAttribute("successMessage", "¡Usuario modificado exitosamente!");
+            return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
+
+        } catch (Exception e) {
+            ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR);
+            mAV.addObject("usuarioMod", usuarioModDto); 
+            mAV.addObject("localidades", localidadService.traerTodas());
+            mAV.addObject("roles", rolRepository.findAll());
+            mAV.addObject("errorMessage", "Error al modificar el usuario: " + e.getMessage());
+            return mAV;
+        }
+    }
 
 
     @GetMapping("/login")

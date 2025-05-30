@@ -2,6 +2,7 @@ package com.oo2.grupo9.services;
 
 import com.oo2.grupo9.dtos.ContactoDTO;
 import com.oo2.grupo9.dtos.UsuarioDTO;
+import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Usuario;
 
 import java.util.List;
@@ -35,5 +36,7 @@ public interface IUsuarioService {
     List<Usuario> traerPorRol(long idRol);
 
     boolean darDeAlta(long idUsuario) throws Exception;
+
+    UsuarioModificacionDTO obtenerUsuarioParaModificar(long idUsuario);
 
 }

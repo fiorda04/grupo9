@@ -31,8 +31,8 @@ public class Usuario implements UserDetails {
     @Column(name = "dni")
     private int dni;
 
-    @OneToOne
-    @JoinColumn(name = "contacto_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contacto_id", referencedColumnName = "id_contacto")
     private Contacto contacto;
 
     @Column(name = "nombre_usuario", unique = true, nullable = false)

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Usuario - Gestión de Usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        /* Idealmente, mueve todos estos estilos a tu styles.css global */
+        .full-width-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-wrapper {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label {
+            flex: 0 0 150px; /* Ajustado un poco para etiquetas más largas como "Nombre de Usuario" */
+            padding-right: 15px;
+            text-align: right;
+            color: #555;
+        }
+
+        .form-group .col-sm-10 { /* Esta clase no se usa directamente si label tiene flex fijo */
+            flex-grow: 1;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .error-message {
+            color: #d9534f;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: block;
+            /* Para que aparezca debajo del input dentro del div del input */
+            width: 100%; 
+            text-align: left; /* Alineado a la izquierda */
+            padding-left: 5px; /* Un poco de padding */
+        }
+
+        .success-message {
+            color: #5cb85c;
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .general-error-message { /* Renombrado para evitar conflicto con .error-message de campo */
+            color: #d9534f;
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none; 
+            display: inline-block; 
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body class="login-page">
+    <div class="login-wrapper">
+        <div class="login-header">
+            <h1>Gestión de Tickets Spring Grupo 9</h1>
+            <p>Modifique los datos del usuario</p>
+        </div>
+        <div class="login-container">
+            <h2>Modificar Usuario</h2>
+
+            <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="general-error-message" th:text="${errorMessage}"></div>
+
+            <form th:action="@{/usuarios/admin/guardarModificacion}" th:object="${usuarioMod}" method="post" class="form-horizontal">
+                
+                <input type="hidden" th:field="*{idUsuario}" /> 
+
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <div> <input type="text" id="nombre" th:field="*{nombre}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="apellido">Apellido:</label>
+                    <div>
+                        <input type="text" id="apellido" th:field="*{apellido}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dni">DNI:</label>
+                    <div>
+                        <input type="text" id="dni" th:field="*{dni}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <div>
+                        <input type="email" id="email" th:field="*{email}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <div>
+                        <input type="text" id="telefono" th:field="*{telefono}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="domicilio">Domicilio:</label>
+                    <div>
+                        <input type="text" id="domicilio" th:field="*{domicilio}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('domicilio')}" th:errors="*{domicilio}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="localidadId">Localidad:</label>
+                    <div>
+                        <select id="localidadId" th:field="*{localidadId}" class="form-control">
+                            <option value="">Seleccione una localidad</option>
+                            <option th:each="loc : ${localidades}" th:value="${loc.idLocalidad}" th:text="${loc.nombreLocalidad}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('localidadId')}" th:errors="*{localidadId}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombreUsuario">Nombre de Usuario:</label>
+                    <div>
+                        <input type="text" id="nombreUsuario" th:field="*{nombreUsuario}" class="form-control" />
+                        <span th:if="${#fields.hasErrors('nombreUsuario')}" th:errors="*{nombreUsuario}" class="error-message"></span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contrasenia">Nueva Contraseña:</label>
+                    <div>
+                        <input type="password" id="contrasenia" th:field="*{contrasenia}" class="form-control" placeholder="Dejar en blanco para no cambiar" th:value="''" />
+                        <span th:if="${#fields.hasErrors('contrasenia')}" th:errors="*{contrasenia}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rolId">Rol:</label>
+                    <div>
+                        <select id="rolId" th:field="*{rolId}" class="form-control">
+                            <option value="">Seleccione un rol</option>
+                            <option th:each="rol : ${roles}" th:value="${rol.idRol}" th:text="${rol.nombreRol}"></option>
+                        </select>
+                        <span th:if="${#fields.hasErrors('rolId')}" th:errors="*{rolId}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="flex-basis: 150px; padding-right: 15px;"></div> <div style="flex-grow: 1;">
+                        <button type="submit" class="btn btn-primary full-width-button">Guardar Cambios</button>
+                        <a th:href="@{/}" class="btn btn-primary full-width-button" style="margin-top: 10px;">Volver al Panel Admin</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

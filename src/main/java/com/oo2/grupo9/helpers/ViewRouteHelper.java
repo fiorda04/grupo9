@@ -7,6 +7,7 @@ public class ViewRouteHelper {
     public final static String USUARIO_LOGIN = "usuarios/Login";
     public final static String USUARIO_LISTA = "usuarios/ListaUsuario";
     public final static String USUARIO_ADMIN_CREAR = "admin/agregar-usuario";
+    public final static String USUARIO_ADMIN_MODIFICAR = "admin/modificar-usuario";
     
     
     //Ticket
