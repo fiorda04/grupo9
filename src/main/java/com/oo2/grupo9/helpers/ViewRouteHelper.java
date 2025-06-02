@@ -10,11 +10,11 @@ public class ViewRouteHelper {
     public final static String USUARIO_ADMIN_MODIFICAR = "admin/modificar-usuario";
     
     
-    //Ticket
+    //Tickets
     public final static String TICKET_CREAR = "tickets/CrearTicket";
     public final static String CREAR_TICKET = "tickets/CrearTicket";
     public final static String LISTA_TICKETS = "tickets/listaTickets";
-    public final static String VER_TICKET = "tickets/verTicket";
+    public final static String VER_TICKET = "tickets/VerTicket";
 
     //Redirects
     public final static String ROUTE_INDEX = "/";

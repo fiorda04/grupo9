@@ -2,315 +2,326 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Tickets</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <style>
-        /* Estilos adicionales para la tabla */
-        .user-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gestión de Tickets</title>
+	<link rel="stylesheet" th:href="@{/css/styles.css}">
+	<style>
+		/* Estilos adicionales para la tabla */
+		.user-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 10px;
+		}
 
-        .user-table th,
-        .user-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+		.user-table th,
+		.user-table td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+		}
 
-        .user-table th {
-            background-color: #f2f2f2;
-        }
+		.user-table th {
+			background-color: #f2f2f2;
+		}
 
-        .status-activo {
-            color: green;
-        }
+		.status-activo {
+			color: green;
+		}
 
-        .status-inactivo {
-            color: red;
-        }
+		.status-inactivo {
+			color: red;
+		}
 
-        .action-button {
-            padding: 5px 10px;
-            margin-left: 5px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
+		.action-button {
+			padding: 5px 10px;
+			margin-left: 5px;
+			cursor: pointer;
+			border: none;
+			border-radius: 4px;
+			font-size: 0.9em;
+		}
 
-        .dar-baja-button {
-            background-color: #d9534f;
-            color: white;
-        }
+		.dar-baja-button {
+			background-color: #d9534f;
+			color: white;
+		}
 
-        .modificar-button {
-            background-color: #ffd700;
-            /* Amarillo para Modificar */
-            color: white;
-        }
+		.modificar-button {
+			background-color: #ffd700;
+			/* Amarillo para Modificar */
+			color: white;
+		}
 
-        .dar-alta-button {
-            background-color: #5cb85c;
-            /* Verde para Dar de Alta */
-            color: white;
-        }
+		.dar-alta-button {
+			background-color: #5cb85c;
+			/* Verde para Dar de Alta */
+			color: white;
+		}
 
-        .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-        }
+		.alert {
+			padding: 10px;
+			margin-bottom: 15px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		}
 
-        .alert-success {
-            color: #3c763d;
-            background-color: #dff0d8;
-            border-color: #d6e9c6;
-        }
+		.alert-success {
+			color: #3c763d;
+			background-color: #dff0d8;
+			border-color: #d6e9c6;
+		}
 
-        .alert-danger {
-            color: #a94442;
-            background-color: #f2dede;
-            border-color: #ebccd1;
-        }
-    </style>
+		.alert-danger {
+			color: #a94442;
+			background-color: #f2dede;
+			border-color: #ebccd1;
+		}
+	</style>
 </head>
 
 <body>
-    <header class="masthead">
-        <div class="container px-4 px-lg-5 h-100 align-items-center justify-content-center text-center">
-            <div class="col-lg-8 align-self-end">
-                <h1 class="font-weight-bold" style="color: black !important;">Gestión de Tickets Spring Grupo 9</h1>
-                <hr class="divider" sec:authorize="hasRole('Cliente')" />
-            </div>
-        </div>
-    </header>
+	<header class="masthead">
+		<div class="container px-4 px-lg-5 h-100 align-items-center justify-content-center text-center">
+			<div class="col-lg-8 align-self-end">
+				<h1 class="font-weight-bold" style="color: black !important;">Gestión de Tickets Spring Grupo 9</h1>
+				<hr class="divider" sec:authorize="hasRole('Cliente')" />
+			</div>
+		</div>
+	</header>
 
-    <main class="dashboard-container">
+	<main class="dashboard-container">
 
-        <div th:if="${mensaje}" class="alert alert-success">
-            <span th:text="${mensaje}"></span>
-        </div>
-        <div th:if="${error}" class="alert alert-danger">
-            <span th:text="${error}"></span>
-        </div>
+		<div th:if="${mensaje}" class="alert alert-success">
+			<span th:text="${mensaje}"></span>
+		</div>
+		<div th:if="${error}" class="alert alert-danger">
+			<span th:text="${error}"></span>
+		</div>
 
-        <div sec:authorize="hasRole('Cliente')">
-            <div class="dashboard-header">
-                <h2>Panel de Cliente - Resumen</h2>
-                <div class="user-actions">
-                    <span class="welcome-message"
-                        th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Cliente</span>
-                    <form th:action="@{/logout}" method="post" style="display: inline;">
-                        <button type="submit" class="logout-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
-                                <path fill-rule="evenodd"
-                                    d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
-                            </svg>
-                            Salir
-                        </button>
-                    </form>
-                </div>
-            </div>
+		<div sec:authorize="hasRole('Cliente')">
+			<div class="dashboard-header">
+				<h2>Panel de Cliente - Resumen</h2>
+				<div class="user-actions">
+					<span class="welcome-message"
+						th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Cliente</span>
+					<form th:action="@{/logout}" method="post" style="display: inline;">
+						<button type="submit" class="logout-button">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+								class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
+								<path fill-rule="evenodd"
+									d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+							</svg>
+							Salir
+						</button>
+					</form>
+				</div>
+			</div>
 
-            <div class="dashboard-menu">
-                <a th:href="@{/}" class="menu-button">Resumen</a>
-                <a th:href="@{/tickets/crear}" class="menu-button">Crear Ticket</a>
-                <a th:href="@{/tickets/crear}" class="menu-button">Mis Tickets</a>
-            </div>
+			<div class="dashboard-menu">
+				<a th:href="@{/}" class="menu-button">Resumen</a>
+				<a th:href="@{/tickets/crear}" class="menu-button">Crear Ticket</a>
+				<a th:href="@{/tickets/crear}" class="menu-button">Mis Tickets</a>
+			</div>
 
-            <div class="dashboard-content" th:if="${tickets != null}">
-                <div class="summary-cards">
-                    <div class="card">
-                        <h3>Total de Tickets</h3>
-                        <div class="number" th:text="${totalTickets}">0</div>
-                        <div class="indicator">+0% desde el último mes</div>
-                    </div>
-                    <div class="card">
-                        <h3>Tickets Abiertos</h3>
-                        <div class="number attention" th:text="${ticketsAbiertos}">0</div>
-                        <div class="indicator">Requieren atención</div>
-                    </div>
-                    <div class="card">
-                        <h3>Tickets Resueltos</h3>
-                        <div class="number success" th:text="${ticketsResueltos}">0</div>
-                        <div class="indicator">Completados satisfactoriamente</div>
-                    </div>
-                </div>
+			<div class="dashboard-content" th:if="${tickets != null}">
+				<div class="summary-cards">
+					<div class="card">
+						<h3>Total de Tickets</h3>
+						<div class="number" th:text="${totalTickets}">0</div>
+						<div class="indicator">+0% desde el último mes</div>
+					</div>
+					<div class="card">
+						<h3>Tickets Abiertos</h3>
+						<div class="number attention" th:text="${ticketsAbiertos}">0</div>
+						<div class="indicator">Requieren atención</div>
+					</div>
+					<div class="card">
+						<h3>Tickets Resueltos</h3>
+						<div class="number success" th:text="${ticketsResueltos}">0</div>
+						<div class="indicator">Completados satisfactoriamente</div>
+					</div>
+				</div>
 
-                <div class="recent-tickets">
-                    <h3>Tickets Recientes</h3>
-                    <p class="subtitle">Tus tickets más recientes y su estado actual</p>
-                    <div class="search-bar">
-                        <form th:action="@{/}" method="get" class="search-form">
-                            <input type="text" name="keyword" th:value="${keyword}"
-                                placeholder="Buscar tickets por título...">
-                            <button type="submit" class="action-button">Buscar</button>
-                            <a th:href="@{/}" class="action-button">Limpiar Filtro</a>
-                        </form>
-                    </div>
-                    <table class="tickets-table">
-                        <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Estado</th>
-                                <th>Prioridad</th>
-                                <th>Fecha de Creación</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="ticket : ${tickets}">
-                                <td th:text="${ticket.titulo}">Título del Ticket</td>
-                                <td><span class="status"
-                                        th:classappend="${ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('Abierto') ? 'abierto' : (ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('En Proceso') ? 'en-proceso' : 'cerrado')}"
-                                        th:text="${ticket.estado != null ? ticket.estado.nombreEstado : ''}">Estado</span>
-                                </td>
-                                <td><span class="priority"
-                                        th:classappend="${ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Alta') ? 'alta' : (ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Media') ? 'media' : 'baja')}"
-                                        th:text="${ticket.prioridad != null ? ticket.prioridad.nombrePrioridad : ''}">Prioridad</span>
-                                </td>
-                                <td
-                                    th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'yyyy-MM-dd') : ''}">
-                                    Fecha</td>
-                            </tr>
-                            <tr th:if="${tickets != null and tickets.isEmpty()}">
-                                <td colspan="4">No hay tickets para mostrar.</td>
-                            </tr>
-                            <tr th:if="${tickets == null}">
-                                <td colspan="4">Cargando tickets...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="dashboard-content" th:if="${tickets == null}">
-                <p>No hay tickets para mostrar.</p>
-            </div>
-        </div>
+				<div class="recent-tickets">
+					<h3>Tickets Recientes</h3>
+					<p class="subtitle">Tus tickets más recientes y su estado actual</p>
+					<div class="search-bar">
+						<form th:action="@{/}" method="get" class="search-form">
+							<input type="text" name="keyword" th:value="${keyword}"
+								placeholder="Buscar tickets por título...">
+							<button type="submit" class="action-button">Buscar</button>
+							<a th:href="@{/}" class="action-button">Limpiar Filtro</a>
+						</form>
+					</div>
+					<table class="tickets-table">
+						<thead>
+							<tr>
+								<th>Título</th>
+								<th>Estado</th>
+								<th>Prioridad</th>
+								<th>Fecha de Creación</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="ticket : ${tickets}">
+								<td th:text="${ticket.titulo}">Título del Ticket</td>
+								<td><span class="status"
+										th:classappend="${ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('Abierto') ? 'abierto' : (ticket.estado != null and ticket.estado.nombreEstado.equalsIgnoreCase('En Proceso') ? 'en-proceso' : 'cerrado')}"
+										th:text="${ticket.estado != null ? ticket.estado.nombreEstado : ''}">Estado</span>
+								</td>
+								<td><span class="priority"
+										th:classappend="${ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Alta') ? 'alta' : (ticket.prioridad != null and ticket.prioridad.nombrePrioridad.equalsIgnoreCase('Media') ? 'media' : 'baja')}"
+										th:text="${ticket.prioridad != null ? ticket.prioridad.nombrePrioridad : ''}">Prioridad</span>
+								</td>
+								<td
+									th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'yyyy-MM-dd') : ''}">
+									Fecha
+								</td>
+								<td>
+									<form th:action="@{tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
+										<button type="submit" class="action-button ver-objeto-button">Ver Ticket</button>
+									</form>
+								</td>
+							</tr>
+							<tr th:if="${tickets != null and tickets.isEmpty()}">
+								<td colspan="4">No hay tickets para mostrar.</td>
+							</tr>
+							<tr th:if="${tickets == null}">
+								<td colspan="4">Cargando tickets...</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="dashboard-content" th:if="${tickets == null}">
+				<p>No hay tickets para mostrar.</p>
+			</div>
+		</div>
 
-        <div sec:authorize="hasRole('Admin')">
-            <div class="dashboard-header">
-                <h2>Panel de Administrador</h2>
-                <div class="user-actions">
-                    <span class="welcome-message"
-                        th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Admin</span>
-                    <form th:action="@{/logout}" method="post" style="display: inline;">
-                        <button type="submit" class="logout-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
-                                <path fill-rule="evenodd"
-                                    d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
-                            </svg>
-                            Salir
-                        </button>
-                    </form>
-                </div>
-            </div>
+		<div sec:authorize="hasRole('Admin')">
+			<div class="dashboard-header">
+				<h2>Panel de Administrador</h2>
+				<div class="user-actions">
+					<span class="welcome-message"
+						th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Admin</span>
+					<form th:action="@{/logout}" method="post" style="display: inline;">
+						<button type="submit" class="logout-button">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+								class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+								<path fill-rule="evenodd"
+									d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
+								<path fill-rule="evenodd"
+									d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+							</svg>
+							Salir
+						</button>
+					</form>
+				</div>
+			</div>
 
-            <div class="dashboard-menu">
-                <a th:href="@{/usuarios/admin/crear}" class="menu-button">Agregar Usuario</a>
-            </div>
+			<div class="dashboard-menu">
+				<a th:href="@{/usuarios/admin/crear}" class="menu-button">Agregar Usuario</a>
+			</div>
 
-            <div class="dashboard-content">
-                <h2>Listado de Usuarios</h2>
-                <table class="user-table">
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Rol</th>
-                            <th>Creación</th>
-                            <th>Activo</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="usuario : ${usuarios}">
-                            <td th:text="${usuario.nombreUsuario}"></td>
-                            <td th:text="${usuario.rol != null ? usuario.rol.nombreRol : ''}"></td>
-                            <td
-                                th:text="${usuario.fechaCreacion != null ? #temporals.format(usuario.fechaCreacion, 'yyyy-MM-dd') : ''}">
-                            </td>
-                            <td th:class="${usuario.activo ? 'status-activo' : 'status-inactivo'}"
-                                th:text="${usuario.activo ? 'Sí' : 'No'}"></td>
-                            <td>
-                                <a th:href="@{/usuarios/admin/modificar/{id}(id=${usuario.idUsuario})}"
-                                    class="action-button modificar-button">Modificar</a>
-                                <form th:if="${usuario.activo}" th:action="@{/dar-de-baja/{id}(id=${usuario.idUsuario})}"
-                                    method="post" style="display:inline;">
-                                    <button type="submit" class="action-button dar-baja-button">Dar de Baja</button>
-                                </form>
-                                <form th:unless="${usuario.activo}"
-                                    th:action="@{/dar-de-alta/{id}(id=${usuario.idUsuario})}"
-                                    method="post" style="display:inline;">
-                                    <button type="submit" class="action-button dar-alta-button">Dar de Alta</button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-		
-		<div sec:authorize="hasRole('Empleado')">
-		    <div class="dashboard-header">
-		        <h2>Panel de Empleado</h2>
-		        <div class="user-actions">
-		            <span class="welcome-message" th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Empleado</span>
-		            <form th:action="@{/logout}" method="post" style="display: inline;">
-		                <button type="submit" class="logout-button">Salir</button>
-		            </form>
-		        </div>
-		    </div>
-
-		    <div class="dashboard-content">
-		        <h3>Tickets Asignados</h3>
-		        <table class="user-table">
-		            <thead>
-		                <tr>
-		                    <th>Título</th>
-		                    <th>Descripción</th>
-		                    <th>Estado</th>
-		                    <th>Prioridad</th>
-		                    <th>Fecha de Creación</th>
-		                    <th>Acciones</th>
-		                </tr>
-		            </thead>
+			<div class="dashboard-content">
+				<h2>Listado de Usuarios</h2>
+				<table class="user-table">
+					<thead>
+						<tr>
+							<th>Usuario</th>
+							<th>Rol</th>
+							<th>Creación</th>
+							<th>Activo</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
 					<tbody>
-					    <tr th:each="ticket : ${tickets}">
+						<tr th:each="usuario : ${usuarios}">
+							<td th:text="${usuario.nombreUsuario}"></td>
+							<td th:text="${usuario.rol != null ? usuario.rol.nombreRol : ''}"></td>
+							<td
+								th:text="${usuario.fechaCreacion != null ? #temporals.format(usuario.fechaCreacion, 'yyyy-MM-dd') : ''}">
+							</td>
+							<td th:class="${usuario.activo ? 'status-activo' : 'status-inactivo'}"
+								th:text="${usuario.activo ? 'Sí' : 'No'}"></td>
+							<td>
+								<a th:href="@{/usuarios/admin/modificar/{id}(id=${usuario.idUsuario})}"
+									class="action-button modificar-button">Modificar</a>
+								<form th:if="${usuario.activo}"
+									th:action="@{/dar-de-baja/{id}(id=${usuario.idUsuario})}" method="post"
+									style="display:inline;">
+									<button type="submit" class="action-button dar-baja-button">Dar de Baja</button>
+								</form>
+								<form th:unless="${usuario.activo}"
+									th:action="@{/dar-de-alta/{id}(id=${usuario.idUsuario})}" method="post"
+									style="display:inline;">
+									<button type="submit" class="action-button dar-alta-button">Dar de Alta</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div sec:authorize="hasRole('Empleado')">
+			<div class="dashboard-header">
+				<h2>Panel de Empleado</h2>
+				<div class="user-actions">
+					<span class="welcome-message"
+						th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Empleado</span>
+					<form th:action="@{/logout}" method="post" style="display: inline;">
+						<button type="submit" class="logout-button">Salir</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="dashboard-content">
+				<h3>Tickets Asignados</h3>
+				<table class="user-table">
+					<thead>
+						<tr>
+							<th>Título</th>
+							<th>Descripción</th>
+							<th>Estado</th>
+							<th>Prioridad</th>
+							<th>Fecha de Creación</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="ticket : ${tickets}">
 							<td th:text="${ticket.titulo != null ? ticket.titulo : ''}">Título</td>
 							<td th:text="${ticket.descripcion != null ? ticket.descripcion : ''}">Descripción</td>
 							<td th:text="${ticket.estado != null ? ticket.estado.nombreEstado : ''}">Estado</td>
-							<td th:text="${ticket.prioridad != null ? ticket.prioridad.nombrePrioridad : ''}">Prioridad</td>
-							<td th:text="${ticket.fechaCreacion != null ? ticket.fechaCreacion : ''}">Fecha de Creación</td>
+							<td th:text="${ticket.prioridad != null ? ticket.prioridad.nombrePrioridad : ''}">Prioridad
+							</td>
+							<td th:text="${ticket.fechaCreacion != null ? ticket.fechaCreacion : ''}">Fecha de Creación
+							</td>
 							<td>
-								<form th:action="@{/tickets/resolver/{id}(id=${ticket.idTicket})}" method="post">
+								<form th:action="@{/tickets/resolver/{id}(id=${ticket.idTicket})}" method="get">
 									<button type="submit" class="action-button dar-alta-button">Intervenir</button>
 								</form>
 							</td>
-					    </tr>
+						</tr>
 
-					    <tr th:if="${tickets == null or tickets.isEmpty()}">
-					        <td colspan="7">No hay tickets asignados.</td>
-					    </tr>
+						<tr th:if="${tickets == null or tickets.isEmpty()}">
+							<td colspan="7">No hay tickets asignados.</td>
+						</tr>
 					</tbody>
-		        </table>
-		    </div>
+				</table>
+			</div>
 		</div>
 
-        <div class="menu-solapa" sec:authorize="!isAuthenticated()">
-            <a th:href="@{/usuarios/login}">Ingresar</a>
-            <a th:href="@{/usuarios/inscribirse}">Inscribirse</a>
-        </div>
-    </main>
+		<div class="menu-solapa" sec:authorize="!isAuthenticated()">
+			<a th:href="@{/usuarios/login}">Ingresar</a>
+			<a th:href="@{/usuarios/inscribirse}">Inscribirse</a>
+		</div>
+	</main>
 </body>
 
 </html>

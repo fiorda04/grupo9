@@ -1,22 +1,28 @@
 package com.oo2.grupo9.controllers;
 
 import com.oo2.grupo9.entities.*;
+import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.dtos.TicketCreacionDTO; 
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,18 +82,16 @@ public class TicketController {
                 return mAV;
             }
 
-            // *******************************************************************
-            // ¡CAMBIO CLAVE AQUÍ: Mapeo manual en lugar de ModelMapper para depurar!
-            // *******************************************************************
+            // Mapeo manual en lugar de ModelMapper para depurar
             Ticket nuevoTicket = new Ticket();
             nuevoTicket.setTitulo(nuevoTicketDTO.getTitulo());
             nuevoTicket.setDescripcion(nuevoTicketDTO.getDescripcion());
 
             // Las fechas de creación y cierre, y el estado inicial, se configuran
-            // en el constructor de la entidad Ticket o se asignan aquí.
+            // en el constructor de la entidad Ticket o se asignan aca.
             // Si la entidad Ticket tiene @CreationTimestamp en fechaCreacion, no necesitas esto.
             // Si la entidad Ticket tiene @UpdateTimestamp en fechaCierre, no necesitas esto.
-            nuevoTicket.setFechaCreacion(LocalDate.now()); // Asegúrate de que no estás duplicando @CreationTimestamp
+            nuevoTicket.setFechaCreacion(LocalDate.now()); // Asegurate de que no estas duplicando @CreationTimestamp
             nuevoTicket.setFechaCierre(null); // Asegúrate de que no estás duplicando @UpdateTimestamp
 
             Tipo tipo = tipoService.traer(nuevoTicketDTO.getTipoId());
@@ -104,10 +108,6 @@ public class TicketController {
             nuevoTicket.setPrioridad(prioridad);
             nuevoTicket.setEstado(estadoAbierto);
 
-            // *******************************************************************
-            // ¡FIN DEL CAMBIO!
-            // *******************************************************************
-
             ticketService.guardar(nuevoTicket);
 
             mAV.setView(new RedirectView(ViewRouteHelper.ROUTE_INDEX + "?mensaje=Ticket creado exitosamente!", true));
@@ -123,4 +123,49 @@ public class TicketController {
             return mAV;
         }
     }
+    
+    @GetMapping("tickets/VerTicket/{id}")
+	public ModelAndView verTicket(@PathVariable("id") Long id) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
+	    Ticket ticket = ticketService.traer(id);
+	    mAV.addObject("ticket", ticket);
+	    
+//	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//	    boolean esEmpleado = auth != null && auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Empleado"));
+//
+//	    if (esEmpleado) {
+//	        mAV.addObject("intervencionDTO", new IntervencionDTO());
+//	        mAV.addObject("estadosDisponibles", estadoService.traerTodas());
+//	        mAV.addObject("prioridadesDisponibles", prioridadService.traerTodas());
+//	    } else {
+//	        // Para que Thymeleaf no rompa, paso valores vacíos
+//	        mAV.addObject("intervencionDTO", null);
+//	        mAV.addObject("estadosDisponibles", Collections.emptyList());
+//	        mAV.addObject("prioridadesDisponibles", Collections.emptyList());
+//	    }
+	    return mAV;
+	}
+    
+    
+//    @PreAuthorize("hasRole('ROLE_Empleado')")
+//    @GetMapping("tickets/modificar/{id}" Long id)
+//    public ModelAndView mostrarFormularioModificarTicket() {
+//        
+//       
+//    }
+//    
+//    @PreAuthorize("hasRole('ROLE_Empleado')")
+//    @PostMapping("tickets/nuevaModificacion")
+//    public ModelAndView guardarNuevaModificacion() {
+//        
+//        
+//    }
+    
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("tickets/modificar/{id}")
+    public String eliminarTicket(@PathVariable("id") Long id) {
+      ticketService.eliminar(id);
+      return "redirect:" + ViewRouteHelper.ROUTE_INDEX;    
+    }
+    
 }

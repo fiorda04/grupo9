@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Ticket - Gestión de Tickets</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .panel {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        .panel h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .info-line {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .info-line span {
+            min-width: 160px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .info-line p {
+            margin: 0;
+            color: #222;
+        }
+
+        .intervenciones {
+            margin-top: 30px;
+        }
+
+        .intervencion {
+            background-color: #f9fafb;
+            padding: 15px;
+            border-left: 4px solid #3b82f6;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+
+        .form-section {
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            padding: 8px 14px;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="top-bar">
+        <h1>Detalle del Ticket</h1>
+        <div>
+            <span th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, usuario_demo</span>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="logout-button">Salir</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Información del Ticket</h2>
+
+        <div class="info-line"><span>Título:</span><p th:text="${ticket.titulo}">Error en sistema de facturación</p></div>
+        <div class="info-line"><span>Descripción:</span><p th:text="${ticket.descripcion}">Problema al generar facturas.</p></div>
+        <div class="info-line">
+            <span>Categorías:</span>
+            <p>
+                <span th:if="${#lists.isEmpty(ticket.lstCategorias)}">Sin categorías</span>
+                <span th:unless="${#lists.isEmpty(ticket.lstCategorias)}"
+                      th:each="cat : ${ticket.lstCategorias}" th:text="${cat.nombreCategoria} + ' '">Software Facturación</span>
+            </p>
+        </div>
+        <div class="info-line"><span>Prioridad:</span><p th:text="${ticket.prioridad.nombrePrioridad}">Alta</p></div>
+        <div class="info-line"><span>Fecha de creación:</span><p th:text="${#temporals.format(ticket.fechaCreacion, 'dd/MM/yyyy')}">15/01/2024</p></div>
+        <div class="info-line"><span>Fecha de cierre:</span><p th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yyyy') : 'Aún no cerrado'}">Aún no cerrado</p></div>
+        <div class="info-line"><span>Estado:</span><p th:text="${ticket.estado.nombreEstado}">En Progreso</p></div>
+        <div class="info-line"><span>Tipo:</span><p th:text="${ticket.tipo.nombreTipo}">Incidencia</p></div>
+        <div class="info-line"><span>Cliente:</span><p th:text="${ticket.usuarioCliente.nombreUsuario}">cliente_empresa_abc</p></div>
+    </div>
+
+    <div class="panel intervenciones">
+        <h2>Intervenciones</h2>
+        <p th:if="${#lists.isEmpty(ticket.lstIntervenciones)}">Este ticket aún no tiene intervenciones.</p>
+
+        <div th:each="intv : ${ticket.lstIntervenciones}" class="intervencion">
+            <p><strong>Fecha:</strong> <span th:text="${#temporals.format(intv.fecha, 'dd/MM/yyyy HH:mm')}">15/01/2024 09:30</span></p>
+            <p><strong>Empleado:</strong> <span th:text="${intv.autor.nombreUsuario}">tecnico_juan</span></p>
+            <p><strong>Contenido:</strong> <span th:text="${intv.contenido}">Se ha identificado el problema...</span></p>
+        </div>
+    </div>
+
+    <div class="panel form-section" sec:authorize="hasRole('Empleado')">
+        <h2>Agregar Intervención</h2>
+        <!-- <form th:action="@{/intervenciones/agregar}" method="post" th:object="${intervencionDTO}">
+            <input type="hidden" th:field="*{ticketId}" />
+
+            <div class="form-group">
+                <label for="contenido">Contenido:</label>
+                <textarea id="contenido" th:field="*{contenido}" rows="4" class="form-control" placeholder="Describe la intervención realizada..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="estadoId">Nuevo Estado:</label>
+                <select id="estadoId" th:field="*{estadoId}" class="form-control">
+                    <option th:each="estado : ${estadosDisponibles}" th:value="${estado.idEstado}" th:text="${estado.nombreEstado}">En Progreso</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="prioridadId">Nueva Prioridad:</label>
+                <select id="prioridadId" th:field="*{prioridadId}" class="form-control">
+                    <option th:each="prioridad : ${prioridadesDisponibles}" th:value="${prioridad.idPrioridad}" th:text="${prioridad.nombrePrioridad}">Alta</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn">Agregar Intervención</button>
+            </div>
+        </form>-->
+    </div>
+</div>
+</body>
+</html>
