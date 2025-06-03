@@ -39,4 +39,7 @@ public interface IUsuarioService {
 
     UsuarioModificacionDTO obtenerUsuarioParaModificar(long idUsuario);
 
+    List<Usuario> traerPorNombreUsuarioConteniendo(String nombreUsuario);
+    
+
 }

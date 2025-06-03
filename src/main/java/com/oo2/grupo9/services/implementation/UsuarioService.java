@@ -3,6 +3,8 @@ package com.oo2.grupo9.services.implementation;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,8 @@ import com.oo2.grupo9.repositories.LocalidadRepository;
 import com.oo2.grupo9.services.IUsuarioService;
 
 import jakarta.transaction.Transactional;
+
+
 
 @Service("usuarioService")
 @Transactional
@@ -337,9 +341,9 @@ public class UsuarioService implements IUsuarioService {
             }
             contactoExistente.setDomicilio(usuarioModDto.getDomicilio());
             if (usuarioModDto.getLocalidadId() != null) {
-                Localidad localidad = localidadRepository.findById(usuarioModDto.getLocalidadId()) // Asumiendo que
-                                                                                                   // localidadRepository
-                                                                                                   // existe
+                Localidad localidad = localidadRepository.findById(usuarioModDto.getLocalidadId()) 
+                                                                                                  
+                                                                                                  
                         .orElseThrow(() -> new Exception(
                                 "Localidad no encontrada con ID: " + usuarioModDto.getLocalidadId()));
                 contactoExistente.setLocalidad(localidad);
@@ -348,4 +352,11 @@ public class UsuarioService implements IUsuarioService {
         usuarioRepository.save(usuarioExistente);
     }
     
+    @Override
+    public List<Usuario> traerPorNombreUsuarioConteniendo(String nombreUsuario) {
+        if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
+            return traerTodos(); 
+        }
+        return usuarioRepository.findByNombreUsuarioContainingIgnoreCase(nombreUsuario.trim());
+    }
 }

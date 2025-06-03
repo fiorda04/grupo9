@@ -18,18 +18,22 @@ import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.ITicketService;
+import com.oo2.grupo9.services.implementation.RolService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
 
 @Controller
 @RequestMapping("/")
 public class HomeController {
 
+    private final RolService rolService;
+
     private UsuarioService usuarioService;
     private ITicketService ticketService;
 
-    public HomeController(UsuarioService usuarioService, ITicketService ticketService) {
+    public HomeController(UsuarioService usuarioService, ITicketService ticketService, RolService rolService) {
         this.usuarioService = usuarioService;
         this.ticketService = ticketService;
+        this.rolService = rolService;
     }
 
     @GetMapping
@@ -96,8 +100,8 @@ public class HomeController {
 
             // Lógica para el rol 'Admin'
             } else if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_Admin"))) {
-                List<Usuario> todosUsuarios = usuarioService.traerTodos();
-                model.addAttribute("usuarios", todosUsuarios);
+                model.addAttribute("usuarios", usuarioService.traerTodos()); 
+                model.addAttribute("todosLosRoles", rolService.traerTodos());
                 return ViewRouteHelper.INDEX;
                 
             // Lógica para el rol 'Empleado'

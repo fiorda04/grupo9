@@ -1,5 +1,7 @@
 package com.oo2.grupo9.controllers;
 
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -16,12 +18,15 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.oo2.grupo9.dtos.ContactoDTO;
 import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
+import com.oo2.grupo9.entities.Rol;
+import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
 
 import jakarta.validation.Valid;
+import org.springframework.ui.Model;
 
 
 @Controller
@@ -195,11 +200,67 @@ public class UsuarioController {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/admin/buscar/nombre") // Coincide con el th:action del HTML
+    public String buscarUsuariosPorNombre(@RequestParam("valor") String nombreUsuario, Model model) {
+        List<Usuario> resultados = usuarioService.traerPorNombreUsuarioConteniendo(nombreUsuario);
+        model.addAttribute("resultadosUsuarios", resultados);
+        model.addAttribute("criterioBusqueda", "Nombre de Usuario (contiene): '" + nombreUsuario + "'");
+        // Puedes añadir todosLosRoles si la página de resultados necesita mostrar un
+        // desplegable de roles
+        // model.addAttribute("todosLosRoles", rolService.traerTodos());
+        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+    }
+
+    /*@PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/admin/buscar/dni")
+    public String buscarUsuariosPorDni(@RequestParam("valor") int dni, Model model) {
+        List<Usuario> resultados = usuarioService.traerPorDniExacto(dni);
+        model.addAttribute("resultadosUsuarios", resultados);
+        model.addAttribute("criterioBusqueda", "DNI: " + dni);
+        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+    }
+
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/admin/buscar/email")
+    public String buscarUsuariosPorEmail(@RequestParam("valor") String email, Model model) {
+        List<Usuario> resultados = usuarioService.traerPorEmailConteniendo(email);
+        model.addAttribute("resultadosUsuarios", resultados);
+        model.addAttribute("criterioBusqueda", "Email (contiene): '" + email + "'");
+        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+    }
+
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/admin/buscar/rol")
+    public String buscarUsuariosPorRol(@RequestParam(name = "valor", required = false) Long rolId, Model model) {
+        List<Usuario> resultados;
+        String nombreRolBuscado = "Todos"; // Default si rolId es null
+
+        if (rolId != null) {
+            resultados = usuarioService.traerPorRolId(rolId);
+            Optional<Rol> rolOpt = rolService.traerPorId(rolId);
+            if (rolOpt.isPresent()) {
+                nombreRolBuscado = rolOpt.get().getNombreRol();
+            } else {
+                nombreRolBuscado = "ID de Rol " + rolId + " (desconocido)";
+            }
+        } else {
+            // Si no se selecciona un rol (rolId es null), puedes mostrar una lista vacía
+            // o podrías decidir mostrar todos los usuarios si así lo prefieres (llamando a
+            // usuarioService.traerTodosUsuarios())
+            resultados = Collections.emptyList();
+            nombreRolBuscado = "Ningún rol seleccionado (o todos si se implementa así)";
+        }
+        model.addAttribute("resultadosUsuarios", resultados);
+        model.addAttribute("criterioBusqueda", "Rol: " + nombreRolBuscado);
+        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+    }*/
+
     @GetMapping("/login")
     public ModelAndView login(@RequestParam(name = "error", required = false) String error,
-                              @RequestParam(name = "logout", required = false) String logout) {
+            @RequestParam(name = "logout", required = false) String logout) {
         ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_LOGIN);
-        mAV.addObject("error", error); 
+        mAV.addObject("error", error);
         mAV.addObject("logout", logout);
         return mAV;
     }
@@ -213,6 +274,5 @@ public class UsuarioController {
     public String loginCheck() {
         return "redirect:" + ViewRouteHelper.ROUTE_INDEX;
     }
-
 
 }

@@ -1,7 +1,6 @@
 package com.oo2.grupo9.controllers;
 
 import com.oo2.grupo9.entities.*;
-import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.dtos.TicketCreacionDTO; 
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.*;
@@ -9,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -21,8 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,21 +77,14 @@ public class TicketController {
                 mAV.setView(new RedirectView(ViewRouteHelper.ROUTE_INDEX + "?error=No se pudo encontrar el usuario autenticado.", true));
                 return mAV;
             }
-
-            // Mapeo manual en lugar de ModelMapper para depurar
             Ticket nuevoTicket = new Ticket();
             nuevoTicket.setTitulo(nuevoTicketDTO.getTitulo());
             nuevoTicket.setDescripcion(nuevoTicketDTO.getDescripcion());
-
-            // Las fechas de creación y cierre, y el estado inicial, se configuran
-            // en el constructor de la entidad Ticket o se asignan aca.
-            // Si la entidad Ticket tiene @CreationTimestamp en fechaCreacion, no necesitas esto.
-            // Si la entidad Ticket tiene @UpdateTimestamp en fechaCierre, no necesitas esto.
-            nuevoTicket.setFechaCreacion(LocalDate.now()); // Asegurate de que no estas duplicando @CreationTimestamp
-            nuevoTicket.setFechaCierre(null); // Asegúrate de que no estás duplicando @UpdateTimestamp
+            nuevoTicket.setFechaCreacion(LocalDate.now()); 
+            nuevoTicket.setFechaCierre(null); 
 
             Tipo tipo = tipoService.traer(nuevoTicketDTO.getTipoId());
-            Prioridad prioridad = prioridadService.traer(1L); // Prioridad predeterminada: 1 (ej. "Baja")
+            Prioridad prioridad = prioridadService.traer(1L); // Prioridad predeterminada: 1
             Estado estadoAbierto = estadoService.traer(1L);   // Estado "Abierto": 1
 
             List<Categoria> categoriasSeleccionadas = nuevoTicketDTO.getCategoriasId().stream()
@@ -129,37 +118,9 @@ public class TicketController {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
 	    Ticket ticket = ticketService.traer(id);
 	    mAV.addObject("ticket", ticket);
-	    
-//	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//	    boolean esEmpleado = auth != null && auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Empleado"));
-//
-//	    if (esEmpleado) {
-//	        mAV.addObject("intervencionDTO", new IntervencionDTO());
-//	        mAV.addObject("estadosDisponibles", estadoService.traerTodas());
-//	        mAV.addObject("prioridadesDisponibles", prioridadService.traerTodas());
-//	    } else {
-//	        // Para que Thymeleaf no rompa, paso valores vacíos
-//	        mAV.addObject("intervencionDTO", null);
-//	        mAV.addObject("estadosDisponibles", Collections.emptyList());
-//	        mAV.addObject("prioridadesDisponibles", Collections.emptyList());
-//	    }
 	    return mAV;
 	}
     
-    
-//    @PreAuthorize("hasRole('ROLE_Empleado')")
-//    @GetMapping("tickets/modificar/{id}" Long id)
-//    public ModelAndView mostrarFormularioModificarTicket() {
-//        
-//       
-//    }
-//    
-//    @PreAuthorize("hasRole('ROLE_Empleado')")
-//    @PostMapping("tickets/nuevaModificacion")
-//    public ModelAndView guardarNuevaModificacion() {
-//        
-//        
-//    }
     
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("tickets/modificar/{id}")
