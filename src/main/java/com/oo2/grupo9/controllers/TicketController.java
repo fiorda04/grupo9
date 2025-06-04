@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.ui.Model;
 
 
 @Controller
@@ -145,11 +146,11 @@ public class TicketController {
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("tickets/modificar/{id}")
     public String eliminarTicket(@PathVariable("id") Long id) {
-      ticketService.eliminar(id);
-      return "redirect:" + ViewRouteHelper.ROUTE_INDEX;    
+        ticketService.eliminar(id);
+        return "redirect:" + ViewRouteHelper.ROUTE_INDEX;    
     }
     
-    @GetMapping("/tickets/buscar/tipo")
+    @GsetMapping("/tickets/buscar/tipo")
     public String buscarTicketsPorTipo(@RequestParam("valor") Long idTipo, Model model) {
         List<Ticket> resultados = new ArrayList<>();
         String nombreTipoBuscado;
@@ -254,4 +255,17 @@ public class TicketController {
     
     
     
+
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("tickets/admin")
+    public String panelTicketsAdmin(Model model) {
+        List<Ticket> todosLosTickets = ticketService.traerTodos();
+        model.addAttribute("tickets", todosLosTickets);
+        model.addAttribute("clientes", usuarioService.traerPorRol(1L));
+        model.addAttribute("prioridades", prioridadService.traerTodas());
+        model.addAttribute("estados", estadoService.traerTodas());
+        model.addAttribute("tipos", tipoService.traerTodas());
+        model.addAttribute("categoriasDisponibles", categoriaService.traerTodas());
+        return ViewRouteHelper.ADMIN_TICKET_PANEL;
+    }
 }

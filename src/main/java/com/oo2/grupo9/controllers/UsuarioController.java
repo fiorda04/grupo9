@@ -245,7 +245,7 @@ public class UsuarioController {
             }
         } else {
             resultados = Collections.emptyList();
-            nombreRolBuscado = "Ningún rol seleccionado (o todos si se implementa así)";
+            nombreRolBuscado = "Ningún rol seleccionado";
         }
         model.addAttribute("resultadosUsuarios", resultados);
         model.addAttribute("criterioBusqueda", "Rol: " + nombreRolBuscado);
