@@ -148,48 +148,47 @@
         <h4 style="text-align: center; color: #555;" th:if="${criterioBusqueda}" th:text="'Criterio: ' + ${criterioBusqueda}"></h4>
         <hr style="margin-bottom: 20px;"/>
 
-        <div th:if="${resultadosUsuarios != null and !resultadosUsuarios.isEmpty()}">
-            <table class="user-table">
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Rol</th>
-                        <th>DNI</th>
-                        <th>Email</th>
-                        <th>Creación</th>
-                        <th>Activo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="usuario : ${resultadosUsuarios}">
-                        <td th:text="${usuario.nombreUsuario}"></td>
-                        <td th:text="${usuario.rol?.nombreRol}"></td>
-                        <td th:text="${usuario.dni}"></td>
-                        <td th:text="${usuario.contacto?.email}"></td>
-                        <td th:text="${usuario.fechaCreacion != null ? #temporals.format(usuario.fechaCreacion, 'yyyy-MM-dd HH:mm') : ''}"></td>
-                        <td th:class="${usuario.activo ? 'status-activo' : 'status-inactivo'}"
-                            th:text="${usuario.activo ? 'Sí' : 'No'}"></td>
-                        <td>
-                            <a th:href="@{/usuarios/admin/modificar/{id}(id=${usuario.idUsuario})}"
-                                class="action-button modificar-button">Modificar</a>
-                            <form th:if="${usuario.activo}"
-                                th:action="@{/dar-de-baja/{id}(id=${usuario.idUsuario})}" method="post"
-                                style="display:inline;">
-                                <button type="submit" class="action-button dar-baja-button">Dar de Baja</button>
-                            </form>
-                            <form th:unless="${usuario.activo}"
-                                th:action="@{/dar-de-alta/{id}(id=${usuario.idUsuario})}" method="post"
-                                style="display:inline;">
-                                <button type="submit" class="action-button dar-alta-button">Dar de Alta</button>
-                            </form>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div th:if="${resultadosTicekts != null and !resultadosTickets.isEmpty()}">
+			<table class="ticket-table">
+			    <thead>
+			        <tr>
+			            <th>#</th>
+			            <th>Título</th>
+			            <th>Prioridad</th>
+			            <th>Estado</th>
+			            <th>Tipo</th>
+			            <th>Cliente</th>
+			            <th>Creación</th>
+			            <th>Cierre</th>
+						<th>Categorías</th>
+						<th>Cant. Intervenciones</th>
+			            <th>Acciones</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			        <tr th:each="ticket : ${resultadosTickets}">
+			            <td th:text="${ticket.idTicket}">1</td>
+			            <td th:text="${ticket.titulo}">Título</td>
+			            <td th:text="${ticket.prioridad.nombrePrioridad}">Alta</td>
+			            <td th:text="${ticket.estado.nombreEstado}">Abierto</td>
+			            <td th:text="${ticket.tipo.nombreTipo}">Incidente</td>
+			            <td th:text="${ticket.usuarioCliente.nombreUsuario}">cliente123</td>
+						<td th:text="${#temporals.format(ticket.fechaCreacion, 'dd/MM/yyyy')}">01/06/2025</td>
+			            <td th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yyyy') : '-'}">—</td>
+						<!-- Categorias unidas por coma -->
+						<td th:text="${#strings.listJoin(ticket.lstCategorias.^![nombreCategoria], ', ')}">Red, Seguridad</td>
+
+						<!-- Cantidad de intervenciones -->
+						<td th:text="${ticket.lstIntervenciones != null ? ticket.lstIntervenciones.size() : '0'}">0</td>
+			            <td>
+			                <a th:href="@{/tickets/ver/{id}(id=${ticket.idTicket})}" class="action-button">Ver</a>
+			            </td>
+			        </tr>
+			    </tbody>
+			</table>
         </div>
-        <div th:if="${resultadosUsuarios == null or resultadosUsuarios.isEmpty()}" style="text-align: center; padding: 20px; background-color: #fdfdfe; border: 1px dashed #ddd; border-radius: 5px;">
-            <p style="font-size: 1.1em; color: #777;">No se encontraron usuarios que coincidan con el criterio: <strong th:text="${criterioBusqueda ?: 'especificado'}"></strong></p>
+        <div th:if="${resultadosTickets == null or resultadosTickets.isEmpty()}" style="text-align: center; padding: 20px; background-color: #fdfdfe; border: 1px dashed #ddd; border-radius: 5px;">
+            <p style="font-size: 1.1em; color: #777;">No se encontraron tickets que coincidan con el criterio: <strong th:text="${criterioBusqueda ?: 'especificado'}"></strong></p>
         </div>
 
     </div> </body>

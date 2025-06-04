@@ -251,7 +251,29 @@ public class TicketController {
         return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
     }
 
+    @GetMapping("/tickets/buscar/fechas")
+    public String buscarTicketsEntreFechas(
+            @RequestParam("desde") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fechaDesde,
+            @RequestParam("hasta") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fechaHasta,
+            Model model) {
+
+        List<Ticket> resultados = ticketService.findByFechaCreacionBetween(fechaDesde, fechaHasta);
+
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Entre " + fechaDesde + " y " + fechaHasta);
+
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
     
+    @GetMapping("/tickets/buscar/titulo")
+    public String buscarTicketsPorTitulo(@RequestParam("valor") String textoTitulo, Model model) {
+        List<Ticket> resultados = ticketService.traerPorNombreUsuarioConteniendo(textoTitulo);
+
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Título contiene: \"" + textoTitulo + "\"");
+
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
     
     
 
