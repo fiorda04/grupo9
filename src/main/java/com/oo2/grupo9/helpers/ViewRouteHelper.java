@@ -16,6 +16,8 @@ public class ViewRouteHelper {
     public final static String CREAR_TICKET = "tickets/CrearTicket";
     public final static String LISTA_TICKETS = "tickets/listaTickets";
     public final static String VER_TICKET = "tickets/VerTicket";
+    public final static String ADMIN_TICKET_PANEL = "admin/panel-tickets";
+
 
     //Redirects
     public final static String ROUTE_INDEX = "/";

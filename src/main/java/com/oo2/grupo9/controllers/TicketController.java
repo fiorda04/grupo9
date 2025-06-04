@@ -21,6 +21,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.ui.Model;
 
 
 @Controller
@@ -128,5 +129,17 @@ public class TicketController {
       ticketService.eliminar(id);
       return "redirect:" + ViewRouteHelper.ROUTE_INDEX;    
     }
-    
+
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("tickets/admin")
+    public String panelTicketsAdmin(Model model) {
+        List<Ticket> todosLosTickets = ticketService.traerTodos();
+        model.addAttribute("tickets", todosLosTickets);
+        model.addAttribute("clientes", usuarioService.traerPorRol(1L));
+        model.addAttribute("prioridades", prioridadService.traerTodas());
+        model.addAttribute("estados", estadoService.traerTodas());
+        model.addAttribute("tipos", tipoService.traerTodas());
+        model.addAttribute("categoriasDisponibles", categoriaService.traerTodas());
+        return ViewRouteHelper.ADMIN_TICKET_PANEL;
+    }
 }
