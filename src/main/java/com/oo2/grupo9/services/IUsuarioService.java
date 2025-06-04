@@ -41,5 +41,7 @@ public interface IUsuarioService {
 
     List<Usuario> traerPorNombreUsuarioConteniendo(String nombreUsuario);
     
+    List<Usuario> traerPorDniExacto(int dni);
 
+    List<Usuario> traerPorEmailConteniendo(String email);
 }

@@ -71,7 +71,7 @@ public class TicketController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
-            Usuario cliente = usuarioService.traer(username); // Asumo que este método trae el Usuario por nombre de usuario
+            Usuario cliente = usuarioService.traer(username); 
 
             if (cliente == null) {
                 mAV.setView(new RedirectView(ViewRouteHelper.ROUTE_INDEX + "?error=No se pudo encontrar el usuario autenticado.", true));

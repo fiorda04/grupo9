@@ -49,8 +49,6 @@ public class Ticket {
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDate fechaCreacion;
     
-    //Pensar en fechaModEstado como fechaCierre asi no hay que asignarle null 
-    @UpdateTimestamp
     @Column(name = "fecha_cierre", nullable = true)
     private LocalDate fechaCierre;
 

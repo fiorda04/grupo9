@@ -1,6 +1,7 @@
 package com.oo2.grupo9.services.implementation;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -358,5 +359,23 @@ public class UsuarioService implements IUsuarioService {
             return traerTodos(); 
         }
         return usuarioRepository.findByNombreUsuarioContainingIgnoreCase(nombreUsuario.trim());
+    }
+
+    @Override
+    public List<Usuario> traerPorDniExacto(int dni) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByDni(dni); 
+        if (usuarioOptional.isPresent()) {
+            return List.of(usuarioOptional.get()); 
+        } else {
+            return Collections.emptyList(); 
+        }
+    }
+
+    @Override
+    public List<Usuario> traerPorEmailConteniendo(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return Collections.emptyList(); 
+        }
+        return usuarioRepository.findByNombreUsuarioContainingIgnoreCase(email.trim());
     }
 }

@@ -1,6 +1,8 @@
 package com.oo2.grupo9.controllers;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,8 @@ import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.services.ILocalidadService;
+import com.oo2.grupo9.services.IRolService;
+import com.oo2.grupo9.services.IUsuarioService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
 
 import jakarta.validation.Valid;
@@ -33,14 +37,14 @@ import org.springframework.ui.Model;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private UsuarioService usuarioService;
-    private ILocalidadService localidadService;
-    private RolRepository rolRepository;
+    private final IUsuarioService usuarioService;
+    private final ILocalidadService localidadService;
+    private final IRolService rolService;
 
-    public UsuarioController(UsuarioService usuarioService, ILocalidadService localidadService, RolRepository rolRepository) {
+    public UsuarioController(UsuarioService usuarioService, ILocalidadService localidadService,  IRolService rolService) {
         this.usuarioService = usuarioService;
         this.localidadService = localidadService;
-        this.rolRepository = rolRepository;
+        this.rolService = rolService;
     }
 
     @GetMapping("/inscribirse")
@@ -100,7 +104,7 @@ public class UsuarioController {
         mAV.addObject("nuevoUsuario", new UsuarioDTO());
         mAV.addObject("nuevoContacto", new ContactoDTO());
         mAV.addObject("localidades", localidadService.traerTodas());
-        mAV.addObject("roles", rolRepository.findAll()); 
+        mAV.addObject("roles", rolService.traerTodos());
         return mAV;
     }
 
@@ -119,7 +123,7 @@ public class UsuarioController {
             mAV.addObject("nuevoUsuario", usuarioDto);
             mAV.addObject("nuevoContacto", contactoDto);
             mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("roles", rolRepository.findAll()); // Recarga los roles
+            mAV.addObject("roles", rolService.traerTodos());
             mAV.addObject("error", "Por favor, corrige los errores en el formulario.");
             return mAV;
         }
@@ -135,7 +139,7 @@ public class UsuarioController {
             mAV.addObject("nuevoUsuario", usuarioDto);
             mAV.addObject("nuevoContacto", contactoDto);
             mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("roles", rolRepository.findAll()); // Recarga los roles
+            mAV.addObject("roles", rolService.traerTodos());
             mAV.addObject("errorMessage", "Error al crear el usuario (Admin): " + e.getMessage());
             return mAV;
         }
@@ -157,7 +161,7 @@ public class UsuarioController {
             mAV.setViewName(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR); 
             mAV.addObject("usuarioMod", usuarioModDto); 
             mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("roles", rolRepository.findAll());
+            mAV.addObject("roles", rolService.traerTodos());
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage",
@@ -178,14 +182,12 @@ public class UsuarioController {
             ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR); 
             mAV.addObject("usuarioMod", usuarioModDto);
             mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("roles", rolRepository.findAll());
+            mAV.addObject("roles", rolService.traerTodos());
             mAV.addObject("errorMessage", "Error de validación. Por favor, corrige los campos marcados.");
             return mAV;
         }
-
         try {
-            usuarioService.actualizarUsuarioAdmin(usuarioModDto);
-
+            //usuarioService.actualizarUsuarioAdmin(usuarioModDto);
             redirectAttributes.addFlashAttribute("successMessage", "¡Usuario modificado exitosamente!");
             return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
 
@@ -193,7 +195,7 @@ public class UsuarioController {
             ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR);
             mAV.addObject("usuarioMod", usuarioModDto); 
             mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("roles", rolRepository.findAll());
+            mAV.addObject("roles", rolService.traerTodos());
             mAV.addObject("errorMessage", "Error al modificar el usuario: " + e.getMessage());
             return mAV;
         }
@@ -201,18 +203,16 @@ public class UsuarioController {
 
 
     @PreAuthorize("hasRole('ROLE_Admin')")
-    @GetMapping("/admin/buscar/nombre") // Coincide con el th:action del HTML
+    @GetMapping("/admin/buscar/nombre") 
     public String buscarUsuariosPorNombre(@RequestParam("valor") String nombreUsuario, Model model) {
         List<Usuario> resultados = usuarioService.traerPorNombreUsuarioConteniendo(nombreUsuario);
         model.addAttribute("resultadosUsuarios", resultados);
         model.addAttribute("criterioBusqueda", "Nombre de Usuario (contiene): '" + nombreUsuario + "'");
-        // Puedes añadir todosLosRoles si la página de resultados necesita mostrar un
-        // desplegable de roles
-        // model.addAttribute("todosLosRoles", rolService.traerTodos());
+
         return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
     }
 
-    /*@PreAuthorize("hasRole('ROLE_Admin')")
+    @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/admin/buscar/dni")
     public String buscarUsuariosPorDni(@RequestParam("valor") int dni, Model model) {
         List<Usuario> resultados = usuarioService.traerPorDniExacto(dni);
@@ -234,10 +234,9 @@ public class UsuarioController {
     @GetMapping("/admin/buscar/rol")
     public String buscarUsuariosPorRol(@RequestParam(name = "valor", required = false) Long rolId, Model model) {
         List<Usuario> resultados;
-        String nombreRolBuscado = "Todos"; // Default si rolId es null
-
+        String nombreRolBuscado = "Todos"; 
         if (rolId != null) {
-            resultados = usuarioService.traerPorRolId(rolId);
+            resultados = usuarioService.traerPorRol(rolId);
             Optional<Rol> rolOpt = rolService.traerPorId(rolId);
             if (rolOpt.isPresent()) {
                 nombreRolBuscado = rolOpt.get().getNombreRol();
@@ -245,16 +244,13 @@ public class UsuarioController {
                 nombreRolBuscado = "ID de Rol " + rolId + " (desconocido)";
             }
         } else {
-            // Si no se selecciona un rol (rolId es null), puedes mostrar una lista vacía
-            // o podrías decidir mostrar todos los usuarios si así lo prefieres (llamando a
-            // usuarioService.traerTodosUsuarios())
             resultados = Collections.emptyList();
             nombreRolBuscado = "Ningún rol seleccionado (o todos si se implementa así)";
         }
         model.addAttribute("resultadosUsuarios", resultados);
         model.addAttribute("criterioBusqueda", "Rol: " + nombreRolBuscado);
         return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
-    }*/
+    }
 
     @GetMapping("/login")
     public ModelAndView login(@RequestParam(name = "error", required = false) String error,
