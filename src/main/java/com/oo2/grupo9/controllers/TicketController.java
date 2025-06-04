@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.ui.Model;
 
 
 @Controller
@@ -150,7 +149,7 @@ public class TicketController {
         return "redirect:" + ViewRouteHelper.ROUTE_INDEX;    
     }
     
-    @GsetMapping("/tickets/buscar/tipo")
+    @GetMapping("/tickets/buscar/tipo")
     public String buscarTicketsPorTipo(@RequestParam("valor") Long idTipo, Model model) {
         List<Ticket> resultados = new ArrayList<>();
         String nombreTipoBuscado;
