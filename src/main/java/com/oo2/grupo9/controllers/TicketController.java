@@ -21,7 +21,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.ui.Model;
 
 
 @Controller
@@ -132,14 +131,15 @@ public class TicketController {
 
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("tickets/admin")
-    public String panelTicketsAdmin(Model model) {
+    public ModelAndView panelTicketsAdminConModelAndView() {
+        ModelAndView mav = new ModelAndView(ViewRouteHelper.ADMIN_TICKET_PANEL);
         List<Ticket> todosLosTickets = ticketService.traerTodos();
-        model.addAttribute("tickets", todosLosTickets);
-        model.addAttribute("clientes", usuarioService.traerPorRol(1L));
-        model.addAttribute("prioridades", prioridadService.traerTodas());
-        model.addAttribute("estados", estadoService.traerTodas());
-        model.addAttribute("tipos", tipoService.traerTodas());
-        model.addAttribute("categoriasDisponibles", categoriaService.traerTodas());
-        return ViewRouteHelper.ADMIN_TICKET_PANEL;
+        mav.addObject("tickets", todosLosTickets);
+        mav.addObject("clientes", usuarioService.traerPorRol(1L));
+        mav.addObject("prioridades", prioridadService.traerTodas());
+        mav.addObject("estados", estadoService.traerTodas());
+        mav.addObject("tipos", tipoService.traerTodas());
+        mav.addObject("categoriasDisponibles", categoriaService.traerTodas());
+        return mav;
     }
 }

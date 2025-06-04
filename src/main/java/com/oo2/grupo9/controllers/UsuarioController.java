@@ -23,14 +23,12 @@ import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Rol;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
-import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.IRolService;
 import com.oo2.grupo9.services.IUsuarioService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
 
 import jakarta.validation.Valid;
-import org.springframework.ui.Model;
 
 
 @Controller
@@ -187,7 +185,7 @@ public class UsuarioController {
             return mAV;
         }
         try {
-            //usuarioService.actualizarUsuarioAdmin(usuarioModDto);
+            usuarioService.actualizarUsuarioAdmin(usuarioModDto);
             redirectAttributes.addFlashAttribute("successMessage", "¡Usuario modificado exitosamente!");
             return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
 
@@ -204,52 +202,55 @@ public class UsuarioController {
 
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/admin/buscar/nombre") 
-    public String buscarUsuariosPorNombre(@RequestParam("valor") String nombreUsuario, Model model) {
+    public ModelAndView buscarUsuariosPorNombre(@RequestParam("valor") String nombreUsuario) {
+        ModelAndView mav = new ModelAndView(ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS);
         List<Usuario> resultados = usuarioService.traerPorNombreUsuarioConteniendo(nombreUsuario);
-        model.addAttribute("resultadosUsuarios", resultados);
-        model.addAttribute("criterioBusqueda", "Nombre de Usuario (contiene): '" + nombreUsuario + "'");
-
-        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+        mav.addObject("resultadosUsuarios", resultados);
+        mav.addObject("criterioBusqueda", "Nombre de Usuario (contiene): '" + nombreUsuario + "'");
+        return mav;
     }
 
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/admin/buscar/dni")
-    public String buscarUsuariosPorDni(@RequestParam("valor") int dni, Model model) {
+    public ModelAndView buscarUsuariosPorDni(@RequestParam("valor") int dni) {
+        ModelAndView mav = new ModelAndView(ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS);
         List<Usuario> resultados = usuarioService.traerPorDniExacto(dni);
-        model.addAttribute("resultadosUsuarios", resultados);
-        model.addAttribute("criterioBusqueda", "DNI: " + dni);
-        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+        mav.addObject("resultadosUsuarios", resultados);
+        mav.addObject("criterioBusqueda", "DNI: " + dni);
+        return mav;
     }
 
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/admin/buscar/email")
-    public String buscarUsuariosPorEmail(@RequestParam("valor") String email, Model model) {
+    public ModelAndView buscarUsuariosPorEmail(@RequestParam("valor") String email) {
+        ModelAndView mav = new ModelAndView(ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS);
         List<Usuario> resultados = usuarioService.traerPorEmailConteniendo(email);
-        model.addAttribute("resultadosUsuarios", resultados);
-        model.addAttribute("criterioBusqueda", "Email (contiene): '" + email + "'");
-        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+        mav.addObject("resultadosUsuarios", resultados);
+        mav.addObject("criterioBusqueda", "Email (contiene): '" + email + "'");
+        return mav;
     }
 
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/admin/buscar/rol")
-    public String buscarUsuariosPorRol(@RequestParam(name = "valor", required = false) Long rolId, Model model) {
+    public ModelAndView buscarUsuariosPorRol(@RequestParam(name = "valor", required = false) Long rolId) {
+        ModelAndView mav = new ModelAndView(ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS);
         List<Usuario> resultados;
         String nombreRolBuscado = "Todos"; 
         if (rolId != null) {
-            resultados = usuarioService.traerPorRol(rolId);
+            resultados = usuarioService.traerPorRol(rolId); 
             Optional<Rol> rolOpt = rolService.traerPorId(rolId);
             if (rolOpt.isPresent()) {
                 nombreRolBuscado = rolOpt.get().getNombreRol();
             } else {
-                nombreRolBuscado = "ID de Rol " + rolId + " (desconocido)";
+                 nombreRolBuscado = "ID de Rol " + rolId + " (desconocido)";
             }
         } else {
-            resultados = Collections.emptyList();
+            resultados = Collections.emptyList(); 
             nombreRolBuscado = "Ningún rol seleccionado";
         }
-        model.addAttribute("resultadosUsuarios", resultados);
-        model.addAttribute("criterioBusqueda", "Rol: " + nombreRolBuscado);
-        return ViewRouteHelper.ADMIN_USER_SEARCH_RESULTS;
+        mav.addObject("resultadosUsuarios", resultados);
+        mav.addObject("criterioBusqueda", "Rol: " + nombreRolBuscado);
+        return mav;
     }
 
     @GetMapping("/login")

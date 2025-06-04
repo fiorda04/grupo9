@@ -39,6 +39,8 @@ public interface IUsuarioService {
 
     UsuarioModificacionDTO obtenerUsuarioParaModificar(long idUsuario);
 
+    void actualizarUsuarioAdmin(UsuarioModificacionDTO usuarioModDto) throws Exception;
+
     List<Usuario> traerPorNombreUsuarioConteniendo(String nombreUsuario);
     
     List<Usuario> traerPorDniExacto(int dni);
