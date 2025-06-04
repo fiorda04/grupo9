@@ -2,8 +2,10 @@ package com.oo2.grupo9.services;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.oo2.grupo9.entities.Ticket;
+import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Intervencion;
 
@@ -21,7 +23,7 @@ public interface ITicketService {
 
     void eliminar(long idTicket);
 
-    Ticket traer(long idTicket);
+    Optional<Ticket> traer(long idTicket);
 
     List<Ticket> traerTodos();
 
@@ -35,7 +37,9 @@ public interface ITicketService {
 
     List<Ticket> traerTicketPorPrioridad(long idPrioridad);
 
-    List<Ticket> findByFechaCreacion(LocalDate fecha); // ¡Asegúrate de que el nombre sea EXACTAMENTE este!
+    List<Ticket> findByFechaCreacion(LocalDate fecha); 
 
-    List<Ticket> findByFechaCreacionBetween(LocalDate fechaCreacion1, LocalDate fechaCreacion2); // ¡Asegúrate de que el nombre sea EXACTAMENTE este!
+    List<Ticket> findByFechaCreacionBetween(LocalDate fechaCreacion1, LocalDate fechaCreacion2); 
+    
+    List<Ticket> traerPorNombreUsuarioConteniendo(String nombreUsuario);
 }

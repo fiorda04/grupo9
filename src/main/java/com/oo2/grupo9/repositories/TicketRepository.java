@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.oo2.grupo9.entities.Ticket;
+import com.oo2.grupo9.entities.Usuario;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
@@ -24,7 +25,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	List<Ticket> findByUsuarioCliente_IdUsuario(Long idUsuario);
 
 	// 28. +traerPorEmpleado(Usuario empleado): List<Ticket>
-	//List<Ticket> findByUsuarioCliente_Id(Long idAutor); // se fija en las intervenciones
+	List<Ticket> findDistinctByLstIntervenciones_Autor_idUsuario(Long idEmpleado);// se fija en las intervenciones y solo agarra un ticket por intervencion
 
 	// 29. +traerTicketPorEstado(Estado estado): List<Ticket>
 	List<Ticket> findByEstado_IdEstado(Long idEstado);
@@ -43,5 +44,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	
 	//32. +traerTicketEntreFechas(LocalDate fechaInicio, LocalDate fechaFin): List<Ticket> 
 	//List<Ticket> findByFechaCreacion1AndFechaCreacion2(LocalDate fechaCreacion1, LocalDate fechaCreacion2);
+    
+    List<Ticket> findByTituloContainingIgnoreCase(String titulo);
 
 }

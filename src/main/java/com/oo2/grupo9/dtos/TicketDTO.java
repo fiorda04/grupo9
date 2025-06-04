@@ -2,6 +2,9 @@ package com.oo2.grupo9.dtos;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import com.oo2.grupo9.entities.Intervencion;
+
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -24,11 +27,16 @@ public class TicketDTO {
 		@NotEmpty(message = "La descripcion del ticket no puede estar vacio")
 	    private String descripcion;
 		
-	    private List<Long> categoriasId;
+//		@NotEmpty(message = "Debe seleccionar al menos una categoría.")
+//	    private List<String> nombresCategorias;
+		
+		private List<Long> categoriasId;
 
+//	    @NotNull(message = "La prioridad del ticket no puede estar vacia")
+//	    private String nombrePrioridades;
 	    
 	    @NotNull(message = "La prioridad del ticket no puede estar vacia")
-	    private Long prioridadId;
+        private Long prioridadId;
 	    
 	    @NotNull(message = "La fecha de creacion del ticket no puede estar vacia")
 	    private LocalDate fechaCreacion;
@@ -36,15 +44,26 @@ public class TicketDTO {
 	    @Future(message = "La fecha de cierre del ticket se va a dar cuando el ticket se cierre")
 	    private LocalDate fechaCierre;
 	    
+//	    @NotNull(message = "El estado del ticket no puede estar vacio")
+//	    private String nombreEstado;
+	    
 	    @NotNull(message = "El estado del ticket no puede estar vacio")
-	    private Long estadoId;
+        private Long estadoId;
 	    
 	    @NotNull(message = "El tipo del ticket no puede estar vacio")
-	    private Long tipoId;   
+        private Long tipoId;
+	    
+//	    @NotNull(message = "El tipo del ticket no puede estar vacio")
+//	    private String nombreTipo;   
+	    
+//	    @NotNull(message = "El usuario del ticket no puede estar vacio")
+//	    private String usuarioNombreCliente; 
 	    
 	    @NotNull(message = "El usuario del ticket no puede estar vacio")
-	    private Long usuarioIdCliente; 
+        private Long usuarioIdCliente; 
 	    
-	    private List<Long> intervencionesId; 
+//	    private List<Intervencion> lstIntervenciones; 
+	    
+	    private List<Long> intervencionesId;
 
 }

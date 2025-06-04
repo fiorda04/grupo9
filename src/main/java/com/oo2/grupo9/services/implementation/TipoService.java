@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TipoService implements ITipoService {
@@ -15,9 +16,8 @@ public class TipoService implements ITipoService {
     private TipoRepository tipoRepository;
 
     @Override
-    public Tipo traer(Long id) {
-        return tipoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el tipo con ID: " + id));
+    public Optional<Tipo> traer(Long id) {
+        return tipoRepository.findById(id);
     }
 
     @Override

@@ -2,29 +2,41 @@ package com.oo2.grupo9.controllers;
 
 import com.oo2.grupo9.entities.*;
 import com.oo2.grupo9.dtos.TicketCreacionDTO; 
+import com.oo2.grupo9.dtos.TicketDTO; 
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.*;
+
 import jakarta.validation.Valid;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Controller
 public class TicketController {
+
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     private ICategoriaService categoriaService;
@@ -43,6 +55,13 @@ public class TicketController {
 
     @Autowired
     private ITicketService ticketService;
+    
+    private ModelMapper modelMapper = new ModelMapper();
+
+
+    TicketController(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
 
 
@@ -83,9 +102,9 @@ public class TicketController {
             nuevoTicket.setFechaCreacion(LocalDate.now()); 
             nuevoTicket.setFechaCierre(null); 
 
-            Tipo tipo = tipoService.traer(nuevoTicketDTO.getTipoId());
-            Prioridad prioridad = prioridadService.traer(1L); // Prioridad predeterminada: 1
-            Estado estadoAbierto = estadoService.traer(1L);   // Estado "Abierto": 1
+            Tipo tipo = tipoService.traer(nuevoTicketDTO.getTipoId()).get();
+            Prioridad prioridad = prioridadService.traer(1L).get(); // Prioridad predeterminada: 1
+            Estado estadoAbierto = estadoService.traer(1L).get();   // Estado "Abierto": 1
 
             List<Categoria> categoriasSeleccionadas = nuevoTicketDTO.getCategoriasId().stream()
                     .map(categoriaService::traer)
@@ -116,7 +135,8 @@ public class TicketController {
     @GetMapping("tickets/VerTicket/{id}")
 	public ModelAndView verTicket(@PathVariable("id") Long id) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
-	    Ticket ticket = ticketService.traer(id);
+//	    TicketDTO ticketDTO = modelMapper.map(ticketService.traer(id).get(), TicketDTO.class);
+	    Ticket ticket = ticketService.traer(id).get();
 	    mAV.addObject("ticket", ticket);
 	    return mAV;
 	}
@@ -128,5 +148,110 @@ public class TicketController {
       ticketService.eliminar(id);
       return "redirect:" + ViewRouteHelper.ROUTE_INDEX;    
     }
+    
+    @GetMapping("/tickets/buscar/tipo")
+    public String buscarTicketsPorTipo(@RequestParam("valor") Long idTipo, Model model) {
+        List<Ticket> resultados = new ArrayList<>();
+        String nombreTipoBuscado;
+        
+        resultados = ticketService.traerTicketsPorTipo(idTipo);
+    	Optional<Tipo> tipoOpt = tipoService.traer(idTipo);
+    	if(tipoOpt.isPresent()) {
+    		nombreTipoBuscado = tipoOpt.get().getNombreTipo();
+    	}else {
+    		nombreTipoBuscado = "ID de Tipo " + idTipo + " (desconocido)";
+    	}
+    	
+//        if(idTipo != null) {
+//        	(aca va todo el desarrollo de arriba si puede estar vacio)
+//        }else {
+//        	nombreTipoBuscado = "Ningún tipo seleccionado";
+//        }
+        
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Tipo: " + nombreTipoBuscado);
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
+    
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/tickets/buscar/cliente")
+    public String buscarTicketsPorCliente(@RequestParam("valor") Long idUsuario, Model model) {
+        List<Ticket> resultados = ticketService.traerPorCliente(idUsuario);
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Usuario: " + usuarioService.traer(idUsuario).getNombreUsuario());
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
+    
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/tickets/buscar/empleado")
+    public String buscarTicketsPorEmpleado(@RequestParam("valor") Long idAutor, Model model) {
+        List<Ticket> resultados = ticketService.traerPorEmpleado(idAutor);
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Usuario: " + usuarioService.traer(idAutor).getNombreUsuario());
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
+    
+    @GetMapping("/tickets/buscar/estado")
+    public String buscarTicketsPorEstado(@RequestParam("valor") Long idEstado, Model model) {
+        List<Ticket> resultados = new ArrayList<>();
+        String nombreEstadoBuscado;
+        resultados = ticketService.traerTicketPorEstado(idEstado);
+    	Optional<Estado> estadoOpt = estadoService.traer(idEstado);
+    	
+    	if(estadoOpt.isPresent()) {
+    		nombreEstadoBuscado = estadoOpt.get().getNombreEstado();
+    	}
+    	else {
+    		nombreEstadoBuscado = "ID de Estado " + idEstado + " (desconocido)";
+    	}
+    	
+//        if(idEstado != null) {
+//        	(aca va todo el desarrollo de arriba si puede estar vacio)
+//        }else {
+//        	nombreEstadoBuscado = "Ningún estado seleccionado";
+//        }
+    	
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Estado: " + nombreEstadoBuscado);
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
+    
+    @GetMapping("/tickets/buscar/prioridad")
+    public String buscarTicketsPorPrioridad(@RequestParam("valor") Long idPrioridad, Model model) {
+        List<Ticket> resultados = new ArrayList<>();
+        String nombrePrioridadBuscado;
+        resultados = ticketService.traerTicketPorPrioridad(idPrioridad);
+    	Optional<Prioridad> prioridadOpt = prioridadService.traer(idPrioridad);
+    	
+    	if(prioridadOpt.isPresent()) {
+    		nombrePrioridadBuscado = prioridadOpt.get().getNombrePrioridad();
+    	}
+    	else {
+    		nombrePrioridadBuscado = "ID de Prioridad " + idPrioridad + " (desconocido)";
+    	}
+    	
+//        if(idPrioridad != null) {
+//        	(aca va todo el desarrollo de arriba si puede estar vacio)
+//        }else {
+//        	nombrePrioridadBuscado = "Ningún Prioridad seleccionado";
+//        }
+    	
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Prioridad: " + nombrePrioridadBuscado);
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
+    
+    @GetMapping("/tickets/buscar/fecha")
+    public String buscarTicketsPorFecha(@RequestParam("fecha") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fecha, Model model) {
+        List<Ticket> resultados = ticketService.findByFechaCreacion(fecha);
+
+        model.addAttribute("resultadosTickets", resultados);
+        model.addAttribute("criterioBusqueda", "Fecha de creación: " + fecha.toString());
+
+        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+    }
+
+    
+    
     
 }

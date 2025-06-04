@@ -3,22 +3,32 @@ package com.oo2.grupo9.services.implementation;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Ticket;
+import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
 import com.oo2.grupo9.repositories.TicketRepository;
 import com.oo2.grupo9.services.ITicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class TicketService implements ITicketService {
 
+    private final AuthenticationManager authenticationManager;
+
     @Autowired
     private TicketRepository ticketRepository;
+
+
+    TicketService(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     
     @Override 
@@ -58,9 +68,8 @@ public class TicketService implements ITicketService {
     }
 
     @Override
-    public Ticket traer(long idTicket) {
-        return ticketRepository.findById(idTicket)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el ticket con ID: " + idTicket));
+    public Optional<Ticket> traer(long idTicket) {
+        return ticketRepository.findById(idTicket);
     }
 
     @Override
@@ -83,7 +92,7 @@ public class TicketService implements ITicketService {
         // Esto requeriría una consulta más compleja, posiblemente a través de Intervenciones
         // o si la entidad Ticket tiene un campo para el empleado asignado.
         // Por ahora, devolvemos una lista vacía o podrías lanzar una excepción si no está implementado.
-        return new ArrayList<>();
+        return ticketRepository.findDistinctByLstIntervenciones_Autor_idUsuario(idAutor);
     }
 
     @Override
@@ -104,6 +113,11 @@ public class TicketService implements ITicketService {
     @Override
     public List<Ticket> findByFechaCreacionBetween(LocalDate fechaCreacion1, LocalDate fechaCreacion2) {
         return ticketRepository.findByFechaCreacionBetween(fechaCreacion1, fechaCreacion2);
+    }
+    
+    @Override
+    public List<Ticket> traerPorNombreUsuarioConteniendo(String nombreUsuario){
+    	return ticketRepository.findByTituloContainingIgnoreCase(nombreUsuario.trim());
     }
 }
 

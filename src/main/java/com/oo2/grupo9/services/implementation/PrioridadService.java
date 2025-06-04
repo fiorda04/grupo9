@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PrioridadService implements IPrioridadService {
@@ -15,9 +16,8 @@ public class PrioridadService implements IPrioridadService {
     private PrioridadRepository prioridadRepository;
 
     @Override
-    public Prioridad traer(Long id) {
-        return prioridadRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró la prioridad con ID: " + id));
+    public Optional<Prioridad> traer(Long id) {
+        return prioridadRepository.findById(id);
     }
 
     @Override

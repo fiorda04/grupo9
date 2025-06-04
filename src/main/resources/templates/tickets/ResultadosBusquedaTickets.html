@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de Búsqueda de Tickets</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; 
+        }
+
+        .main-container { 
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .top-bar-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .welcome-message {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .logout-button { 
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+        .logout-button svg {
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        .menu-button-style { 
+            background-color: #007bff; 
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+        .menu-button-style:hover {
+            background-color: #0056b3;
+        }
+
+        
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px; 
+        }
+        .user-table th, .user-table td {
+            border: 1px solid #ddd;
+            padding: 10px; 
+            text-align: left;
+            font-size: 0.95em;
+        }
+        .user-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .status-activo { color: green; font-weight: bold; }
+        .status-inactivo { color: red; font-weight: bold; }
+        
+        .action-button {
+            padding: 6px 12px; 
+            margin-right: 5px; 
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85em; 
+            color: white;
+        }
+        .action-button:last-child {
+            margin-right: 0;
+        }
+        .modificar-button { background-color: #ffc107; color: #212529; } 
+        .modificar-button:hover { background-color: #e0a800; }
+        .dar-baja-button { background-color: #dc3545; }
+        .dar-baja-button:hover { background-color: #c82333; }
+        .dar-alta-button { background-color: #28a745; }
+        .dar-alta-button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Gestión de Tickets Spring Grupo 9</h1>
+        </div>
+
+        <div class="top-bar-actions">
+            <div>
+                <a th:href="@{/}" class="menu-button-style">Volver al Panel de Inicio</a>
+            </div>
+            <div class="user-actions">
+                <span class="welcome-message"
+                    th:text="${'Bienvenido, ' + #authentication.principal.username}" style="margin-right: 15px;">Bienvenido</span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="logout-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
+                            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                        </svg>
+                        Salir
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <h2 style="text-align: center;">Resultados de Búsqueda de Ticket</h2>
+        <h4 style="text-align: center; color: #555;" th:if="${criterioBusqueda}" th:text="'Criterio: ' + ${criterioBusqueda}"></h4>
+        <hr style="margin-bottom: 20px;"/>
+
+        <div th:if="${resultadosUsuarios != null and !resultadosUsuarios.isEmpty()}">
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Rol</th>
+                        <th>DNI</th>
+                        <th>Email</th>
+                        <th>Creación</th>
+                        <th>Activo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${resultadosUsuarios}">
+                        <td th:text="${usuario.nombreUsuario}"></td>
+                        <td th:text="${usuario.rol?.nombreRol}"></td>
+                        <td th:text="${usuario.dni}"></td>
+                        <td th:text="${usuario.contacto?.email}"></td>
+                        <td th:text="${usuario.fechaCreacion != null ? #temporals.format(usuario.fechaCreacion, 'yyyy-MM-dd HH:mm') : ''}"></td>
+                        <td th:class="${usuario.activo ? 'status-activo' : 'status-inactivo'}"
+                            th:text="${usuario.activo ? 'Sí' : 'No'}"></td>
+                        <td>
+                            <a th:href="@{/usuarios/admin/modificar/{id}(id=${usuario.idUsuario})}"
+                                class="action-button modificar-button">Modificar</a>
+                            <form th:if="${usuario.activo}"
+                                th:action="@{/dar-de-baja/{id}(id=${usuario.idUsuario})}" method="post"
+                                style="display:inline;">
+                                <button type="submit" class="action-button dar-baja-button">Dar de Baja</button>
+                            </form>
+                            <form th:unless="${usuario.activo}"
+                                th:action="@{/dar-de-alta/{id}(id=${usuario.idUsuario})}" method="post"
+                                style="display:inline;">
+                                <button type="submit" class="action-button dar-alta-button">Dar de Alta</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${resultadosUsuarios == null or resultadosUsuarios.isEmpty()}" style="text-align: center; padding: 20px; background-color: #fdfdfe; border: 1px dashed #ddd; border-radius: 5px;">
+            <p style="font-size: 1.1em; color: #777;">No se encontraron usuarios que coincidan con el criterio: <strong th:text="${criterioBusqueda ?: 'especificado'}"></strong></p>
+        </div>
+
+    </div> </body>
+</html>
