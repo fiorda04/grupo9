@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EstadoService implements IEstadoService {
@@ -15,9 +16,8 @@ public class EstadoService implements IEstadoService {
     private EstadoRepository estadoRepository;
 
     @Override
-    public Estado traer(Long id) {
-        return estadoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No se encontró el estado con ID: " + id));
+    public Optional<Estado> traer(Long id) {
+        return estadoRepository.findById(id);
     }
 
     @Override

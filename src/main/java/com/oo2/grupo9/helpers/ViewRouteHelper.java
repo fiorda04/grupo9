@@ -14,8 +14,9 @@ public class ViewRouteHelper {
     //Tickets
     public final static String TICKET_CREAR = "tickets/CrearTicket";
     public final static String CREAR_TICKET = "tickets/CrearTicket";
-    public final static String LISTA_TICKETS = "tickets/listaTickets";
+    public final static String LISTA_TICKETS = "tickets/ListaTickets";
     public final static String VER_TICKET = "tickets/VerTicket";
+    public final static String TICKETS_SEARCH_RESULTS = "tickets/ResultadosBusquedaTickets";
     public final static String ADMIN_TICKET_PANEL = "admin/panel-tickets";
 
 
