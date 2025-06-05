@@ -150,7 +150,8 @@ public class TicketController {
     }
     
     @GetMapping("/tickets/buscar/tipo")
-    public String buscarTicketsPorTipo(@RequestParam("valor") Long idTipo, Model model) {
+    public ModelAndView buscarTicketsPorTipo(@RequestParam("valor") Long idTipo) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = new ArrayList<>();
         String nombreTipoBuscado;
         
@@ -168,31 +169,34 @@ public class TicketController {
 //        	nombreTipoBuscado = "Ningún tipo seleccionado";
 //        }
         
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Tipo: " + nombreTipoBuscado);
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Tipo: " + nombreTipoBuscado);
+        return mAV;
     }
     
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/tickets/buscar/cliente")
-    public String buscarTicketsPorCliente(@RequestParam("valor") Long idUsuario, Model model) {
+    public ModelAndView buscarTicketsPorCliente(@RequestParam("valor") Long idUsuario) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = ticketService.traerPorCliente(idUsuario);
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Usuario: " + usuarioService.traer(idUsuario).getNombreUsuario());
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Usuario: " + usuarioService.traer(idUsuario).getNombreUsuario());
+        return mAV;
     }
     
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/tickets/buscar/empleado")
-    public String buscarTicketsPorEmpleado(@RequestParam("valor") Long idAutor, Model model) {
+    public ModelAndView buscarTicketsPorEmpleado(@RequestParam("valor") Long idAutor) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = ticketService.traerPorEmpleado(idAutor);
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Usuario: " + usuarioService.traer(idAutor).getNombreUsuario());
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Usuario: " + usuarioService.traer(idAutor).getNombreUsuario());
+        return mAV;
     }
     
     @GetMapping("/tickets/buscar/estado")
-    public String buscarTicketsPorEstado(@RequestParam("valor") Long idEstado, Model model) {
+    public ModelAndView buscarTicketsPorEstado(@RequestParam("valor") Long idEstado) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = new ArrayList<>();
         String nombreEstadoBuscado;
         resultados = ticketService.traerTicketPorEstado(idEstado);
@@ -211,13 +215,14 @@ public class TicketController {
 //        	nombreEstadoBuscado = "Ningún estado seleccionado";
 //        }
     	
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Estado: " + nombreEstadoBuscado);
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Estado: " + nombreEstadoBuscado);
+        return mAV;
     }
     
     @GetMapping("/tickets/buscar/prioridad")
-    public String buscarTicketsPorPrioridad(@RequestParam("valor") Long idPrioridad, Model model) {
+    public ModelAndView buscarTicketsPorPrioridad(@RequestParam("valor") Long idPrioridad) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = new ArrayList<>();
         String nombrePrioridadBuscado;
         resultados = ticketService.traerTicketPorPrioridad(idPrioridad);
@@ -236,43 +241,45 @@ public class TicketController {
 //        	nombrePrioridadBuscado = "Ningún Prioridad seleccionado";
 //        }
     	
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Prioridad: " + nombrePrioridadBuscado);
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Prioridad: " + nombrePrioridadBuscado);
+        return mAV;
     }
     
     @GetMapping("/tickets/buscar/fecha")
-    public String buscarTicketsPorFecha(@RequestParam("fecha") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fecha, Model model) {
+    public ModelAndView buscarTicketsPorFecha(@RequestParam("fecha") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fecha) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = ticketService.findByFechaCreacion(fecha);
 
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Fecha de creación: " + fecha.toString());
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Fecha de creación: " + fecha.toString());
 
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        return mAV;
     }
 
     @GetMapping("/tickets/buscar/fechas")
-    public String buscarTicketsEntreFechas(
+    public ModelAndView buscarTicketsEntreFechas(
             @RequestParam("desde") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fechaDesde,
-            @RequestParam("hasta") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fechaHasta,
-            Model model) {
+            @RequestParam("hasta") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fechaHasta) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
 
         List<Ticket> resultados = ticketService.findByFechaCreacionBetween(fechaDesde, fechaHasta);
 
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Entre " + fechaDesde + " y " + fechaHasta);
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Entre " + fechaDesde + " y " + fechaHasta);
 
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        return mAV;
     }
     
     @GetMapping("/tickets/buscar/titulo")
-    public String buscarTicketsPorTitulo(@RequestParam("valor") String textoTitulo, Model model) {
+    public ModelAndView buscarTicketsPorTitulo(@RequestParam("valor") String textoTitulo) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = ticketService.traerPorTituloConteniendo(textoTitulo);
 
-        model.addAttribute("resultadosTickets", resultados);
-        model.addAttribute("criterioBusqueda", "Título contiene: \"" + textoTitulo + "\"");
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Título contiene: \"" + textoTitulo + "\"");
 
-        return ViewRouteHelper.TICKETS_SEARCH_RESULTS;
+        return mAV;
     }
     
     
