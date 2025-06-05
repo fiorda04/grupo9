@@ -41,18 +41,10 @@ public class TicketService implements ITicketService {
     public long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idPrioridad,
                         LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
                         List<Intervencion> lstIntervenciones) {
-        // Este método ya no lo utilizaremos directamente en el flujo de "guardar" del formulario
-        // pero lo mantenemos por si tiene otros usos.
         Ticket nuevoTicket = new Ticket();
         nuevoTicket.setTitulo(titulo);
         nuevoTicket.setDescripcion(descripcion);
         nuevoTicket.setLstCategorias(lstCategorias);
-        // Necesitarías cargar las entidades Prioridad, Estado, Tipo y UsuarioCliente por sus IDs
-        // y setearlas aquí.
-        // nuevoTicket.setPrioridad(...);
-        // nuevoTicket.setEstado(...);
-        // nuevoTicket.setTipo(...);
-        // nuevoTicket.setUsuarioCliente(...);
         nuevoTicket.setFechaCreacion(fechaCreacion);
         nuevoTicket.setFechaCierre(fechaCierre);
         nuevoTicket.setLstIntervenciones(lstIntervenciones);
@@ -95,9 +87,6 @@ public class TicketService implements ITicketService {
 
     @Override
     public List<Ticket> traerPorEmpleado(long idAutor) {
-        // Esto requeriría una consulta más compleja, posiblemente a través de Intervenciones
-        // o si la entidad Ticket tiene un campo para el empleado asignado.
-        // Por ahora, devolvemos una lista vacía o podrías lanzar una excepción si no está implementado.
         return ticketRepository.findDistinctByLstIntervenciones_Autor_idUsuario(idAutor);
     }
 
