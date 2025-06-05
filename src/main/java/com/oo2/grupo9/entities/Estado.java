@@ -19,5 +19,6 @@ public class Estado {
 	
 	@Column(name = "nombre", nullable = false)
     private String nombreEstado;
-
+	
+	public static final Long ID_ESTADO_CERRADO = 6L;
 }

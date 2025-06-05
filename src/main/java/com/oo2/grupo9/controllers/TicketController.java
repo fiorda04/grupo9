@@ -1,6 +1,7 @@
 package com.oo2.grupo9.controllers;
 
 import com.oo2.grupo9.entities.*;
+import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.dtos.TicketCreacionDTO; 
 import com.oo2.grupo9.dtos.TicketDTO; 
 import com.oo2.grupo9.helpers.ViewRouteHelper;
@@ -132,15 +133,38 @@ public class TicketController {
         }
     }
     
-    @GetMapping("tickets/VerTicket/{id}")
-	public ModelAndView verTicket(@PathVariable("id") Long id) {
-		ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
-//	    TicketDTO ticketDTO = modelMapper.map(ticketService.traer(id).get(), TicketDTO.class);
-	    Ticket ticket = ticketService.traer(id).get();
-	    mAV.addObject("ticket", ticket);
-	    return mAV;
-	}
+//    @GetMapping("tickets/VerTicket/{id}")
+//	public ModelAndView verTicket(@PathVariable("id") Long id) {
+//		ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
+////	    TicketDTO ticketDTO = modelMapper.map(ticketService.traer(id).get(), TicketDTO.class);
+//	    Ticket ticket = ticketService.traer(id).get();
+//	    mAV.addObject("ticket", ticket);
+//	    return mAV;
+//	}
     
+    
+    @GetMapping("tickets/VerTicket/{id}")
+    public ModelAndView verTicket(@PathVariable("id") Long id) {
+        ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
+        Ticket ticket = ticketService.traer(id).get();
+
+        IntervencionDTO intervencionDTO = new IntervencionDTO();
+        intervencionDTO.setTicketId(id); // esto es necesario para que el formulario lo use
+
+        mAV.addObject("ticket", ticket);
+        mAV.addObject("intervencionDTO", intervencionDTO);
+        mAV.addObject("estadosDisponibles", estadoService.traerTodas());
+        mAV.addObject("prioridadesDisponibles", prioridadService.traerTodas());
+
+        return mAV;
+    }
+    
+    @PostMapping("/intervenciones/agregar")
+    public String agregarIntervencion(@ModelAttribute("intervencionDTO") IntervencionDTO dto) {
+        ticketService.realizarIntervencion(dto);
+
+        return "redirect:/tickets/VerTicket/" + dto.getTicketId();
+    }
     
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("tickets/modificar/{id}")

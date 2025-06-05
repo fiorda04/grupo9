@@ -172,32 +172,34 @@
 
     <div class="panel form-section" sec:authorize="hasRole('Empleado')">
         <h2>Agregar Intervención</h2>
-        <!-- <form th:action="@{/intervenciones/agregar}" method="post" th:object="${intervencionDTO}">
-            <input type="hidden" th:field="*{ticketId}" />
+		<form th:action="@{/intervenciones/agregar}" method="post" th:object="${intervencionDTO}">
+		    <input type="hidden" th:field="*{ticketId}" th:value="${ticket.idTicket}" />
 
-            <div class="form-group">
-                <label for="contenido">Contenido:</label>
-                <textarea id="contenido" th:field="*{contenido}" rows="4" class="form-control" placeholder="Describe la intervención realizada..."></textarea>
-            </div>
+		    <div class="form-group">
+		        <label for="contenido">Contenido:</label>
+		        <textarea id="contenido" th:field="*{contenido}" rows="4" class="form-control" placeholder="Describe la intervención realizada..."></textarea>
+		    </div>
 
-            <div class="form-group">
-                <label for="estadoId">Nuevo Estado:</label>
-                <select id="estadoId" th:field="*{estadoId}" class="form-control">
-                    <option th:each="estado : ${estadosDisponibles}" th:value="${estado.idEstado}" th:text="${estado.nombreEstado}">En Progreso</option>
-                </select>
-            </div>
+		    <div class="form-group">
+		        <label for="estadoId">Nuevo Estado:</label>
+		        <select id="estadoId" th:field="*{estadoId}" class="form-control">
+		            <option value="" disabled selected>Seleccionar estado</option>
+		            <option th:each="estado : ${estadosDisponibles}" th:value="${estado.idEstado}" th:text="${estado.nombreEstado}"></option>
+		        </select>
+		    </div>
 
-            <div class="form-group">
-                <label for="prioridadId">Nueva Prioridad:</label>
-                <select id="prioridadId" th:field="*{prioridadId}" class="form-control">
-                    <option th:each="prioridad : ${prioridadesDisponibles}" th:value="${prioridad.idPrioridad}" th:text="${prioridad.nombrePrioridad}">Alta</option>
-                </select>
-            </div>
+		    <div class="form-group">
+		        <label for="prioridadId">Nueva Prioridad:</label>
+		        <select id="prioridadId" th:field="*{prioridadId}" class="form-control">
+		            <option value="" disabled selected>Seleccionar prioridad</option>
+		            <option th:each="prioridad : ${prioridadesDisponibles}" th:value="${prioridad.idPrioridad}" th:text="${prioridad.nombrePrioridad}"></option>
+		        </select>
+		    </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn">Agregar Intervención</button>
-            </div>
-        </form>-->
+		    <div class="form-group">
+		        <button type="submit" class="btn">Intervenir</button>
+		    </div>
+		</form>
     </div>
 </div>
 </body>

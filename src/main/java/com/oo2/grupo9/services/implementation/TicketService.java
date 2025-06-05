@@ -1,19 +1,27 @@
 package com.oo2.grupo9.services.implementation;
 
+import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
+import com.oo2.grupo9.entities.Estado;
 import com.oo2.grupo9.entities.Intervencion;
+import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
+import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
+import com.oo2.grupo9.repositories.PrioridadRepository;
 import com.oo2.grupo9.repositories.TicketRepository;
+import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.services.ITicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -134,5 +142,47 @@ public class TicketService implements ITicketService {
                                                    i.getAutor().getIdUsuario().equals(empleado.getIdUsuario())))
             .collect(Collectors.toList());
     }
+    
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private EstadoRepository estadoRepository;
+    @Autowired
+    private PrioridadRepository prioridadRepository;
+    
+    public void realizarIntervencion(IntervencionDTO dto) {
+        Ticket ticket = ticketRepository.findById(dto.getTicketId())
+                .orElseThrow(() -> new RuntimeException("Ticket no encontrado"));
+        
+        //Verificar si el ticket ya está "Cerrado" (idEstado = 6)
+        if (ticket.getEstado().getIdEstado().equals(Estado.ID_ESTADO_CERRADO)) {
+            throw new IllegalStateException("No se puede intervenir un ticket que ya está cerrado.");
+        }
+
+        Intervencion intervencion = new Intervencion();
+        intervencion.setTicket(ticket);
+        intervencion.setContenido(dto.getContenido());
+        intervencion.setFechaIntervencion(LocalDate.now());
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario empleado = usuarioRepository.findByNombreUsuario(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        intervencion.setAutor(empleado);
+
+        Estado nuevoEstado = estadoRepository.findById(dto.getEstadoId()).orElseThrow();
+        Prioridad nuevaPrioridad = prioridadRepository.findById(dto.getPrioridadId()).orElseThrow();
+
+        ticket.setEstado(nuevoEstado);
+        ticket.setPrioridad(nuevaPrioridad);
+        
+        //Si el estado es "Cerrado" (idEstado = 6), actualizar la fecha de cierre
+        if (nuevoEstado.getIdEstado().equals(Estado.ID_ESTADO_CERRADO)) {
+            ticket.setFechaCierre(LocalDate.now());
+        }
+        intervencionRepository.save(intervencion);
+        ticketRepository.save(ticket);
+    }
+    
+    
 }
 

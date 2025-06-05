@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Intervencion;
 
@@ -46,4 +47,7 @@ public interface ITicketService {
 	List<Ticket> traerTicketsConIntervencionesDeEmpleado(Usuario empleado);
 
 	List<Intervencion> traerIntervencionesPorEmpleado(Long idEmpleado);
+
+
+	void realizarIntervencion(IntervencionDTO dto);
 }

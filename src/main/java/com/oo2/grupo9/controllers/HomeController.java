@@ -1,6 +1,7 @@
 package com.oo2.grupo9.controllers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -179,7 +180,6 @@ public class HomeController {
         }
         return "tickets/IntervencionesEmpleado";
     }
-    
     
     
 }

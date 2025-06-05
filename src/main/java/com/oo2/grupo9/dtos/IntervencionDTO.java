@@ -16,4 +16,6 @@ public class IntervencionDTO {
 	private String contenido;
 	private LocalDate fechaIntervencion;
 	private Long autorId;
+	private Long estadoId;
+    private Long prioridadId;
 }
