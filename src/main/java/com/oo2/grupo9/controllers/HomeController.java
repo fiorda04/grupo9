@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
@@ -165,4 +166,20 @@ public class HomeController {
             return "redirect:/";
         }
     }
+    
+    @GetMapping("/tickets/IntervencionesEmpleado")
+    public String verTicketsConMisIntervenciones(Model model, Authentication auth) {
+        String username = auth.getName();
+        try {
+            Usuario empleado = usuarioService.traer(username);
+            List<Intervencion> intervenciones = ticketService.traerIntervencionesPorEmpleado(empleado.getIdUsuario());
+            model.addAttribute("intervenciones", intervenciones);
+        } catch (Exception e) {
+            model.addAttribute("error", "No se pudieron obtener tus intervenciones: " + e.getMessage());
+        }
+        return "tickets/IntervencionesEmpleado";
+    }
+    
+    
+    
 }

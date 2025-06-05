@@ -333,6 +333,9 @@
 						</tr>
 					</thead>
 					<tbody>
+						<div class="dashboard-menu">
+							<a th:href="@{/tickets/IntervencionesEmpleado}" class="menu-button">Mis Intervenciones</a>
+						</div>
 						<tr th:each="ticket : ${tickets}">
 							<td th:text="${ticket.titulo != null ? ticket.titulo : ''}">Título</td>
 							<td th:text="${ticket.descripcion != null ? ticket.descripcion : ''}">Descripción</td>

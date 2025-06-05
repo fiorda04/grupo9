@@ -3,7 +3,9 @@ package com.oo2.grupo9.services.implementation;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Ticket;
+import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
+import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.TicketRepository;
 import com.oo2.grupo9.services.ITicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,6 +27,9 @@ public class TicketService implements ITicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private IntervencionRepository intervencionRepository;
 
 
     TicketService(AuthenticationManager authenticationManager) {
@@ -118,6 +124,26 @@ public class TicketService implements ITicketService {
     @Override
     public List<Ticket> traerPorTituloConteniendo(String titulo){
     	return ticketRepository.findByTituloContainingIgnoreCase(titulo.trim());
+    }
+    
+    
+    @Override
+    public List<Intervencion> traerIntervencionesPorEmpleado(Long idEmpleado) {
+        return intervencionRepository.findByAutor_IdUsuario(idEmpleado);
+    }
+    
+    
+    @Override
+    public List<Ticket> traerTicketsConIntervencionesDeEmpleado(Usuario empleado) {
+        List<Ticket> todos = ticketRepository.findAll();
+
+        return todos.stream()
+            .filter(ticket -> ticket.getLstIntervenciones() != null &&
+                              ticket.getLstIntervenciones().stream()
+                                    .anyMatch(i -> i.getAutor() != null &&
+                                                   i.getAutor().getIdUsuario() != null &&
+                                                   i.getAutor().getIdUsuario().equals(empleado.getIdUsuario())))
+            .collect(Collectors.toList());
     }
 }
 
