@@ -267,7 +267,7 @@ public class TicketController {
     
     @GetMapping("/tickets/buscar/titulo")
     public String buscarTicketsPorTitulo(@RequestParam("valor") String textoTitulo, Model model) {
-        List<Ticket> resultados = ticketService.traerPorNombreUsuarioConteniendo(textoTitulo);
+        List<Ticket> resultados = ticketService.traerPorTituloConteniendo(textoTitulo);
 
         model.addAttribute("resultadosTickets", resultados);
         model.addAttribute("criterioBusqueda", "Título contiene: \"" + textoTitulo + "\"");

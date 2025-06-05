@@ -122,8 +122,8 @@ public class TicketService implements ITicketService {
     }
     
     @Override
-    public List<Ticket> traerPorNombreUsuarioConteniendo(String nombreUsuario){
-    	return ticketRepository.findByTituloContainingIgnoreCase(nombreUsuario.trim());
+    public List<Ticket> traerPorTituloConteniendo(String titulo){
+    	return ticketRepository.findByTituloContainingIgnoreCase(titulo.trim());
     }
     
     

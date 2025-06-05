@@ -41,11 +41,5 @@ public interface ITicketService {
 
     List<Ticket> findByFechaCreacionBetween(LocalDate fechaCreacion1, LocalDate fechaCreacion2); 
     
-    List<Ticket> traerPorNombreUsuarioConteniendo(String nombreUsuario);
-
-
-	List<Ticket> traerTicketsConIntervencionesDeEmpleado(Usuario empleado);
-
-
-	List<Intervencion> traerIntervencionesPorEmpleado(Long idEmpleado);
+    List<Ticket> traerPorTituloConteniendo(String titulo);
 }
