@@ -345,9 +345,11 @@
 							<td th:text="${ticket.fechaCreacion != null ? ticket.fechaCreacion : ''}">Fecha de Creación
 							</td>
 							<td>
-								<form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
-									<button type="submit" class="action-button dar-alta-button">Intervenir</button>
-								</form>
+								<div th:if="${ticket.estado != null and !ticket.estado.nombreEstado.equalsIgnoreCase('Cerrado')}">
+									<form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
+										<button type="submit" class="action-button dar-alta-button">Intervenir</button>
+									</form>
+								</div>
 							</td>
 						</tr>
 

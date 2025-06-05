@@ -164,7 +164,7 @@
         <p th:if="${#lists.isEmpty(ticket.lstIntervenciones)}">Este ticket aún no tiene intervenciones.</p>
 
         <div th:each="intv : ${ticket.lstIntervenciones}" class="intervencion">
-            <p><strong>Fecha:</strong> <span th:text="${#temporals.format(intv.fecha, 'dd/MM/yyyy HH:mm')}">15/01/2024 09:30</span></p>
+            <p><strong>Fecha:</strong> <span th:text="${#temporals.format(intv.fechaIntervencion, 'dd/MM/yyyy HH:mm')}">15/01/2024 09:30</span></p>
             <p><strong>Empleado:</strong> <span th:text="${intv.autor.nombreUsuario}">tecnico_juan</span></p>
             <p><strong>Contenido:</strong> <span th:text="${intv.contenido}">Se ha identificado el problema...</span></p>
         </div>
