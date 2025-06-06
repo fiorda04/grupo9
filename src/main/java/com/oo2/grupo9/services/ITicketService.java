@@ -32,6 +32,8 @@ public interface ITicketService {
     List<Ticket> traerTicketsPorTipo(long idTipo);
 
     List<Ticket> traerPorCliente(long idUsuario);
+    
+    List<Ticket> traerPorCategoria(long idCategoria);
 
     List<Ticket> traerPorEmpleado(long idAutor); // se fija en las intervenciones
 
@@ -41,7 +43,9 @@ public interface ITicketService {
 
     List<Ticket> findByFechaCreacion(LocalDate fecha); 
 
-    List<Ticket> findByFechaCreacionBetween(LocalDate fechaCreacion1, LocalDate fechaCreacion2); 
+    List<Ticket> findByFechaCreacionBetween(LocalDateTime fechaCreacion1, LocalDateTime fechaCreacion2); 
+    
+    List<Ticket> findByFechaCierreBetween(LocalDateTime fechaCreacion1, LocalDateTime fechaCreacion2); 
     
     List<Ticket> traerPorTituloConteniendo(String titulo);
 

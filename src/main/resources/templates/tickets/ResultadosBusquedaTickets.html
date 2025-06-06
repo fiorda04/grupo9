@@ -28,6 +28,7 @@
         .table-action-button { padding: 5px 10px; margin-right: 5px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 0.9em; }
         .ver-ticket-button { background-color: #17a2b8; }
         .ver-ticket-button:hover { background-color: #138496; }
+		.delete-ticket-button { background-color: #d9534f; }
     </style>
 </head>
 
@@ -95,6 +96,10 @@
                             <form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
                                 <button type="submit" class="table-action-button ver-ticket-button">Ver Ticket</button>
                             </form>
+							<form th:action="@{/tickets/eliminar/{id}(id=${ticket.idTicket})}" method="post" >
+								<input type="hidden" name="_method" value="delete" />
+								<button type="submit" class="table-action-button delete-ticket-button" sec:authorize="hasRole('Admin')">Eliminar Ticket</button>
+							</form>
                         </td>
                     </tr>
                 </tbody>

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -168,10 +169,10 @@ public class TicketController {
     }
     
     @PreAuthorize("hasRole('ROLE_Admin')")
-    @GetMapping("tickets/modificar/{id}")
+    @PostMapping("tickets/eliminar/{id}")
     public String eliminarTicket(@PathVariable("id") Long id) {
         ticketService.eliminar(id);
-        return "redirect:" + ViewRouteHelper.ROUTE_INDEX;    
+        return  ViewRouteHelper.ADMIN_TICKET_PANEL;    
     }
     
     @GetMapping("/tickets/buscar/tipo")
@@ -206,6 +207,16 @@ public class TicketController {
         List<Ticket> resultados = ticketService.traerPorCliente(idUsuario);
         mAV.addObject("resultadosTickets", resultados);
         mAV.addObject("criterioBusqueda", "Usuario: " + usuarioService.traer(idUsuario).getNombreUsuario());
+        return mAV;
+    }
+    
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @GetMapping("/tickets/buscar/categoria")
+    public ModelAndView buscarTicketsPorCategoria(@RequestParam("valor") Long idCategoria) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
+        List<Ticket> resultados = ticketService.traerPorCategoria(idCategoria);
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Categoria: " + categoriaService.traer(idCategoria).getNombreCategoria());
         return mAV;
     }
     
@@ -284,11 +295,31 @@ public class TicketController {
 
     @GetMapping("/tickets/buscar/fechas")
     public ModelAndView buscarTicketsEntreFechas(
-            @RequestParam("desde") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fechaDesde,
-            @RequestParam("hasta") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate fechaHasta) {
+            @RequestParam("fechaDesde") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+            @RequestParam("fechaHasta") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta) {
     	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
 
-        List<Ticket> resultados = ticketService.findByFechaCreacionBetween(fechaDesde, fechaHasta);
+    	LocalDateTime desdeInicio = fechaDesde.atStartOfDay();
+    	LocalDateTime hastaFin = fechaHasta.atTime(23,59,59);
+    	
+        List<Ticket> resultados = ticketService.findByFechaCreacionBetween(desdeInicio, hastaFin);
+
+        mAV.addObject("resultadosTickets", resultados);
+        mAV.addObject("criterioBusqueda", "Entre " + fechaDesde + " y " + fechaHasta);
+
+        return mAV;
+    }
+    
+    @GetMapping("/tickets/buscar/fechasCierre")
+    public ModelAndView buscarTicketsEntreFechasCierre(
+            @RequestParam("fechaDesde") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
+            @RequestParam("fechaHasta") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta) {
+    	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
+
+    	LocalDateTime desdeInicio = fechaDesde.atStartOfDay();
+    	LocalDateTime hastaFin = fechaHasta.atTime(23,59,59);
+    	
+        List<Ticket> resultados = ticketService.findByFechaCierreBetween(desdeInicio, hastaFin);
 
         mAV.addObject("resultadosTickets", resultados);
         mAV.addObject("criterioBusqueda", "Entre " + fechaDesde + " y " + fechaHasta);

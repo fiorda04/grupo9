@@ -94,6 +94,11 @@ public class TicketService implements ITicketService {
     }
 
     @Override
+    public List<Ticket> traerPorCategoria(long idCategoria) {
+        return ticketRepository.findByLstCategorias_idCategoria(idCategoria);
+    }
+    
+    @Override
     public List<Ticket> traerPorEmpleado(long idAutor) {
         return ticketRepository.findDistinctByLstIntervenciones_Autor_idUsuario(idAutor);
     }
@@ -114,7 +119,12 @@ public class TicketService implements ITicketService {
     }
 
     @Override
-    public List<Ticket> findByFechaCreacionBetween(LocalDate fechaCreacion1, LocalDate fechaCreacion2) {
+    public List<Ticket> findByFechaCreacionBetween(LocalDateTime fechaCreacion1, LocalDateTime fechaCreacion2) {
+        return ticketRepository.findByFechaCreacionBetween(fechaCreacion1, fechaCreacion2);
+    }
+    
+    @Override
+    public List<Ticket> findByFechaCierreBetween(LocalDateTime fechaCreacion1, LocalDateTime fechaCreacion2) {
         return ticketRepository.findByFechaCreacionBetween(fechaCreacion1, fechaCreacion2);
     }
     

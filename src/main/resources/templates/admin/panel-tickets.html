@@ -97,6 +97,7 @@
         .action-cell form { display: inline; }
         .table-action-button { padding: 5px 10px; margin-right: 5px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 0.9em; }
         .ver-ticket-button { background-color: #17a2b8; }
+		.delete-ticket-button { background-color: #d9534f; }
         .ver-ticket-button:hover { background-color: #138496; }
 
     </style>
@@ -142,7 +143,7 @@
                         </form>
                     </div>
                     <div class="filter-group">
-                        <form th:action="@{/admin/tickets/buscar/cliente}" method="get">
+                        <form th:action="@{/tickets/buscar/cliente}" method="get">
                             <label for="searchClienteId">Cliente:</label>
                             <select id="searchClienteId" name="valor" class="search-input">
                                 <option value="">Todos los Clientes</option>
@@ -153,7 +154,7 @@
                     </div>
                     
                         <div class="filter-group">
-                            <form th:action="@{/admin/tickets/buscar/categoria}" method="get">
+                            <form th:action="@{/tickets/buscar/categoria}" method="get">
                                 <label for="searchCategoriaId">Categoría:</label>
                                 <select id="searchCategoriaId" name="valor" class="search-input">
                                     <option value="">Todas las Categorías</option>
@@ -169,7 +170,7 @@
 
                 <div class="filter-row">
                     <div class="filter-group">
-                         <form th:action="@{/admin/tickets/buscar/fechasCreacion}" method="get">
+                         <form th:action="@{/tickets/buscar/fechas}" method="get">
                             <label>Fecha Creación:</label>
                             <div class="date-range-inputs">
                                 <input type="date" name="fechaDesde" class="search-input" title="Desde">
@@ -180,7 +181,7 @@
                         </form>
                     </div>
                     <div class="filter-group">
-                         <form th:action="@{/admin/tickets/buscar/fechasCierre}" method="get">
+                         <form th:action="@{/tickets/buscar/fechasCierre}" method="get">
                             <label>Fecha Cierre:</label>
                             <div class="date-range-inputs">
                                 <input type="date" name="fechaDesde" class="search-input" title="Desde">
@@ -194,7 +195,7 @@
                 
                 <div class="filter-row">
                     <div class="filter-group">
-                        <form th:action="@{/admin/tickets/buscar/prioridad}" method="get">
+                        <form th:action="@{/tickets/buscar/prioridad}" method="get">
                             <label for="searchPrioridadId">Prioridad:</label>
                             <select id="searchPrioridadId" name="valor" class="search-input">
                                 <option value="">Todas</option>
@@ -204,7 +205,7 @@
                         </form>
                     </div>
                     <div class="filter-group">
-                        <form th:action="@{/admin/tickets/buscar/estado}" method="get">
+                        <form th:action="@{/tickets/buscar/estado}" method="get">
                             <label for="searchEstadoId">Estado:</label>
                             <select id="searchEstadoId" name="valor" class="search-input">
                                 <option value="">Todos</option>
@@ -216,7 +217,7 @@
 
                     
                     <div class="filter-group">
-                        <form th:action="@{/admin/tickets/buscar/tipo}" method="get">
+                        <form th:action="@{/tickets/buscar/tipo}" method="get">
                             <label for="searchTipoId">Tipo:</label>
                             <select id="searchTipoId" name="valor" class="search-input">
                                 <option value="">Todos</option>
@@ -263,6 +264,10 @@
                             <form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
                                 <button type="submit" class="table-action-button ver-ticket-button">Ver Ticket</button>
                             </form>
+							<form th:action="@{/tickets/eliminar/{id}(id=${ticket.idTicket})}" method="post">
+								<input type="hidden" name="_method" value="delete" />
+								<button type="submit" class="table-action-button delete-ticket-button">Eliminar Ticket</button>
+							</form>
                         </td>
                     </tr>
                     <tr th:if="${tickets == null or tickets.isEmpty()}">
