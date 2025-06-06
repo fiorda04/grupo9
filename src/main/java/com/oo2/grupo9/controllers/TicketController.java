@@ -1,13 +1,11 @@
 package com.oo2.grupo9.controllers;
 
-import com.oo2.grupo9.entities.*;
-import com.oo2.grupo9.dtos.IntervencionDTO;
-import com.oo2.grupo9.dtos.TicketCreacionDTO; 
-import com.oo2.grupo9.dtos.TicketDTO; 
-import com.oo2.grupo9.helpers.ViewRouteHelper;
-import com.oo2.grupo9.services.*;
-
-import jakarta.validation.Valid;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +15,32 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.oo2.grupo9.dtos.IntervencionDTO;
+import com.oo2.grupo9.dtos.TicketCreacionDTO;
+import com.oo2.grupo9.entities.Categoria;
+import com.oo2.grupo9.entities.Estado;
+import com.oo2.grupo9.entities.Prioridad;
+import com.oo2.grupo9.entities.Ticket;
+import com.oo2.grupo9.entities.Tipo;
+import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.helpers.ViewRouteHelper;
+import com.oo2.grupo9.services.ICategoriaService;
+import com.oo2.grupo9.services.IEstadoService;
+import com.oo2.grupo9.services.IPrioridadService;
+import com.oo2.grupo9.services.ITicketService;
+import com.oo2.grupo9.services.ITipoService;
+import com.oo2.grupo9.services.IUsuarioService;
+
+import jakarta.validation.Valid;
 
 
 @Controller
@@ -347,6 +354,7 @@ public class TicketController {
         List<Ticket> todosLosTickets = ticketService.traerTodos();
         mav.addObject("tickets", todosLosTickets);
         mav.addObject("clientes", usuarioService.traerPorRol(1L));
+        mav.addObject("empleados", usuarioService.traerPorRol(2L));
         mav.addObject("prioridades", prioridadService.traerTodas());
         mav.addObject("estados", estadoService.traerTodas());
         mav.addObject("tipos", tipoService.traerTodas());

@@ -131,7 +131,7 @@
         <div class="content-area">
             
 
-            <div class="search-area">
+            <class="search-area">
                 <h4>Buscar Tickets Por:</h4>
                 
                 <div class="filter-row">
@@ -164,10 +164,27 @@
                                 <button type="submit" class="action-button">Buscar</button>
                             </form>
                         </div>
-                    
+						<div class="filter-group">
+						                       <form th:action="@{/tickets/buscar/prioridad}" method="get">
+						                           <label for="searchPrioridadId">Prioridad:</label>
+						                           <select id="searchPrioridadId" name="valor" class="search-input">
+						                               <option value="">Todas</option>
+						                               <option th:each="p : ${prioridades}" th:value="${p.idPrioridad}" th:text="${p.nombrePrioridad}"></option>
+						                           </select>
+						                           <button type="submit" class="action-button">Buscar</button>
+						                       </form>
+						                   </div>
+						                   <div class="filter-group">
+						                       <form th:action="@{/tickets/buscar/estado}" method="get">
+						                           <label for="searchEstadoId">Estado:</label>
+						                           <select id="searchEstadoId" name="valor" class="search-input">
+						                               <option value="">Todos</option>
+						                               <option th:each="e : ${estados}" th:value="${e.idEstado}" th:text="${e.nombreEstado}"></option>
+						                           </select>
+						                           <button type="submit" class="action-button">Buscar</button>
+						                       </form>
+						                   </div>
                 </div>
-                
-
                 <div class="filter-row">
                     <div class="filter-group">
                          <form th:action="@{/tickets/buscar/fechas}" method="get">
@@ -191,41 +208,27 @@
                             <button type="submit" class="action-button">Buscar</button>
                         </form>
                     </div>
-                </div>
-                
-                <div class="filter-row">
-                    <div class="filter-group">
-                        <form th:action="@{/tickets/buscar/prioridad}" method="get">
-                            <label for="searchPrioridadId">Prioridad:</label>
-                            <select id="searchPrioridadId" name="valor" class="search-input">
-                                <option value="">Todas</option>
-                                <option th:each="p : ${prioridades}" th:value="${p.idPrioridad}" th:text="${p.nombrePrioridad}"></option>
-                            </select>
-                            <button type="submit" class="action-button">Buscar</button>
-                        </form>
-                    </div>
-                    <div class="filter-group">
-                        <form th:action="@{/tickets/buscar/estado}" method="get">
-                            <label for="searchEstadoId">Estado:</label>
-                            <select id="searchEstadoId" name="valor" class="search-input">
-                                <option value="">Todos</option>
-                                <option th:each="e : ${estados}" th:value="${e.idEstado}" th:text="${e.nombreEstado}"></option>
-                            </select>
-                            <button type="submit" class="action-button">Buscar</button>
-                        </form>
-                    </div>
+					<div class="filter-group">
+					                       <form th:action="@{/tickets/buscar/tipo}" method="get">
+					                           <label for="searchTipoId">Tipo:</label>
+					                           <select id="searchTipoId" name="valor" class="search-input">
+					                               <option value="">Todos</option>
+					                               <option th:each="t : ${tipos}" th:value="${t.idTipo}" th:text="${t.nombreTipo}"></option>
+					                           </select>
+					                           <button type="submit" class="action-button">Buscar</button>
+					                       </form>
+					                   </div>
+									   <div class="filter-group">
+									   					                       <form th:action="@{/tickets/buscar/empleado}" method="get">
+																				<label for="searchClienteId">Empleados:</label>
+																				                           <select id="searchEmpleadoId" name="valor" class="search-input">
+																				                               <option value="">Todos los Empleados</option>
+																				                               <option th:each="empleado : ${empleados}" th:value="${empleado.idUsuario}" th:text="${empleado.nombreUsuario}"></option>
+																				                           </select>
+																				                           <button type="submit" class="action-button">Buscar</button>
 
-                    
-                    <div class="filter-group">
-                        <form th:action="@{/tickets/buscar/tipo}" method="get">
-                            <label for="searchTipoId">Tipo:</label>
-                            <select id="searchTipoId" name="valor" class="search-input">
-                                <option value="">Todos</option>
-                                <option th:each="t : ${tipos}" th:value="${t.idTipo}" th:text="${t.nombreTipo}"></option>
-                            </select>
-                            <button type="submit" class="action-button">Buscar</button>
-                        </form>
-                    </div>
+						 </form>
+					 </div>
                 </div>
             </div> <table class="ticket-table">
                 <thead>

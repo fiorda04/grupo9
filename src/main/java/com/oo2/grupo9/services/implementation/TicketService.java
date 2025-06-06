@@ -1,5 +1,17 @@
 package com.oo2.grupo9.services.implementation;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Estado;
@@ -7,25 +19,12 @@ import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
-import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
 import com.oo2.grupo9.repositories.TicketRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.services.ITicketService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

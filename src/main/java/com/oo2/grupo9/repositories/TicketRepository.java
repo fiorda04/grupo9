@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.oo2.grupo9.entities.Ticket;
-import com.oo2.grupo9.entities.Usuario;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {

@@ -3,8 +3,6 @@ package com.oo2.grupo9.dtos;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.oo2.grupo9.entities.Intervencion;
-
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
