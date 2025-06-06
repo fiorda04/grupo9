@@ -342,8 +342,7 @@
 							<td th:text="${ticket.estado != null ? ticket.estado.nombreEstado : ''}">Estado</td>
 							<td th:text="${ticket.prioridad != null ? ticket.prioridad.nombrePrioridad : ''}">Prioridad
 							</td>
-							<td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}"></td>Fecha de Creación
-							</td>
+							<td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}">Fecha de Creación</td></td>
 							<td>
 								<div th:if="${ticket.estado != null and !ticket.estado.nombreEstado.equalsIgnoreCase('Cerrado')}">
 									<form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
