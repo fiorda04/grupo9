@@ -9,26 +9,125 @@
     <style>
         /* Reutiliza los mismos estilos de tu panel-tickets.html */
         /* Idealmente, todos estos estilos deberían estar en un archivo CSS global */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
-        .main-container { max-width: 1400px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .page-header { text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-        .page-header h1 { color: #333; font-weight: bold; }
-        .top-bar-actions { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; margin-bottom: 20px; }
-        .welcome-message { font-size: 0.9em; color: #555; }
-        .logout-button { background-color: #dc3545; color: white; padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
-        .logout-button:hover { background-color: #c82333; }
-        .menu-button-style { background-color: #007bff; color: white; padding: 10px 15px; border-radius: 4px; text-decoration: none; font-size: 0.9em; display: inline-block; }
-        .menu-button-style:hover { background-color: #0056b3; }
-        
-        .ticket-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; }
-        .ticket-table th, .ticket-table td { border: 1px solid #dee2e6; padding: 10px; text-align: left; vertical-align: middle; }
-        .ticket-table th { background-color: #e9ecef; font-weight: 600; color: #495057;}
-        .ticket-table tr:nth-child(even) { background-color: #f8f9fa; }
-        .action-cell form { display: inline; }
-        .table-action-button { padding: 5px 10px; margin-right: 5px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 0.9em; }
-        .ver-ticket-button { background-color: #17a2b8; }
-        .ver-ticket-button:hover { background-color: #138496; }
-		.delete-ticket-button { background-color: #d9534f; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .menu-button-style {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .menu-button-style:hover {
+            background-color: #0056b3;
+        }
+
+        .ticket-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .ticket-table th,
+        .ticket-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .ticket-table th {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .ticket-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .action-cell form {
+            display: inline;
+        }
+
+        .table-action-button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .ver-ticket-button {
+            background-color: #17a2b8;
+        }
+
+        .ver-ticket-button:hover {
+            background-color: #138496;
+        }
+
+        .delete-ticket-button {
+            background-color: #d9534f;
+        }
     </style>
 </head>
 
@@ -41,8 +140,10 @@
         <div class="top-bar-actions">
             <div>
                 <a th:href="@{/}" class="menu-button-style">Volver al Menu Principal</a>
-                <a th:href="@{/tickets/admin}" class="menu-button-style" sec:authorize="hasRole('Admin')">Volver al panel de Ticket</a>
-				<a th:href="@{/tickets/mis-tickets}" class="menu-button-style" sec:authorize="hasRole('Cliente')">Volver al panel de Ticket</a>
+                <a th:href="@{/tickets/admin}" class="menu-button-style" sec:authorize="hasRole('Admin')">Volver al
+                    panel de Ticket</a>
+                <a th:href="@{/tickets/mis-tickets}" class="menu-button-style" sec:authorize="hasRole('Cliente')">Volver
+                    al panel de Ticket</a>
             </div>
             <div class="user-actions">
                 <span class="welcome-message" th:text="${'Bienvenido, ' + #authentication.principal.username}"
@@ -78,38 +179,47 @@
                 <tbody>
                     <tr th:each="ticket : ${resultadosTickets}">
                         <td th:text="${ticket.titulo}"></td>
-                        <td th:text="${ticket.descripcion != null ? #strings.abbreviate(ticket.descripcion, 40) : ''}"></td>
+                        <td th:text="${ticket.descripcion != null ? #strings.abbreviate(ticket.descripcion, 40) : ''}">
+                        </td>
                         <td>
                             <span th:if="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}">N/A</span>
-                            <span th:unless="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}" 
-                                  th:each="cat, iterStat : ${ticket.lstCategorias}" 
-                                  th:text="${cat.nombreCategoria + (!iterStat.last ? ', ' : '')}"></span>
+                            <span th:unless="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}"
+                                th:each="cat, iterStat : ${ticket.lstCategorias}"
+                                th:text="${cat.nombreCategoria + (!iterStat.last ? ', ' : '')}"></span>
                         </td>
                         <td th:text="${ticket.prioridad?.nombrePrioridad}"></td>
-                        <td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}"></td>
-                        <td th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yy HH:mm') : 'N/A'}"></td>
+                        <td
+                            th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}">
+                        </td>
+                        <td
+                            th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yy HH:mm') : 'N/A'}">
+                        </td>
                         <td th:text="${ticket.estado?.nombreEstado}"></td>
                         <td th:text="${ticket.tipo?.nombreTipo}"></td>
                         <td th:text="${ticket.usuarioCliente?.nombreUsuario}"></td>
-                        <td th:text="${ticket.lstIntervenciones != null ? ticket.lstIntervenciones.size() : 0}" style="text-align:center;"></td>
+                        <td th:text="${ticket.lstIntervenciones != null ? ticket.lstIntervenciones.size() : 0}"
+                            style="text-align:center;"></td>
                         <td class="action-cell">
                             <form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
                                 <button type="submit" class="table-action-button ver-ticket-button">Ver Ticket</button>
                             </form>
-							<form th:action="@{/tickets/eliminar/{id}(id=${ticket.idTicket})}" method="post" >
-								<input type="hidden" name="_method" value="delete" />
-								<button type="submit" class="table-action-button delete-ticket-button" sec:authorize="hasRole('Admin')">Eliminar Ticket</button>
-							</form>
+                            <form th:action="@{/tickets/eliminar/{id}(id=${ticket.idTicket})}" method="post">
+                                <input type="hidden" name="_method" value="delete" />
+                                <button type="submit" class="table-action-button delete-ticket-button"
+                                    sec:authorize="hasRole('Admin')">Eliminar Ticket</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div th:if="${resultadosTickets == null or resultadosTickets.isEmpty()}"
-             style="text-align: center; padding: 20px; background-color: #fdfdfe; border: 1px dashed #ddd; border-radius: 5px;">
+            style="text-align: center; padding: 20px; background-color: #fdfdfe; border: 1px dashed #ddd; border-radius: 5px;">
             <p style="font-size: 1.1em; color: #777;">No se encontraron tickets que coincidan con el criterio: <strong
                     th:text="${criterioBusqueda ?: 'especificado'}"></strong></p>
         </div>
 
-    </div> </body>
+    </div>
+</body>
+
 </html>

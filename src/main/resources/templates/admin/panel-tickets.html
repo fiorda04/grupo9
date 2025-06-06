@@ -1,120 +1,319 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administrador - Tickets</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}"> <style>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e9ecef; /* Un gris muy claro para el fondo de la página */
+            background-color: #e9ecef;
+            /* Un gris muy claro para el fondo de la página */
         }
+
         .global-title-bar {
-            background-color: #343a40; /* Barra superior oscura */
+            background-color: #343a40;
             color: white;
             padding: 15px 0;
             text-align: center;
         }
+
         .global-title-bar h1 {
             margin: 0;
-            font-size: 1.8em; /* Un poco más pequeño que antes */
+            font-size: 1.8em;
             font-weight: bold;
         }
 
-        /* Contenedor principal que se centrará y tendrá el fondo blanco */
         .main-content-wrapper {
-            max-width: 1300px; /* O el ancho que te guste para el contenido principal */
-            margin: 20px auto; /* Centrado y con margen superior/inferior */
+            max-width: 1300px;
+            margin: 20px auto;
+            /* Centrado y con margen superior/inferior */
             background-color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            padding: 0; /* Sin padding aquí, los elementos internos lo manejarán */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            /* Sin padding aquí, los elementos internos lo manejarán */
         }
 
         .admin-panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 20px; /* Ajuste de padding */
-            background-color: #f8f9fa; /* Ligeramente diferente al body para destacar */
+            padding: 12px 20px;
+            /* Ajuste de padding */
+            background-color: #f8f9fa;
+            /* Ligeramente diferente al body para destacar */
             border-bottom: 1px solid #dee2e6;
-            border-radius: 8px 8px 0 0; /* Bordes redondeados solo arriba */
+            border-radius: 8px 8px 0 0;
+            /* Bordes redondeados solo arriba */
         }
-        .admin-panel-header h2 { margin: 0; font-size: 1.5em; color: #212529; }
-        .admin-panel-header .user-info { display: flex; align-items: center; }
-        .admin-panel-header .user-info span { margin-right: 15px; font-size: 0.9em; color: #495057; }
-        
+
+        .admin-panel-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #212529;
+        }
+
+        .admin-panel-header .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .admin-panel-header .user-info span {
+            margin-right: 15px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+
         .logout-button {
-             background-color: #dc3545; color: white; padding: 8px 12px; border: none;
-            border-radius: 4px; cursor: pointer; font-size: 0.9em; display:flex; align-items:center;
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
         }
-        .logout-button:hover { background-color: #c82333; }
-        .logout-button svg { vertical-align: middle; margin-right: 5px;}
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .logout-button svg {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
 
 
         .main-action-menu {
             padding: 15px 20px;
-            background-color: #f8f9fa; /* Mismo fondo que el panel header */
-            border-bottom: 2px solid #007bff; /* Línea azul distintiva */
+            background-color: #f8f9fa;
+            /* Mismo fondo que el panel header */
+            border-bottom: 2px solid #007bff;
+            /* Línea azul distintiva */
         }
+
         .main-action-menu .btn-nav {
-            background-color: #007bff; color: white; padding: 10px 18px; border-radius: 4px;
-            text-decoration: none; font-size: 0.95em; margin-right: 10px; border: none; cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.95em;
+            margin-right: 10px;
+            border: none;
+            cursor: pointer;
         }
-        .main-action-menu .btn-nav:hover { background-color: #0056b3; }
+
+        .main-action-menu .btn-nav:hover {
+            background-color: #0056b3;
+        }
+
         .main-action-menu .btn-nav.active {
-            background-color: #0056b3; /* Un azul más oscuro para indicar la página activa */
+            background-color: #0056b3;
+            /* Un azul más oscuro para indicar la página activa */
             font-weight: bold;
         }
-        
-        .content-area { 
-            padding: 25px; /* Buen padding interno para el contenido */
+
+        .content-area {
+            padding: 25px;
+            /* Buen padding interno para el contenido */
         }
-        .content-area > h3 { /* Título "Listado General de Tickets" */
-            font-size: 1.4em; color:#343a40; margin-top:0; margin-bottom:20px;
-            padding-bottom: 10px; border-bottom: 1px solid #ced4da;
+
+        .content-area>h3 {
+            /* Título "Listado General de Tickets" */
+            font-size: 1.4em;
+            color: #343a40;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ced4da;
         }
-        
-        .search-area { margin-bottom: 30px; padding: 20px; border: 1px solid #e9ecef; border-radius: 6px; background-color: #f8f9fa; }
-        .search-area h4 { margin-top:0; margin-bottom: 20px; font-size: 1.15em; color: #333; border-bottom: 1px solid #ddd; padding-bottom:10px;}
-        .filter-row { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 15px; align-items: flex-end;}
-        .filter-group { display: flex; flex-direction: column; flex: 1; min-width: 220px; /* Ajusta para que quepan bien */ }
-        .filter-group label { margin-bottom: 5px; font-weight: 600; font-size:0.85em; color: #495057; }
-        .filter-group .search-input { width:100%; padding: 8px 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 0.9em; box-sizing: border-box; }
-        .filter-group .action-button { width:100%; padding: 8px 12px; background-color: #007bff; color:white; border:none; border-radius:4px; cursor:pointer; font-size:0.9em; margin-top: auto; }
-        .filter-group .action-button:hover { background-color: #0056b3; }
-        .date-range-inputs { display: flex; align-items: center; gap: 5px; width: 100%; }
-        .date-range-inputs .search-input { flex-grow:1; }
-        .date-range-inputs span { padding: 0 5px; }
+
+        .search-area {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+        }
+
+        .search-area h4 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.15em;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 220px;
+            /* Ajusta para que quepan bien */
+        }
+
+        .filter-group label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.85em;
+            color: #495057;
+        }
+
+        .filter-group .search-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+        }
+
+        .filter-group .action-button {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: auto;
+        }
+
+        .filter-group .action-button:hover {
+            background-color: #0056b3;
+        }
+
+        .date-range-inputs {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .date-range-inputs .search-input {
+            flex-grow: 1;
+        }
+
+        .date-range-inputs span {
+            padding: 0 5px;
+        }
 
 
-        .ticket-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; }
-        .ticket-table th, .ticket-table td { border: 1px solid #dee2e6; padding: 10px; text-align: left; vertical-align: middle; }
-        .ticket-table th { background-color: #e9ecef; font-weight: 600; color: #495057;}
-        .ticket-table tr:nth-child(even) { background-color: #f8f9fa; }
-        .action-cell form { display: inline; }
-        .table-action-button { padding: 5px 10px; margin-right: 5px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 0.9em; }
-        .ver-ticket-button { background-color: #17a2b8; }
-		.delete-ticket-button { background-color: #d9534f; }
-        .ver-ticket-button:hover { background-color: #138496; }
+        .ticket-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
 
+        .ticket-table th,
+        .ticket-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .ticket-table th {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .ticket-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .action-cell form {
+            display: inline;
+        }
+
+        .table-action-button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .intervention-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .intervention-table th,
+        .intervention-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .intervention-table th {
+            background-color: #e9ecef;
+            font-weight: 600;
+        }
+
+        .intervention-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .ver-ticket-button {
+            background-color: #17a2b8;
+        }
+
+        .delete-ticket-button {
+            background-color: #d9534f;
+        }
+
+        .ver-ticket-button:hover {
+            background-color: #138496;
+        }
     </style>
 </head>
-<body>
-    <div class="global-title-bar">
-        <h1>Gestión de Tickets Spring Grupo 9</h1>
-    </div>
 
-    <div class="page-container"> <div class="admin-panel-header">
-            <h2>Panel de Administrador</h2> <div class="user-info">
-                <span th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Fiorda</span>
+<body>
+    <header class="global-title-bar">
+        <div class="global-title-bar">
+        <h1>Gestión de Tickets Spring Grupo 9</h1>
+        </div>
+    </header>
+
+    <div class="page-container">
+        <div class="admin-panel-header">
+            <h2>Panel de Administrador</h2>
+            <div class="user-info">
+                <span class="user-info" th:text="${'Bienvenido, ' + #authentication.principal.username}">Bienvenido, Fiorda</span>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="logout-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
-                            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
+                            <path fill-rule="evenodd"
+                                d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
                         </svg>
                         Salir
                     </button>
@@ -126,19 +325,22 @@
             <a th:href="@{/}" class="btn-nav">Usuarios</a>
             <a th:href="@{/usuarios/admin/crear}" class="btn-nav">Agregar Usuario</a>
             <a th:href="@{/tickets/admin}" class="btn-nav">Tickets</a>
+            <a th:href="@{/admin/intervenciones}" class="btn-nav">Intervenciones</a>
+
         </div>
-        
+
         <div class="content-area">
-            
+
 
             <class="search-area">
                 <h4>Buscar Tickets Por:</h4>
-                
+
                 <div class="filter-row">
                     <div class="filter-group">
                         <form th:action="@{/tickets/buscar/titulo}" method="get">
                             <label for="searchTitulo">Título:</label>
-                            <input type="text" id="searchTitulo" name="valor" class="search-input" placeholder="Parte del título...">
+                            <input type="text" id="searchTitulo" name="valor" class="search-input"
+                                placeholder="Parte del título...">
                             <button type="submit" class="action-button">Buscar</button>
                         </form>
                     </div>
@@ -147,47 +349,50 @@
                             <label for="searchClienteId">Cliente:</label>
                             <select id="searchClienteId" name="valor" class="search-input">
                                 <option value="">Todos los Clientes</option>
-                                <option th:each="cliente : ${clientes}" th:value="${cliente.idUsuario}" th:text="${cliente.nombreUsuario}"></option>
+                                <option th:each="cliente : ${clientes}" th:value="${cliente.idUsuario}"
+                                    th:text="${cliente.nombreUsuario}"></option>
                             </select>
                             <button type="submit" class="action-button">Buscar</button>
                         </form>
                     </div>
-                    
-                        <div class="filter-group">
-                            <form th:action="@{/tickets/buscar/categoria}" method="get">
-                                <label for="searchCategoriaId">Categoría:</label>
-                                <select id="searchCategoriaId" name="valor" class="search-input">
-                                    <option value="">Todas las Categorías</option>
-                                    <option th:each="cat : ${categoriasDisponibles}" th:value="${cat.idCategoria}"
-                                        th:text="${cat.nombreCategoria}"></option>
-                                </select>
-                                <button type="submit" class="action-button">Buscar</button>
-                            </form>
-                        </div>
-						<div class="filter-group">
-						                       <form th:action="@{/tickets/buscar/prioridad}" method="get">
-						                           <label for="searchPrioridadId">Prioridad:</label>
-						                           <select id="searchPrioridadId" name="valor" class="search-input">
-						                               <option value="">Todas</option>
-						                               <option th:each="p : ${prioridades}" th:value="${p.idPrioridad}" th:text="${p.nombrePrioridad}"></option>
-						                           </select>
-						                           <button type="submit" class="action-button">Buscar</button>
-						                       </form>
-						                   </div>
-						                   <div class="filter-group">
-						                       <form th:action="@{/tickets/buscar/estado}" method="get">
-						                           <label for="searchEstadoId">Estado:</label>
-						                           <select id="searchEstadoId" name="valor" class="search-input">
-						                               <option value="">Todos</option>
-						                               <option th:each="e : ${estados}" th:value="${e.idEstado}" th:text="${e.nombreEstado}"></option>
-						                           </select>
-						                           <button type="submit" class="action-button">Buscar</button>
-						                       </form>
-						                   </div>
+
+                    <div class="filter-group">
+                        <form th:action="@{/tickets/buscar/categoria}" method="get">
+                            <label for="searchCategoriaId">Categoría:</label>
+                            <select id="searchCategoriaId" name="valor" class="search-input">
+                                <option value="">Todas las Categorías</option>
+                                <option th:each="cat : ${categoriasDisponibles}" th:value="${cat.idCategoria}"
+                                    th:text="${cat.nombreCategoria}"></option>
+                            </select>
+                            <button type="submit" class="action-button">Buscar</button>
+                        </form>
+                    </div>
+                    <div class="filter-group">
+                        <form th:action="@{/tickets/buscar/prioridad}" method="get">
+                            <label for="searchPrioridadId">Prioridad:</label>
+                            <select id="searchPrioridadId" name="valor" class="search-input">
+                                <option value="">Todas</option>
+                                <option th:each="p : ${prioridades}" th:value="${p.idPrioridad}"
+                                    th:text="${p.nombrePrioridad}"></option>
+                            </select>
+                            <button type="submit" class="action-button">Buscar</button>
+                        </form>
+                    </div>
+                    <div class="filter-group">
+                        <form th:action="@{/tickets/buscar/estado}" method="get">
+                            <label for="searchEstadoId">Estado:</label>
+                            <select id="searchEstadoId" name="valor" class="search-input">
+                                <option value="">Todos</option>
+                                <option th:each="e : ${estados}" th:value="${e.idEstado}" th:text="${e.nombreEstado}">
+                                </option>
+                            </select>
+                            <button type="submit" class="action-button">Buscar</button>
+                        </form>
+                    </div>
                 </div>
                 <div class="filter-row">
                     <div class="filter-group">
-                         <form th:action="@{/tickets/buscar/fechas}" method="get">
+                        <form th:action="@{/tickets/buscar/fechas}" method="get">
                             <label>Fecha Creación:</label>
                             <div class="date-range-inputs">
                                 <input type="date" name="fechaDesde" class="search-input" title="Desde">
@@ -198,7 +403,7 @@
                         </form>
                     </div>
                     <div class="filter-group">
-                         <form th:action="@{/tickets/buscar/fechasCierre}" method="get">
+                        <form th:action="@{/tickets/buscar/fechasCierre}" method="get">
                             <label>Fecha Cierre:</label>
                             <div class="date-range-inputs">
                                 <input type="date" name="fechaDesde" class="search-input" title="Desde">
@@ -208,75 +413,88 @@
                             <button type="submit" class="action-button">Buscar</button>
                         </form>
                     </div>
-					<div class="filter-group">
-					                       <form th:action="@{/tickets/buscar/tipo}" method="get">
-					                           <label for="searchTipoId">Tipo:</label>
-					                           <select id="searchTipoId" name="valor" class="search-input">
-					                               <option value="">Todos</option>
-					                               <option th:each="t : ${tipos}" th:value="${t.idTipo}" th:text="${t.nombreTipo}"></option>
-					                           </select>
-					                           <button type="submit" class="action-button">Buscar</button>
-					                       </form>
-					                   </div>
-									   <div class="filter-group">
-									   					                       <form th:action="@{/tickets/buscar/empleado}" method="get">
-																				<label for="searchClienteId">Empleados:</label>
-																				                           <select id="searchEmpleadoId" name="valor" class="search-input">
-																				                               <option value="">Todos los Empleados</option>
-																				                               <option th:each="empleado : ${empleados}" th:value="${empleado.idUsuario}" th:text="${empleado.nombreUsuario}"></option>
-																				                           </select>
-																				                           <button type="submit" class="action-button">Buscar</button>
+                    <div class="filter-group">
+                        <form th:action="@{/tickets/buscar/tipo}" method="get">
+                            <label for="searchTipoId">Tipo:</label>
+                            <select id="searchTipoId" name="valor" class="search-input">
+                                <option value="">Todos</option>
+                                <option th:each="t : ${tipos}" th:value="${t.idTipo}" th:text="${t.nombreTipo}">
+                                </option>
+                            </select>
+                            <button type="submit" class="action-button">Buscar</button>
+                        </form>
+                    </div>
+                    <div class="filter-group">
+                        <form th:action="@{/tickets/buscar/empleado}" method="get">
+                            <label for="searchClienteId">Empleados:</label>
+                            <select id="searchEmpleadoId" name="valor" class="search-input">
+                                <option value="">Todos los Empleados</option>
+                                <option th:each="empleado : ${empleados}" th:value="${empleado.idUsuario}"
+                                    th:text="${empleado.nombreUsuario}"></option>
+                            </select>
+                            <button type="submit" class="action-button">Buscar</button>
 
-						 </form>
-					 </div>
+                        </form>
+                    </div>
                 </div>
-            </div> <table class="ticket-table">
-                <thead>
-                    <tr>
-                        <th>Título</th>
-                        <th>Desc. (breve)</th>
-                        <th>Categorías</th>
-                        <th>Prioridad</th>
-                        <th>F. Creación</th>
-                        <th>F. Cierre</th>
-                        <th>Estado</th>
-                        <th>Tipo</th>
-                        <th>Cliente</th>
-                        <th>Cant. Interv.</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <h3>Listado General de Tickets</h3>
-                    <tr th:each="ticket : ${tickets}"> <td th:text="${ticket.titulo}"></td>
-                        <td th:text="${ticket.descripcion != null ? #strings.abbreviate(ticket.descripcion, 40) : ''}"></td>
-                        <td>
-                            <span th:if="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}">N/A</span>
-                            <span th:unless="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}" 
-                                  th:each="cat, iterStat : ${ticket.lstCategorias}" 
-                                  th:text="${cat.nombreCategoria + (!iterStat.last ? ', ' : '')}"></span>
-                        </td>
-                        <td th:text="${ticket.prioridad?.nombrePrioridad}"></td>
-                        <td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}"></td>
-                        <td th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yy HH:mm') : 'N/A'}"></td>
-                        <td th:text="${ticket.estado?.nombreEstado}"></td>
-                        <td th:text="${ticket.tipo?.nombreTipo}"></td>
-                        <td th:text="${ticket.usuarioCliente?.nombreUsuario}"></td>
-                        <td th:text="${ticket.lstIntervenciones != null ? ticket.lstIntervenciones.size() : 0}" style="text-align:center;"></td>
-                        <td class="action-cell">
-                            <form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
-                                <button type="submit" class="table-action-button ver-ticket-button">Ver Ticket</button>
-                            </form>
-							<form th:action="@{/tickets/eliminar/{id}(id=${ticket.idTicket})}" method="post">
-								<input type="hidden" name="_method" value="delete" />
-								<button type="submit" class="table-action-button delete-ticket-button">Eliminar Ticket</button>
-							</form>
-                        </td>
-                    </tr>
-                    <tr th:if="${tickets == null or tickets.isEmpty()}">
-                        <td colspan="11" style="text-align:center;">No hay tickets para mostrar.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div> </div> </body>
+        </div>
+        <table class="intervention-table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Desc. (breve)</th>
+                    <th>Categorías</th>
+                    <th>Prioridad</th>
+                    <th>F. Creación</th>
+                    <th>F. Cierre</th>
+                    <th>Estado</th>
+                    <th>Tipo</th>
+                    <th>Cliente</th>
+                    <th>Cant. Interv.</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <h3>Listado General de Tickets</h3>
+                <tr th:each="ticket : ${tickets}">
+                    <td th:text="${ticket.titulo}"></td>
+                    <td th:text="${ticket.descripcion != null ? #strings.abbreviate(ticket.descripcion, 40) : ''}"></td>
+                    <td>
+                        <span th:if="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}">N/A</span>
+                        <span th:unless="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}"
+                            th:each="cat, iterStat : ${ticket.lstCategorias}"
+                            th:text="${cat.nombreCategoria + (!iterStat.last ? ', ' : '')}"></span>
+                    </td>
+                    <td th:text="${ticket.prioridad?.nombrePrioridad}"></td>
+                    <td
+                        th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}">
+                    </td>
+                    <td
+                        th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yy HH:mm') : 'N/A'}">
+                    </td>
+                    <td th:text="${ticket.estado?.nombreEstado}"></td>
+                    <td th:text="${ticket.tipo?.nombreTipo}"></td>
+                    <td th:text="${ticket.usuarioCliente?.nombreUsuario}"></td>
+                    <td th:text="${ticket.lstIntervenciones != null ? ticket.lstIntervenciones.size() : 0}"
+                        style="text-align:center;"></td>
+                    <td class="action-cell">
+                        <form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
+                            <button type="submit" class="table-action-button ver-ticket-button">Ver Ticket</button>
+                        </form>
+                        <form th:action="@{/tickets/eliminar/{id}(id=${ticket.idTicket})}" method="post">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="table-action-button delete-ticket-button">Eliminar
+                                Ticket</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${tickets == null or tickets.isEmpty()}">
+                    <td colspan="11" style="text-align:center;">No hay tickets para mostrar.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+</body>
+
 </html>

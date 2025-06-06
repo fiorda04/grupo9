@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
+import org.springframework.ui.Model;
+
 @ControllerAdvice
 public class Handler{
 	
@@ -12,6 +14,12 @@ public class Handler{
         ModelAndView mAV = new ModelAndView("error/ticket-no-encontrado");
         mAV.addObject("mensaje", ex.getMessage());
         return mAV;
+    }
+	
+	@ExceptionHandler(TicketCerradoException.class)
+    public String manejarTicketCerrado(TicketCerradoException ex, Model model) {
+        model.addAttribute("mensajeError", ex.getMessage());
+        return "error/ticket-cerrado";
     }
 
 }

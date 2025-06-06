@@ -19,6 +19,7 @@ import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.TicketCerradoException;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
@@ -165,7 +166,7 @@ public class TicketService implements ITicketService {
         
         //Verificar si el ticket ya está "Cerrado" (idEstado = 6)
         if (ticket.getEstado().getIdEstado().equals(Estado.ID_ESTADO_CERRADO)) {
-            throw new IllegalStateException("No se puede intervenir un ticket que ya está cerrado.");
+            throw new TicketCerradoException("No se puede intervenir un ticket que ya está cerrado.");
         }
 
         Intervencion intervencion = new Intervencion();
