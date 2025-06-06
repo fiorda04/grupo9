@@ -183,6 +183,42 @@ public class TicketService implements ITicketService {
         ticketRepository.save(ticket);
     }
     
-    
+    @Override
+    public List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad,
+                                                LocalDate fechaCreacion, LocalDate fechaCierre,
+                                                Long idEstado, Long idTipo, Usuario usuario) {
+        List<Ticket> tickets = ticketRepository.findAll();
+
+        if (titulo != null && !titulo.isEmpty()) {
+            tickets.removeIf(ticket -> !ticket.getTitulo().toLowerCase().contains(titulo.toLowerCase()));
+        }
+
+        if (categoriaId != null) {
+            tickets.removeIf(ticket -> ticket.getLstCategorias().stream()
+                    .noneMatch(cat -> cat.getIdCategoria().equals(categoriaId)));
+        }
+
+        if (idPrioridad != null ) {
+            tickets.removeIf(ticket -> ticket.getPrioridad() == null || !ticket.getPrioridad().getIdPrioridad().equals(idPrioridad));
+        }
+
+        if (fechaCreacion != null) {
+            tickets.removeIf(ticket -> !fechaCreacion.equals(ticket.getFechaCreacion()));
+        }
+
+        if (fechaCierre != null) {
+            tickets.removeIf(ticket -> ticket.getFechaCierre() == null || !fechaCierre.equals(ticket.getFechaCierre()));
+        }
+
+        if (idEstado != null ) {
+            tickets.removeIf(ticket -> ticket.getEstado() == null || !ticket.getEstado().getIdEstado().equals(idEstado));
+        }
+
+        if (idTipo != null ) {
+            tickets.removeIf(ticket -> ticket.getTipo() == null || !ticket.getTipo().getIdTipo().equals(idTipo));
+        }
+
+        return tickets;
+    }
 }
 

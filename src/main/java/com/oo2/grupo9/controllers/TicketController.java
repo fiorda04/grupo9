@@ -321,4 +321,42 @@ public class TicketController {
         mav.addObject("categoriasDisponibles", categoriaService.traerTodas());
         return mav;
     }
+    
+    @GetMapping("/tickets/mis-tickets")
+    public ModelAndView verMisTicketsConFiltros(
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) Long prioridadId,
+            @RequestParam(required = false) Long estadoId,
+            @RequestParam(required = false) Long tipoId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCreacion,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCierre
+    ) {
+        ModelAndView mAV = new ModelAndView(ViewRouteHelper.MIS_TICKETS);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario cliente = usuarioService.traer(username);
+
+        List<Ticket> tickets = ticketService.buscarTicketsConFiltros(
+        	    titulo, categoriaId, prioridadId, fechaCreacion, fechaCierre, estadoId, tipoId, cliente
+        	);
+
+        mAV.addObject("tickets", tickets);
+        mAV.addObject("categoriasDisponibles", categoriaService.traerTodas());
+        mAV.addObject("prioridadesDisponibles", prioridadService.traerTodas());
+        mAV.addObject("estadosDisponibles", estadoService.traerTodas());
+        mAV.addObject("tiposDisponibles", tipoService.traerTodas());
+
+        // Agregar valores actuales de filtros para mantenerlos en el formulario
+        mAV.addObject("titulo", titulo);
+        mAV.addObject("categoriaId", categoriaId);
+        mAV.addObject("prioridadId", prioridadId);
+        mAV.addObject("estadoId", estadoId);
+        mAV.addObject("tipoId", tipoId);
+        mAV.addObject("fechaCreacion", fechaCreacion);
+        mAV.addObject("fechaCierre", fechaCierre);
+
+        return mAV;
+    }
 }

@@ -48,6 +48,9 @@ public interface ITicketService {
 
 	List<Intervencion> traerIntervencionesPorEmpleado(Long idEmpleado);
 
-
 	void realizarIntervencion(IntervencionDTO dto);
+	
+	List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad,
+            LocalDate fechaCreacion, LocalDate fechaCierre,
+            Long idEstado, Long idTipo, Usuario usuario);
 }

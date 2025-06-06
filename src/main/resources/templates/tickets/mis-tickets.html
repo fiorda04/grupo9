@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tickets</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .welcome-message {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .logout-button svg {
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+
+        .menu-button-style {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .menu-button-style:hover {
+            background-color: #0056b3;
+        }
+
+        .action-button {
+            padding: 6px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: white;
+        }
+
+        .modificar-button {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .modificar-button:hover {
+            background-color: #e0a800;
+        }
+
+        .search-input {
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Gestión de Tickets Spring Grupo 9</h1>
+        </div>
+
+        <div class="top-bar-actions">
+            <div>
+                <a th:href="@{/}" class="menu-button-style">Volver al Panel</a>
+            </div>
+            <div class="user-actions">
+                <span class="welcome-message"
+                    th:text="${'Bienvenido, ' + #authentication.principal.username}" style="margin-right: 15px;">Bienvenido</span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="logout-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
+                            <path fill-rule="evenodd"
+                                d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                        </svg>
+                        Salir
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <h2 style="text-align: center;">Buscar Mis Tickets</h2>
+        <hr style="margin-bottom: 20px;" />
+
+        <form th:action="@{/tickets/ResultadosBusquedaTickets}" method="get"
+            style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+
+            <div style="flex: 1 1 250px;">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" class="search-input" style="width: 100%; padding: 8px;">
+            </div>
+			
+            <div style="flex: 1 1 250px;">
+                <label for="categorias">Buscar por Titulo:</label>
+                <select id="categorias" name="categorias" multiple class="search-input"
+                    style="width: 100%; padding: 8px;">
+                    <option value="@{/tickets/buscar/titulo}">Titulo</option>
+                    <option value="2">Categoría 2</option>
+                    <option value="3">Categoría 3</option>
+                    <option value="4">Categoría 4</option>
+                    <option value="5">Categoría 5</option>
+                    <option value="6">Categoría 6</option>
+                </select>
+                <small>Ctrl/Cmd + clic para seleccionar múltiples</small>
+            </div>
+
+            <div style="flex: 1 1 200px;">
+                <label for="prioridad">Prioridad:</label>
+                <select id="prioridad" name="prioridad" class="search-input" style="width: 100%; padding: 8px;">
+                    <option value="">-- Seleccione --</option>
+                    <option value="ALTA">Alta</option>
+                    <option value="MEDIA">Media</option>
+                    <option value="BAJA">Baja</option>
+                </select>
+            </div>
+
+            <div style="flex: 1 1 200px;">
+                <label for="fechaCreacionDesde">Fecha de Creación (Desde):</label>
+                <input type="date" id="fechaCreacionDesde" name="fechaCreacionDesde" class="search-input"
+                    style="width: 100%; padding: 8px;">
+            </div>
+
+            <div style="flex: 1 1 200px;">
+                <label for="fechaCreacionHasta">Fecha de Creación (Hasta):</label>
+                <input type="date" id="fechaCreacionHasta" name="fechaCreacionHasta" class="search-input"
+                    style="width: 100%; padding: 8px;">
+            </div>
+
+            <div style="flex: 1 1 200px;">
+                <label for="fechaCierreDesde">Fecha de Cierre (Desde):</label>
+                <input type="date" id="fechaCierreDesde" name="fechaCierreDesde" class="search-input"
+                    style="width: 100%; padding: 8px;">
+            </div>
+
+            <div style="flex: 1 1 200px;">
+                <label for="fechaCierreHasta">Fecha de Cierre (Hasta):</label>
+                <input type="date" id="fechaCierreHasta" name="fechaCierreHasta" class="search-input"
+                    style="width: 100%; padding: 8px;">
+            </div>
+
+            <div style="flex: 1 1 200px;">
+                <label for="estado">Estado:</label>
+                <select id="estado" name="estado" class="search-input" style="width: 100%; padding: 8px;">
+                    <option value="">-- Seleccione --</option>
+                    <option value="ABIERTO">Abierto</option>
+                    <option value="DERIVADO">Derivado</option>
+                    <option value="CERRADO">Cerrado</option>
+                </select>
+            </div>
+
+            <div style="flex: 1 1 200px;">
+                <label for="tipo">Tipo:</label>
+                <select id="tipo" name="tipo" class="search-input" style="width: 100%; padding: 8px;">
+                    <option value="">-- Seleccione --</option>
+                    <option value="RECLAMO">Reclamo</option>
+                    <option value="CONSULTA">Consulta</option>
+                    <option value="NOTIFICACION">Notificación</option>
+                </select>
+            </div>
+
+            <div style="flex: 1 1 100%; text-align: right;">
+                <button type="submit" class="action-button modificar-button" style="margin-top: 10px;">
+                    Buscar Tickets
+                </button>
+            </div> 
+        </form>
+    </div>
+</body>
+
+</html>
