@@ -1,6 +1,7 @@
 package com.oo2.grupo9.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -47,10 +48,10 @@ public class Ticket {
 
     @CreationTimestamp
     @Column(name = "fecha_creacion", nullable = false)
-    private LocalDate fechaCreacion;
+    private LocalDateTime fechaCreacion;
     
     @Column(name = "fecha_cierre", nullable = true)
-    private LocalDate fechaCierre;
+    private LocalDateTime fechaCierre;
 
     @ManyToOne
     @JoinColumn(name = "id_estado", nullable = false)

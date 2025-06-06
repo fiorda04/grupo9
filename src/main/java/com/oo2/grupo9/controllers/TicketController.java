@@ -28,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -100,7 +101,7 @@ public class TicketController {
             Ticket nuevoTicket = new Ticket();
             nuevoTicket.setTitulo(nuevoTicketDTO.getTitulo());
             nuevoTicket.setDescripcion(nuevoTicketDTO.getDescripcion());
-            nuevoTicket.setFechaCreacion(LocalDate.now()); 
+            nuevoTicket.setFechaCreacion(LocalDateTime.now()); 
             nuevoTicket.setFechaCierre(null); 
 
             Tipo tipo = tipoService.traer(nuevoTicketDTO.getTipoId()).get();

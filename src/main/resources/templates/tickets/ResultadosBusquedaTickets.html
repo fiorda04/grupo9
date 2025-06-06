@@ -41,6 +41,7 @@
             <div>
                 <a th:href="@{/}" class="menu-button-style">Volver al Menu Principal</a>
                 <a th:href="@{/tickets/admin}" class="menu-button-style" sec:authorize="hasRole('Admin')">Volver al panel de Ticket</a>
+				<a th:href="@{/tickets/mis-tickets}" class="menu-button-style" sec:authorize="hasRole('Cliente')">Volver al panel de Ticket</a>
             </div>
             <div class="user-actions">
                 <span class="welcome-message" th:text="${'Bienvenido, ' + #authentication.principal.username}"

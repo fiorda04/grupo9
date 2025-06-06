@@ -2,7 +2,7 @@ spring:
     datasource:
         url: jdbc:mysql://localhost:3306/gestion-tickets
         username: root
-        password: root
+        password: root123456
     jpa:
         show_sql: true
         hibernate:

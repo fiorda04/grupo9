@@ -1,6 +1,7 @@
 package com.oo2.grupo9.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public interface ITicketService {
 
 
     long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idPrioridad,
-                LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
+                LocalDateTime fechaCreacion, LocalDateTime fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
                 List<Intervencion> lstIntervenciones);
 
 

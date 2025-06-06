@@ -47,7 +47,7 @@ public class TicketService implements ITicketService {
     
     @Override 
     public long agregar(String titulo, String descripcion, List<Categoria> lstCategorias, Long idPrioridad,
-                        LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
+                        LocalDateTime fechaCreacion, LocalDateTime fechaCierre, Long idEstado, Long idTipo, Long idUsuarioCliente,
                         List<Intervencion> lstIntervenciones) {
         Ticket nuevoTicket = new Ticket();
         nuevoTicket.setTitulo(titulo);
@@ -162,7 +162,7 @@ public class TicketService implements ITicketService {
         Intervencion intervencion = new Intervencion();
         intervencion.setTicket(ticket);
         intervencion.setContenido(dto.getContenido());
-        intervencion.setFechaIntervencion(LocalDate.now());
+        intervencion.setFechaIntervencion(LocalDateTime.now());
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario empleado = usuarioRepository.findByNombreUsuario(username)
@@ -177,16 +177,14 @@ public class TicketService implements ITicketService {
         
         //Si el estado es "Cerrado" (idEstado = 6), actualizar la fecha de cierre
         if (nuevoEstado.getIdEstado().equals(Estado.ID_ESTADO_CERRADO)) {
-            ticket.setFechaCierre(LocalDate.now());
+            ticket.setFechaCierre(LocalDateTime.now());
         }
         intervencionRepository.save(intervencion);
         ticketRepository.save(ticket);
     }
     
     @Override
-    public List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad,
-                                                LocalDate fechaCreacion, LocalDate fechaCierre,
-                                                Long idEstado, Long idTipo, Usuario usuario) {
+    public List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad, LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Usuario usuario) {
         List<Ticket> tickets = ticketRepository.findAll();
 
         if (titulo != null && !titulo.isEmpty()) {

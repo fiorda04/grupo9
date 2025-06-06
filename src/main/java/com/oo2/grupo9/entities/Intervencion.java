@@ -1,6 +1,6 @@
 package com.oo2.grupo9.entities;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +30,7 @@ public class Intervencion {
     private String contenido;
 
     @Column(name = "fecha_intervencion", nullable = false)
-    private LocalDate fechaIntervencion;
+    private LocalDateTime fechaIntervencion;
 
     @ManyToOne
     @JoinColumn(name = "id_autor", nullable = false)
