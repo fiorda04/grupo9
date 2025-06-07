@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,18 +30,12 @@ import com.oo2.grupo9.services.ITicketService;
 @Transactional
 public class TicketService implements ITicketService {
 
-    private final AuthenticationManager authenticationManager;
 
     @Autowired
     private TicketRepository ticketRepository;
 
     @Autowired
     private IntervencionRepository intervencionRepository;
-
-
-    TicketService(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 
     
     @Override 

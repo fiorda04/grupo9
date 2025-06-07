@@ -106,7 +106,6 @@ public class DataInitializer implements CommandLineRunner {
         List<Categoria> categoriasSoporteTecnico = new ArrayList<>(Arrays.asList(categoria1, categoria3, categoria4));
         List<Categoria> categoriasAtencionAlCliente = new ArrayList<>(Arrays.asList(categoria6));
         List<Categoria> categoriasGenerales = new ArrayList<>(Arrays.asList(categoria1, categoria2, categoria3, categoria4, categoria5, categoria6));
-        List<Categoria> categoriasVacia = new ArrayList<>();
 
         // --- 6. Crear Tipos ---
         Tipo tipoReclamos = createTipoIfNotExists("Reclamos");
@@ -114,7 +113,7 @@ public class DataInitializer implements CommandLineRunner {
         Tipo tipoNotificaciones = createTipoIfNotExists("Notificaciones");
 
         // --- 7. Crear Usuarios (1 Admin, 3 Empleados, 5 Clientes = 9 Usuarios en total) ---
-        Usuario adminUser = createUsuarioIfNotExists("Admin", "Principal", 11111111, "admin", "admin123", rolAdmin, localidadLomas, "admin@example.com", 12345670, "Calle Falsa 123, Administración");
+        createUsuarioIfNotExists("Admin", "Principal", 11111111, "admin", "admin123", rolAdmin, localidadLomas, "admin@example.com", 12345670, "Calle Falsa 123, Administración");
         Usuario empleado1 = createUsuarioIfNotExists("Juan", "Perez", 22222222, "empleado1", "empleado123", rolEmpleado, localidadLomas, "empleado1@example.com", 12345671, "Avenida Central 456, Soporte");
         Usuario empleado2 = createUsuarioIfNotExists("Mario", "Lopez", 33333333, "empleado2", "empleado123", rolEmpleado, localidadLomas, "empleado2@example.com", 12345672, "Calle Mitre 456, Oficina 1");
         Usuario empleado3 = createUsuarioIfNotExists("Laura", "Garcia", 44444444, "empleado3", "empleado123", rolEmpleado, localidadLomas, "empleado3@example.com", 12345673, "Bulevar Tech 789, Desarrollo");
@@ -148,13 +147,13 @@ public class DataInitializer implements CommandLineRunner {
         Ticket c4_ticket1 = createTicketIfNotExists("Problema con teléfono fijo", "Mi teléfono fijo no tiene tono.", LocalDateTime.now().minusHours(7), cliente4, prioridadAlta, estadoAbierto, categoriasSoporteTecnico, tipoReclamos);
         Ticket c4_ticket2 = createTicketIfNotExists("Problema con hardware", "La impresora que instalaron no funciona.", LocalDateTime.now().minusDays(3).minusHours(6), cliente4, prioridadAlta, estadoDerivado2, categoriasSoporteTecnico, tipoReclamos);
         // Este ticket no tendrá intervenciones para demostración
-        Ticket c4_ticket3_no_intervencion = createTicketIfNotExists("Consulta sobre garantía (sin intervención)", "Pregunta sobre garantía de un equipo.", LocalDateTime.now().minusDays(5).minusHours(2), cliente4, prioridadBajo, estadoAbierto, categoriasGenerales, tipoConsultas);
+        createTicketIfNotExists("Consulta sobre garantía (sin intervención)", "Pregunta sobre garantía de un equipo.", LocalDateTime.now().minusDays(5).minusHours(2), cliente4, prioridadBajo, estadoAbierto, categoriasGenerales, tipoConsultas);
 
         // Tickets para cliente5
         Ticket c5_ticket1 = createTicketIfNotExists("Consulta sobre planes", "Quiero cambiar mi plan de internet.", LocalDateTime.now().minusDays(1).minusHours(8), cliente5, prioridadMedio, estadoAbierto, categoriasFacturacion, tipoConsultas);
         // Estos tickets no tendrán intervenciones para demostración
-        Ticket c5_ticket2_no_intervencion = createTicketIfNotExists("Problema con velocidad de internet (sin intervención)", "La velocidad no es la contratada.", LocalDateTime.now().minusHours(4), cliente5, prioridadAlta, estadoAbierto, categoriasInternet, tipoReclamos);
-        Ticket c5_ticket3_no_intervencion = createTicketIfNotExists("Notificación de cambio de domicilio (sin intervención)", "Solicito actualizar mi dirección de servicio.", LocalDateTime.now().minusDays(2).minusHours(9), cliente5, prioridadBajo, estadoAbierto, categoriasAtencionAlCliente, tipoNotificaciones);
+        createTicketIfNotExists("Problema con velocidad de internet (sin intervención)", "La velocidad no es la contratada.", LocalDateTime.now().minusHours(4), cliente5, prioridadAlta, estadoAbierto, categoriasInternet, tipoReclamos);
+        createTicketIfNotExists("Notificación de cambio de domicilio (sin intervención)", "Solicito actualizar mi dirección de servicio.", LocalDateTime.now().minusDays(2).minusHours(9), cliente5, prioridadBajo, estadoAbierto, categoriasAtencionAlCliente, tipoNotificaciones);
 
 
         // --- 9. Crear Intervenciones (solo empleados) ---
