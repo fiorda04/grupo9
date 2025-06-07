@@ -2,10 +2,10 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mis Tickets</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -83,22 +83,19 @@
         }
 
         .action-button {
-            padding: 6px 12px;
-            margin-right: 5px;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            font-size: 0.85em;
+            background-color: #007bff;
             color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+            cursor: pointer;
+            text-align: center;
         }
 
         .modificar-button {
-            background-color: #ffc107;
-            color: #212529;
-        }
-
-        .modificar-button:hover {
-            background-color: #e0a800;
+            background-color: #0056b3;
         }
 
         .search-input {
@@ -118,16 +115,12 @@
                 <a th:href="@{/}" class="menu-button-style">Volver al Panel</a>
             </div>
             <div class="user-actions">
-                <span class="welcome-message"
-                    th:text="${'Bienvenido, ' + #authentication.principal.username}" style="margin-right: 15px;">Bienvenido</span>
+                <span class="welcome-message" th:text="${'Bienvenido, ' + #authentication.principal.username}" style="margin-right: 15px;">Bienvenido</span>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="logout-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                            class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd"
-                                d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
-                            <path fill-rule="evenodd"
-                                d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2H1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a.5.5 0 0 0 1.5-1.5v-2a.5.5 0 0 1 .5-.5z" />
+                            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
                         </svg>
                         Salir
                     </button>
@@ -138,87 +131,78 @@
         <h2 style="text-align: center;">Buscar Mis Tickets</h2>
         <hr style="margin-bottom: 20px;" />
 
-        <form th:action="@{/tickets/ResultadosBusquedaTickets}" method="get"
-            style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
-
-            <div style="flex: 1 1 250px;">
+        <form th:action="@{/tickets/ResultadoBusquedaTicketsCliente}" method="get" style="display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+            <div style="flex: 1 1 170px; margin-right: 20px; margin-bottom: 20px;">
                 <label for="titulo">Título:</label>
-                <input type="text" id="titulo" name="titulo" class="search-input" style="width: 100%; padding: 8px;">
+                <input type="text" id="titulo" name="titulo" class="search-input" style="width: 100%; padding: 8px;" />
             </div>
-			
-            <div style="flex: 1 1 250px;">
-                <label for="categorias">Buscar por Titulo:</label>
-                <select id="categorias" name="categorias" multiple class="search-input"
-                    style="width: 100%; padding: 8px;">
-                    <option value="@{/tickets/buscar/titulo}">Titulo</option>
+
+            <div style="flex: 1 1 170px;">
+                <label for="categoriaId">Buscar por Categoría:</label>
+                <select id="categoriaId" name="categoriaId" class="search-input" style="width: 100%; padding: 8px;">
+                    <option value="">--Seleccione Categoría--</option>
+                    <option value="1">Categoría 1</option>
                     <option value="2">Categoría 2</option>
                     <option value="3">Categoría 3</option>
                     <option value="4">Categoría 4</option>
                     <option value="5">Categoría 5</option>
                     <option value="6">Categoría 6</option>
                 </select>
-                <small>Ctrl/Cmd + clic para seleccionar múltiples</small>
             </div>
 
-            <div style="flex: 1 1 200px;">
-                <label for="prioridad">Prioridad:</label>
-                <select id="prioridad" name="prioridad" class="search-input" style="width: 100%; padding: 8px;">
-                    <option value="">-- Seleccione --</option>
-                    <option value="ALTA">Alta</option>
-                    <option value="MEDIA">Media</option>
-                    <option value="BAJA">Baja</option>
+            <div style="flex: 1 1 170px;">
+                <label for="prioridadId">Prioridad:</label>
+                <select id="prioridadId" name="prioridadId" class="search-input" style="width: 100%; padding: 8px;">
+                    <option value="">-- Seleccione Prioridad --</option>
+                    <option value="1">Alta</option>
+                    <option value="2">Media</option>
+                    <option value="3">Baja</option>
                 </select>
             </div>
 
-            <div style="flex: 1 1 200px;">
+            <div style="flex: 1 1 170px;">
+                <label for="estadoId">Estado:</label>
+                <select id="estadoId" name="estadoId" class="search-input" style="width: 100%; padding: 8px;">
+                    <option value="">-- Seleccione Estado--</option>
+                    <option value="1">Abierto</option>
+                    <option value="2">Derivado</option>
+                    <option value="3">Cerrado</option>
+                </select>
+            </div>
+
+            <div style="flex: 1 1 170px;">
+                <label for="tipoId">Tipo:</label>
+                <select id="tipoId" name="tipoId" class="search-input" style="width: 100%; padding: 8px;">
+                    <option value="">-- Seleccione --</option>
+                    <option value="1">Reclamo</option>
+                    <option value="2">Consulta</option>
+                    <option value="3">Notificación</option>
+                </select>
+            </div>
+
+            <div style="flex: 1 1 170px; margin-right: 20px; margin-bottom: 20px;">
                 <label for="fechaCreacionDesde">Fecha de Creación (Desde):</label>
-                <input type="date" id="fechaCreacionDesde" name="fechaCreacionDesde" class="search-input"
-                    style="width: 100%; padding: 8px;">
+                <input type="date" id="fechaCreacionDesde" name="fechaCreacionDesde" class="search-input" style="width: 100%; padding: 8px;" />
             </div>
 
-            <div style="flex: 1 1 200px;">
-                <label for="fechaCreacionHasta">Fecha de Creación:</label>
-                <input type="date" id="fechaCreacionHasta" name="fechaCreacionHasta" class="search-input"
-                    style="width: 100%; padding: 8px;">
+            <div style="flex: 1 1 170px; margin-right: 20px; margin-bottom: 20px;">
+                <label for="fechaCreacionHasta">Fecha de Creación (Hasta):</label>
+                <input type="date" id="fechaCreacionHasta" name="fechaCreacionHasta" class="search-input" style="width: 100%; padding: 8px;" />
             </div>
-			
-            <div style="flex: 1 1 200px;">
+
+            <div style="flex: 1 1 170px; margin-right: 20px; margin-bottom: 20px;">
                 <label for="fechaCierreDesde">Fecha de Cierre (Desde):</label>
-                <input type="date" id="fechaCierreDesde" name="fechaCierreDesde" class="search-input"
-                    style="width: 100%; padding: 8px;">
+                <input type="date" id="fechaCierreDesde" name="fechaCierreDesde" class="search-input" style="width: 100%; padding: 8px;" />
             </div>
 
-            <div style="flex: 1 1 200px;">
+            <div style="flex: 1 1 170px; margin-right: 20px; margin-bottom: 20px;">
                 <label for="fechaCierreHasta">Fecha de Cierre (Hasta):</label>
-                <input type="date" id="fechaCierreHasta" name="fechaCierreHasta" class="search-input"
-                    style="width: 100%; padding: 8px;">
-            </div>
-
-            <div style="flex: 1 1 200px;">
-                <label for="estado">Estado:</label>
-                <select id="estado" name="estado" class="search-input" style="width: 100%; padding: 8px;">
-                    <option value="">-- Seleccione --</option>
-                    <option value="ABIERTO">Abierto</option>
-                    <option value="DERIVADO">Derivado</option>
-                    <option value="CERRADO">Cerrado</option>
-                </select>
-            </div>
-
-            <div style="flex: 1 1 200px;">
-                <label for="tipo">Tipo:</label>
-                <select id="tipo" name="tipo" class="search-input" style="width: 100%; padding: 8px;">
-                    <option value="">-- Seleccione --</option>
-                    <option value="RECLAMO">Reclamo</option>
-                    <option value="CONSULTA">Consulta</option>
-                    <option value="NOTIFICACION">Notificación</option>
-                </select>
+                <input type="date" id="fechaCierreHasta" name="fechaCierreHasta" class="search-input" style="width: 100%; padding: 8px;" />
             </div>
 
             <div style="flex: 1 1 100%; text-align: right;">
-                <button type="submit" class="action-button modificar-button" style="margin-top: 10px;">
-                    Buscar Tickets
-                </button>
-            </div> 
+                <button type="submit" class="action-button" style="margin-top: 10px;">Buscar Tickets</button>
+            </div>
         </form>
     </div>
 </body>

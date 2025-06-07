@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.oo2.grupo9.entities.Ticket;
-import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Intervencion;
+import com.oo2.grupo9.entities.Ticket;
+import com.oo2.grupo9.entities.Usuario;
 
 public interface ITicketService {
 
@@ -54,7 +54,7 @@ public interface ITicketService {
 
 	void realizarIntervencion(IntervencionDTO dto);
 	
-	List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad,
-            LocalDate fechaCreacion, LocalDate fechaCierre,
-            Long idEstado, Long idTipo, Usuario usuario);
+	List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad, Long idEstado, Long idTipo,
+            LocalDate fechaCreacionDesde, LocalDate fechaCreacionHasta, LocalDate fechaCierreDesde, LocalDate fechaCierreHasta,
+            Usuario usuario);
 }
