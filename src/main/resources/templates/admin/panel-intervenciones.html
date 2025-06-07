@@ -207,8 +207,7 @@
 
     <main class="dashboard-container">
 
-        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
-        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        
 
         <div sec:authorize="hasRole('Admin')">
             <div class="dashboard-header">
@@ -276,6 +275,8 @@
                     </form>
                 </div>
 
+                <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
                 <h3>Listado General de Intervenciones</h3>
 
                 <table class="intervention-table">
@@ -288,6 +289,7 @@
                             <th>Contenido de Intervención</th>
                             <th>Autor Intervención</th>
                             <th>Fecha Intervención</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -302,6 +304,11 @@
                             <td th:text="${intervencion.autor?.nombreUsuario}"></td>
                             <td
                                 th:text="${intervencion.fechaIntervencion != null ? #temporals.format(intervencion.fechaIntervencion, 'dd/MM/yy HH:mm') : ''}">
+                            </td>
+                            <td>
+                                <form th:action="@{/admin/intervenciones/eliminar/{id}(id=${intervencion.idIntervencion})}" method="post">
+                                    <button type="submit" class="table-action-button delete-ticket-button">Eliminar</button>
+                                </form>
                             </td>
                         </tr>
                         <tr th:if="${intervenciones == null or intervenciones.isEmpty()}">

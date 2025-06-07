@@ -227,6 +227,7 @@
                                 <th>Contenido de Intervención</th>
                                 <th>Autor Intervención</th>
                                 <th>Fecha Intervención</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -237,7 +238,14 @@
                                 <td th:text="${intervencion.ticket?.fechaCreacion != null ? #temporals.format(intervencion.ticket.fechaCreacion, 'dd/MM/yyyy HH:mm') : ''}"></td>
                                 <td th:text="${#strings.abbreviate(intervencion.contenido, 100)}"></td>
                                 <td th:text="${intervencion.autor?.nombreUsuario}"></td>
-                                <td th:text="${intervencion.fechaIntervencion != null ? #temporals.format(intervencion.fechaIntervencion, 'dd/MM/yyyy HH:mm') : ''}"></td>
+                                <td
+                                    th:text="${intervencion.fechaIntervencion != null ? #temporals.format(intervencion.fechaIntervencion, 'dd/MM/yyyy HH:mm') : ''}">
+                                </td>
+                                <td>
+                                    <form th:action="@{/admin/intervenciones/eliminar/{id}(id=${intervencion.idIntervencion})}" method="post">
+                                        <button type="submit" class="table-action-button delete-ticket-button">Eliminar</button>
+                                    </form>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

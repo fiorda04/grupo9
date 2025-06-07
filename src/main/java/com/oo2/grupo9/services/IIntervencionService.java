@@ -10,4 +10,5 @@ public interface IIntervencionService {
     List<Intervencion> traerPorEmpleadoId(Long empleadoId);
     List<Intervencion> traerPorContenido(String contenido);
     List<Intervencion> traerPorFechas(LocalDate desde, LocalDate hasta);
+    void eliminar(Long idIntervencion);
 }

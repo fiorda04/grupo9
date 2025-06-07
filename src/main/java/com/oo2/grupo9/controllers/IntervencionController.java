@@ -10,9 +10,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView; 
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -95,4 +98,17 @@ public class IntervencionController {
         
         return mav;
     }
+
+    @PreAuthorize("hasRole('ROLE_Admin')")
+    @PostMapping("/eliminar/{id}")
+    public ModelAndView eliminarIntervencion(@PathVariable("id") Long idIntervencion, RedirectAttributes redirectAttributes) { 
+        try {
+            intervencionService.eliminar(idIntervencion);
+            redirectAttributes.addFlashAttribute("mensaje", "Intervención eliminada exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar la intervención: " + e.getMessage());
+        }
+        return new ModelAndView("redirect:/admin/intervenciones");
+    }
+
 }
