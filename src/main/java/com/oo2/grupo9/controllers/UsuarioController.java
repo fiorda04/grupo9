@@ -136,6 +136,7 @@ public class UsuarioController {
            
             usuarioService.agregarUsuarioPorAdmin(usuarioDto, contactoDto);
             redirectAttributes.addFlashAttribute("successMessage", "Usuario creado exitosamente por el administrador!");
+            emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
             return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
 
         } catch (Exception e) {

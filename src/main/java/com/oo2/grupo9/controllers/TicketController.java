@@ -144,7 +144,7 @@ public class TicketController {
     @GetMapping("tickets/VerTicket/{id}")
     public ModelAndView verTicket(@PathVariable("id") Long id) {
         ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
-        Ticket ticket = ticketService.traer(id).get();
+        Ticket ticket = ticketService.traer(id);
 
         IntervencionDTO intervencionDTO = new IntervencionDTO();
         intervencionDTO.setTicketId(id); // esto es necesario para que el formulario lo use

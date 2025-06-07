@@ -3,7 +3,6 @@ package com.oo2.grupo9.services;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
@@ -25,7 +24,7 @@ public interface ITicketService {
 
     void eliminar(long idTicket);
 
-    Optional<Ticket> traer(long idTicket);
+    Ticket traer(long idTicket);
 
     List<Ticket> traerTodos();
 

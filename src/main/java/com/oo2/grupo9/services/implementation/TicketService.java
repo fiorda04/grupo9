@@ -3,7 +3,6 @@ package com.oo2.grupo9.services.implementation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.exceptions.TicketCerradoException;
+import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
@@ -67,13 +67,14 @@ public class TicketService implements ITicketService {
     }
 
     @Override
-    public Optional<Ticket> traer(long idTicket) {
-        return ticketRepository.findById(idTicket);
+    public Ticket traer(long idTicket) {
+        return ticketRepository.findById(idTicket).orElseThrow(() -> new TicketNoEncontradoException("No se encontró el ticket con ID: " + idTicket));
     }
 
     @Override
     public List<Ticket> traerTodos() {
         return ticketRepository.findAll();
+        		
     }
 
     @Override
@@ -155,7 +156,7 @@ public class TicketService implements ITicketService {
     
     public void realizarIntervencion(IntervencionDTO dto) {
         Ticket ticket = ticketRepository.findById(dto.getTicketId())
-                .orElseThrow(() -> new RuntimeException("Ticket no encontrado"));
+                .orElseThrow(() -> new TicketNoEncontradoException("Ticket no encontrado"));
         
         //Verificar si el ticket ya está "Cerrado" (idEstado = 6)
         if (ticket.getEstado().getIdEstado().equals(Estado.ID_ESTADO_CERRADO)) {
