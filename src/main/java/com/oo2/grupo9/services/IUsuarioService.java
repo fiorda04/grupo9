@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IUsuarioService {
 
-    Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto, String urlLogin) throws Exception;
+    Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception;
 
     Usuario agregarUsuarioPorAdmin(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception;
     

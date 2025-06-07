@@ -70,7 +70,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto, String urlLogin) throws Exception {
+    public Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception {
         if (usuarioRepository.findByNombreUsuario(usuarioDto.getNombreUsuario()).isPresent()) {
             throw new Exception("El nombre de usuario '" + usuarioDto.getNombreUsuario() + "' ya existe.");
         }
@@ -93,10 +93,8 @@ public class UsuarioService implements IUsuarioService {
         nuevoUsuario.setContacto(nuevoContacto);
         nuevoUsuario.setRol(rolUsuario);
 
-        Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
-        if(usuarioGuardado != null) {
-            emailService.enviarEmailDeBienvenida(contactoDto.getEmail(), usuarioDto.getNombre(), urlLogin);
-        }
+        nuevoUsuario = usuarioRepository.save(nuevoUsuario);
+       
         return nuevoUsuario;
     }
 

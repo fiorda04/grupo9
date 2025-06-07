@@ -79,21 +79,12 @@ public class UsuarioController {
         }
         // 2. Si no hay errores de validación, intentar agregar el usuario
         try {
-            // --- CONSTRUIR LA URL DE LOGIN ---
-            String scheme = request.getScheme();         // http
-            String serverName = request.getServerName(); // localhost
-            int serverPort = request.getServerPort();    // 8080
-            String contextPath = request.getContextPath(); // Usualmente vacío
-
-            String urlBase = scheme + "://" + serverName + ":" + serverPort + contextPath+"/";
-            String urlLogin = urlBase + ViewRouteHelper.USUARIO_LOGIN; // Asumiendo que esta constante es "/usuarios/login"
-            // --- FIN CONSTRUIR URL ---
-            usuarioService.agregarDesdeDTO(usuarioDto, contactoDto, urlLogin);
             // Si todo fue bien, redirigimos al índice (patrón POST-redirect-GET)
             ModelAndView mAV = new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true));
             // Los mensajes flash se añaden al ModelAndView para que RedirectView los envíe como flash attributes
-            emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
             mAV.addObject("success", "Usuario registrado exitosamente!");
+            // Mandamos el email de que se registro con ese usuario y para que inicie sesion
+            emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
             return mAV;
 
         } catch (Exception e) {
