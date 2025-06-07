@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -22,10 +22,13 @@ public class EmailService implements IEmailService {
 
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
+    private HttpServletRequest request;
 
-    public EmailService(JavaMailSender javaMailSender, SpringTemplateEngine templateEngine) {
+    
+    public EmailService(JavaMailSender javaMailSender, SpringTemplateEngine templateEngine, HttpServletRequest request) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
+        this.request = request;
     }
 
     //Este metodo deberiamos usar en el controller que guarda al usuario en la base de datos
@@ -33,7 +36,14 @@ public class EmailService implements IEmailService {
     public void prepareAndSendWelcomeEmail(String email, String nombreUsuario) throws Exception {
         Map<String, Object> message = new HashMap<>();
         message.put("nombreUsuario", nombreUsuario);
-        String loginURL = "http://localhost:8080/usuarios/login";
+        //se arma la url
+        String scheme = request.getScheme(); // http
+        String serverName = request.getServerName(); // localhost
+        int serverPort = request.getServerPort(); // 8080
+        String contextPath = request.getContextPath(); // Usualmente vacío
+        String urlBase = scheme + "://" + serverName + ":" + serverPort + contextPath + "/";
+        String loginURL = urlBase + ViewRouteHelper.USUARIO_LOGIN; 
+
         message.put("loginURL", loginURL);
 
         this.sendEmail(email, nombreUsuario, MailConfigHelper.EMAIL_BIENVENIDA,"¡Bienvenido a nuestro servicio!", message);
