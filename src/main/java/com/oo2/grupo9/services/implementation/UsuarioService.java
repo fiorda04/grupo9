@@ -21,7 +21,6 @@ import com.oo2.grupo9.repositories.ContactoRepository;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.repositories.LocalidadRepository;
-import com.oo2.grupo9.services.IEmailService;
 import com.oo2.grupo9.services.IUsuarioService;
 import jakarta.transaction.Transactional;
 
@@ -37,17 +36,16 @@ public class UsuarioService implements IUsuarioService {
     private final ContactoRepository contactoRepository;
     private final LocalidadRepository localidadRepository;
     private final ModelMapper modelMapper;
-    private final IEmailService emailService;
 
     public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository,
             ContactoRepository contactoRepository, LocalidadRepository localidadRepository,
-            PasswordEncoder passwordEncoder, IEmailService emailService) {
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.contactoRepository = contactoRepository;
         this.localidadRepository = localidadRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService; 
+    
 
         // --- INICIALIZACIÓN Y CONFIGURACIÓN DE MODELMAPPER ---
         this.modelMapper = new ModelMapper();

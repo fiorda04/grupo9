@@ -28,7 +28,6 @@ import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.IRolService;
 import com.oo2.grupo9.services.IUsuarioService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
-import jakarta.servlet.http.HttpServletRequest; 
 
 import jakarta.validation.Valid;
 
@@ -63,8 +62,7 @@ public class UsuarioController {
             @ModelAttribute("nuevoUsuario") @Valid UsuarioDTO usuarioDto,
             BindingResult usuarioBindingResult, // Captura errores de validación para UsuarioDTO
             @ModelAttribute("nuevoContacto") @Valid ContactoDTO contactoDto,
-            BindingResult contactoBindingResult, // Captura errores de validación para ContactoDTO
-            HttpServletRequest request
+            BindingResult contactoBindingResult // Captura errores de validación para ContactoDTO
     ) {
         // 1. Verificar si hay errores de validación en cualquiera de los DTOs
         if (usuarioBindingResult.hasErrors() || contactoBindingResult.hasErrors()) {
@@ -80,6 +78,7 @@ public class UsuarioController {
         // 2. Si no hay errores de validación, intentar agregar el usuario
         try {
             // Si todo fue bien, redirigimos al índice (patrón POST-redirect-GET)
+            usuarioService.agregarDesdeDTO(usuarioDto, contactoDto);
             ModelAndView mAV = new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true));
             // Los mensajes flash se añaden al ModelAndView para que RedirectView los envíe como flash attributes
             mAV.addObject("success", "Usuario registrado exitosamente!");
