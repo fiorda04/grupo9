@@ -56,13 +56,13 @@ public class SecurityConfig {
                     login.usernameParameter("username");       
                     login.passwordParameter("password");       
                     login.defaultSuccessUrl("/", true);                                              
-                    login.failureUrl("/login?error");          
+                    //login.failureUrl("/login?error");          
                     login.permitAll();                        
                 })
                 .logout(logout -> {
                     // Configuración del cierre de sesión
                     logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout")); 
-                    logout.logoutSuccessUrl("/"); 
+                    //logout.logoutSuccessUrl("/"); 
                     logout.invalidateHttpSession(true);      
                     logout.deleteCookies("JSESSIONID");      // Elimina la cookie de sesión
                     logout.permitAll();                      

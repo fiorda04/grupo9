@@ -28,6 +28,7 @@ import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.IRolService;
 import com.oo2.grupo9.services.IUsuarioService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest; 
 
 import jakarta.validation.Valid;
 
@@ -62,7 +63,8 @@ public class UsuarioController {
             @ModelAttribute("nuevoUsuario") @Valid UsuarioDTO usuarioDto,
             BindingResult usuarioBindingResult, // Captura errores de validación para UsuarioDTO
             @ModelAttribute("nuevoContacto") @Valid ContactoDTO contactoDto,
-            BindingResult contactoBindingResult // Captura errores de validación para ContactoDTO
+            BindingResult contactoBindingResult, // Captura errores de validación para ContactoDTO
+            HttpServletRequest request
     ) {
         // 1. Verificar si hay errores de validación en cualquiera de los DTOs
         if (usuarioBindingResult.hasErrors() || contactoBindingResult.hasErrors()) {
@@ -77,8 +79,16 @@ public class UsuarioController {
         }
         // 2. Si no hay errores de validación, intentar agregar el usuario
         try {
-            // Delegamos al servicio, que ahora espera DTOs y maneja el mapeo y la encriptación
-            usuarioService.agregarDesdeDTO(usuarioDto, contactoDto);
+            // --- CONSTRUIR LA URL DE LOGIN ---
+            String scheme = request.getScheme();         // http
+            String serverName = request.getServerName(); // localhost
+            int serverPort = request.getServerPort();    // 8080
+            String contextPath = request.getContextPath(); // Usualmente vacío
+
+            String urlBase = scheme + "://" + serverName + ":" + serverPort + contextPath+"/";
+            String urlLogin = urlBase + ViewRouteHelper.USUARIO_LOGIN; // Asumiendo que esta constante es "/usuarios/login"
+            // --- FIN CONSTRUIR URL ---
+            usuarioService.agregarDesdeDTO(usuarioDto, contactoDto, urlLogin);
             // Si todo fue bien, redirigimos al índice (patrón POST-redirect-GET)
             ModelAndView mAV = new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true));
             // Los mensajes flash se añaden al ModelAndView para que RedirectView los envíe como flash attributes
@@ -269,7 +279,7 @@ public class UsuarioController {
 
     @GetMapping("/logout")
     public RedirectView logout() {
-        return new RedirectView(ViewRouteHelper.ROUTE_INDEX + "?logout", true);
+        return new RedirectView(ViewRouteHelper.USUARIO_LOGIN + "?logout", true);
     }
 
     @GetMapping("/loginsuccess")

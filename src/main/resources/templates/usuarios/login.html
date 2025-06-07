@@ -31,13 +31,11 @@
             <h2>Iniciar Sesión</h2>
             
             <div th:if="${param.error}" class="alert alert-danger">
-                Credenciales inválidas. Por favor, inténtelo de nuevo.
+                Usuario y/o contrasenia invalidas. Por favor, inténtelo de nuevo.
             </div>
-            
             <div th:if="${param.logout}" class="alert alert-info">
                 Has cerrado la sesión correctamente.
             </div>
-            
             <form th:action="@{/loginprocess}" method="post">
                 <div class="form-group">
                     <label for="username">Nombre de Usuario:</label>

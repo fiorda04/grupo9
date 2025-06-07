@@ -7,13 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +44,6 @@ import jakarta.validation.Valid;
 @Controller
 public class TicketController {
 
-    private final PasswordEncoder passwordEncoder;
-
     @Autowired
     private ICategoriaService categoriaService;
 
@@ -66,13 +62,6 @@ public class TicketController {
     @Autowired
     private ITicketService ticketService;
     
-    private ModelMapper modelMapper = new ModelMapper();
-
-
-    TicketController(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
 
 
     @GetMapping("/tickets/crear")
