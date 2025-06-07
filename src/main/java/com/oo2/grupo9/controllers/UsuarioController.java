@@ -23,6 +23,7 @@ import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Rol;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
+import com.oo2.grupo9.services.IEmailService;
 import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.IRolService;
 import com.oo2.grupo9.services.IUsuarioService;
@@ -38,11 +39,13 @@ public class UsuarioController {
     private final IUsuarioService usuarioService;
     private final ILocalidadService localidadService;
     private final IRolService rolService;
+    private final IEmailService emailService;
 
-    public UsuarioController(UsuarioService usuarioService, ILocalidadService localidadService,  IRolService rolService) {
+    public UsuarioController(UsuarioService usuarioService, ILocalidadService localidadService,  IRolService rolService, IEmailService emailService) {
         this.usuarioService = usuarioService;
         this.localidadService = localidadService;
         this.rolService = rolService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/inscribirse")
@@ -79,6 +82,7 @@ public class UsuarioController {
             // Si todo fue bien, redirigimos al índice (patrón POST-redirect-GET)
             ModelAndView mAV = new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true));
             // Los mensajes flash se añaden al ModelAndView para que RedirectView los envíe como flash attributes
+            emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
             mAV.addObject("success", "Usuario registrado exitosamente!");
             return mAV;
 
@@ -91,6 +95,7 @@ public class UsuarioController {
             mAV.addObject("error", "Error al registrar el usuario: " + e.getMessage()); // Muestra el mensaje de la excepción
             return mAV;
         }
+        
     }
 
 
