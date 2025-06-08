@@ -1,5 +1,6 @@
 package com.oo2.grupo9.exceptions;
 
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,4 +33,11 @@ public class Handler{
         mAV.addObject("volverUrlAdmin", "/usuarios/admin/crear"); 
         return mAV;
     }
+	
+	@ExceptionHandler(CampoBusquedaVacioException.class)
+	public ModelAndView manejarCampoBusquedaVacio(CampoBusquedaVacioException ex) {
+		ModelAndView mAV = new ModelAndView("error/selecciona-un-campo");
+		mAV.addObject("mensaje",ex.getMessage());
+		return mAV;
+	}
 }

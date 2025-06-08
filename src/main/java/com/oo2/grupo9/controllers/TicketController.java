@@ -30,6 +30,7 @@ import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Tipo;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.CampoBusquedaVacioException;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.ICategoriaService;
 import com.oo2.grupo9.services.IEstadoService;
@@ -377,6 +378,14 @@ public class TicketController {
     ) {
         ModelAndView mAV = new ModelAndView("/tickets/ResultadosBusquedaTicketsCliente"); 
 
+        if ((titulo == null || titulo.isBlank()) && categoriaId == null && prioridadId == null &&
+                estadoId == null && tipoId == null &&
+                fechaCreacionDesde == null && fechaCreacionHasta == null &&
+                fechaCierreDesde == null && fechaCierreHasta == null) {
+                
+                throw new CampoBusquedaVacioException("Por favor, selecciona al menos un campo para realizar la busqueda");
+            }
+        
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Usuario cliente = usuarioService.traer(username);
