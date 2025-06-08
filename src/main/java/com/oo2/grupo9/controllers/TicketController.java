@@ -30,6 +30,7 @@ import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Tipo;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.CampoBusquedaVacioException;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.ICategoriaService;
 import com.oo2.grupo9.services.IEstadoService;
@@ -382,9 +383,7 @@ public class TicketController {
                 fechaCreacionDesde == null && fechaCreacionHasta == null &&
                 fechaCierreDesde == null && fechaCierreHasta == null) {
                 
-                ModelAndView errorView = new ModelAndView("/error/selecciona-un-campo");
-                errorView.addObject("mensaje", "Debes seleccionar al menos un filtro para buscar");
-                return errorView;
+                throw new CampoBusquedaVacioException("Por favor, selecciona al menos un campo para realizar la busqueda");
             }
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -170,15 +170,15 @@
                         <td th:if="${ticket.lstCategorias != null and !ticket.lstCategorias.isEmpty()}">
 						    <span th:each="cat, stat : ${ticket.lstCategorias}" th:text="${cat.nombreCategoria + (stat.last ? '' : ', ')}"></span>
 						</td>
-						<td th:if="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}">N/A</td>
-                        <td th:text="${ticket.prioridad?.nombrePrioridad}">N/A</td>
+						<td th:if="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}"></td>
+                        <td th:text="${ticket.prioridad?.nombrePrioridad}"></td>
                         <td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}"></td>
                         <td th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yy HH:mm') : 'N/A'}"></td>
-                        <td th:text="${ticket.estado?.nombreEstado}">N/A</td>
-                        <td th:text="${ticket.tipo?.nombreTipo}">N/A</td>
+                        <td th:text="${ticket.estado?.nombreEstado}"></td>
+                        <td th:text="${ticket.tipo?.nombreTipo}"></td>
                         <td class="action-cell">
                             <form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
-                                <button type="submit" class="table-action-button ver-ticket-button">Ver</button>
+                                <button type="submit" class="table-action-button ver-ticket-button">Ver Ticket</button>
                             </form>
                         </td>
                     </tr>
