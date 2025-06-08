@@ -119,7 +119,7 @@ public class TicketService implements ITicketService {
     
     @Override
     public List<Ticket> findByFechaCierreBetween(LocalDateTime fechaCreacion1, LocalDateTime fechaCreacion2) {
-        return ticketRepository.findByFechaCreacionBetween(fechaCreacion1, fechaCreacion2);
+        return ticketRepository.findByFechaCierreBetween(fechaCreacion1, fechaCreacion2);
     }
     
     @Override
