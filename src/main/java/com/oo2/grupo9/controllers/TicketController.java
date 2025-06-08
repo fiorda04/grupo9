@@ -34,6 +34,7 @@ import com.oo2.grupo9.exceptions.CategoriaNoValidaException;
 import com.oo2.grupo9.exceptions.ClienteNoEncontradoException;
 import com.oo2.grupo9.exceptions.EmpleadoNoEncontradoException;
 import com.oo2.grupo9.exceptions.RangoDeFechasInvalidoException;
+import com.oo2.grupo9.exceptions.CampoBusquedaVacioException;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.ICategoriaService;
 import com.oo2.grupo9.services.IEstadoService;
@@ -331,39 +332,64 @@ public class TicketController {
     }
     
     @GetMapping("/tickets/mis-tickets")
-    public ModelAndView verMisTicketsConFiltros(
-            @RequestParam(required = false) String titulo,
-            @RequestParam(required = false) Long categoriaId,
-            @RequestParam(required = false) Long prioridadId,
-            @RequestParam(required = false) Long estadoId,
-            @RequestParam(required = false) Long tipoId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCreacion,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCierre
-    ) {
-        ModelAndView mAV = new ModelAndView(ViewRouteHelper.MIS_TICKETS);
+    public ModelAndView mostrarFormularioMisTickets() {
+        ModelAndView mAV = new ModelAndView("tickets/mis-tickets"); 
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Usuario cliente = usuarioService.traer(username);
-
-        List<Ticket> tickets = ticketService.buscarTicketsConFiltros(
-        	    titulo, categoriaId, prioridadId, fechaCreacion, fechaCierre, estadoId, tipoId, cliente
-        	);
-
-        mAV.addObject("tickets", tickets);
         mAV.addObject("categoriasDisponibles", categoriaService.traerTodas());
         mAV.addObject("prioridadesDisponibles", prioridadService.traerTodas());
         mAV.addObject("estadosDisponibles", estadoService.traerTodas());
         mAV.addObject("tiposDisponibles", tipoService.traerTodas());
 
-        // Agregar valores actuales de filtros para mantenerlos en el formulario
+        return mAV;
+    }
+
+    @GetMapping("/tickets/ResultadoBusquedaTicketsCliente")
+    public ModelAndView buscarTicketsConFiltros(
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) Long prioridadId,
+            @RequestParam(required = false) Long estadoId,
+            @RequestParam(required = false) Long tipoId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCreacionDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCreacionHasta,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCierreDesde,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCierreHasta
+    ) {
+        ModelAndView mAV = new ModelAndView("/tickets/ResultadosBusquedaTicketsCliente"); 
+
+        if ((titulo == null || titulo.isBlank()) && categoriaId == null && prioridadId == null &&
+                estadoId == null && tipoId == null &&
+                fechaCreacionDesde == null && fechaCreacionHasta == null &&
+                fechaCierreDesde == null && fechaCierreHasta == null) {
+                
+                throw new CampoBusquedaVacioException("Por favor, selecciona al menos un campo para realizar la busqueda");
+            }
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Usuario cliente = usuarioService.traer(username);
+
+        List<Ticket> tickets = ticketService.buscarTicketsConFiltros(
+            titulo, categoriaId, prioridadId, estadoId, tipoId, 
+            fechaCreacionDesde, fechaCreacionHasta, fechaCierreDesde, fechaCierreHasta, cliente
+        );
+
+        mAV.addObject("resultadosTickets", tickets);
+
+        mAV.addObject("categoriasDisponibles", categoriaService.traerTodas());
+        mAV.addObject("prioridadesDisponibles", prioridadService.traerTodas());
+        mAV.addObject("estadosDisponibles", estadoService.traerTodas());
+        mAV.addObject("tiposDisponibles", tipoService.traerTodas());
+
         mAV.addObject("titulo", titulo);
         mAV.addObject("categoriaId", categoriaId);
         mAV.addObject("prioridadId", prioridadId);
         mAV.addObject("estadoId", estadoId);
         mAV.addObject("tipoId", tipoId);
-        mAV.addObject("fechaCreacion", fechaCreacion);
-        mAV.addObject("fechaCierre", fechaCierre);
+        mAV.addObject("fechaCreacionDesde", fechaCreacionDesde);
+        mAV.addObject("fechaCreacionHasta", fechaCreacionHasta);
+        mAV.addObject("fechaCierreDesde", fechaCierreDesde);
+        mAV.addObject("fechaCierreHasta", fechaCierreHasta);
 
         return mAV;
     }

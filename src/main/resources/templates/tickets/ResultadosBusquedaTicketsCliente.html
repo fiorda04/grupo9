@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Tickets - Resultados</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .welcome-message {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .menu-button-style {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .menu-button-style:hover {
+            background-color: #0056b3;
+        }
+
+        .ticket-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .ticket-table th,
+        .ticket-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .ticket-table th {
+            background-color: #e9ecef;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .ticket-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .action-cell form {
+            display: inline;
+        }
+
+        .table-action-button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .ver-ticket-button {
+            background-color: #17a2b8;
+        }
+
+        .ver-ticket-button:hover {
+            background-color: #138496;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="page-header">
+            <h1>Gestión de Tickets - Mis Tickets</h1>
+        </div>
+
+        <div class="top-bar-actions">
+            <div>
+                <a th:href="@{/}" class="menu-button-style">Volver al Menú Principal</a>
+                <a th:href="@{/tickets/mis-tickets}" class="menu-button-style">Volver al panel de Ticket</a>
+            </div>
+            <div class="user-actions">
+                <span class="welcome-message" th:text="${'Bienvenido, ' + #authentication.principal.username}"
+                    style="margin-right: 15px;">Bienvenido</span>
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="logout-button">Salir</button>
+                </form>
+            </div>
+        </div>
+
+        <h2 style="text-align: center;">Resultados de Búsqueda</h2>
+        <hr style="margin-bottom: 20px;" />
+
+        <div th:if="${resultadosTickets != null and !resultadosTickets.isEmpty()}">
+            <table class="ticket-table">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th>Prioridad</th>
+                        <th>F. Creación</th>
+                        <th>F. Cierre</th>
+                        <th>Estado</th>
+                        <th>Tipo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="ticket : ${resultadosTickets}">
+                        <td th:text="${ticket.titulo}"></td>
+                        <td th:text="${ticket.descripcion != null ? #strings.abbreviate(ticket.descripcion, 40) : ''}"></td>
+                        <td th:if="${ticket.lstCategorias != null and !ticket.lstCategorias.isEmpty()}">
+						    <span th:each="cat, stat : ${ticket.lstCategorias}" th:text="${cat.nombreCategoria + (stat.last ? '' : ', ')}"></span>
+						</td>
+						<td th:if="${ticket.lstCategorias == null or ticket.lstCategorias.isEmpty()}"></td>
+                        <td th:text="${ticket.prioridad?.nombrePrioridad}"></td>
+                        <td th:text="${ticket.fechaCreacion != null ? #temporals.format(ticket.fechaCreacion, 'dd/MM/yy HH:mm') : ''}"></td>
+                        <td th:text="${ticket.fechaCierre != null ? #temporals.format(ticket.fechaCierre, 'dd/MM/yy HH:mm') : 'N/A'}"></td>
+                        <td th:text="${ticket.estado?.nombreEstado}"></td>
+                        <td th:text="${ticket.tipo?.nombreTipo}"></td>
+                        <td class="action-cell">
+                            <form th:action="@{/tickets/VerTicket/{id}(id=${ticket.idTicket})}" method="get">
+                                <button type="submit" class="table-action-button ver-ticket-button">Ver Ticket</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${resultadosTickets == null or resultadosTickets.isEmpty()}"
+            style="text-align: center; padding: 20px; background-color: #fdfdfe; border: 1px dashed #ddd; border-radius: 5px;">
+            <p style="font-size: 1.1em; color: #777;">No se encontraron tickets que coincidan con los filtros aplicados.</p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -17,13 +17,14 @@ import com.oo2.grupo9.entities.Contacto;
 import com.oo2.grupo9.entities.Localidad;
 import com.oo2.grupo9.entities.Rol;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.UsuarioYaExistenteException;
 import com.oo2.grupo9.repositories.ContactoRepository;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.repositories.LocalidadRepository;
-import com.oo2.grupo9.services.IEmailService;
 import com.oo2.grupo9.services.IUsuarioService;
 import jakarta.transaction.Transactional;
+import org.springframework.util.StringUtils;
 
 
 
@@ -37,17 +38,16 @@ public class UsuarioService implements IUsuarioService {
     private final ContactoRepository contactoRepository;
     private final LocalidadRepository localidadRepository;
     private final ModelMapper modelMapper;
-    private final IEmailService emailService;
 
     public UsuarioService(UsuarioRepository usuarioRepository, RolRepository rolRepository,
             ContactoRepository contactoRepository, LocalidadRepository localidadRepository,
-            PasswordEncoder passwordEncoder, IEmailService emailService) {
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.contactoRepository = contactoRepository;
         this.localidadRepository = localidadRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService; 
+    
 
         // --- INICIALIZACIÓN Y CONFIGURACIÓN DE MODELMAPPER ---
         this.modelMapper = new ModelMapper();
@@ -72,9 +72,14 @@ public class UsuarioService implements IUsuarioService {
     @Override
     public Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception {
         if (usuarioRepository.findByNombreUsuario(usuarioDto.getNombreUsuario()).isPresent()) {
-            throw new Exception("El nombre de usuario '" + usuarioDto.getNombreUsuario() + "' ya existe.");
+            throw new UsuarioYaExistenteException("El nombre de usuario '" + usuarioDto.getNombreUsuario() + "' ya existe.");
         }
-
+        if (usuarioRepository.findByDni(usuarioDto.getDni()).isPresent()) {
+            throw new UsuarioYaExistenteException("El DNI '" + usuarioDto.getDni() + "' ya está registrado.");
+        }
+        if (usuarioRepository.findByContacto_Email(contactoDto.getEmail()).isPresent()) {
+            throw new UsuarioYaExistenteException("El email '" + contactoDto.getEmail() + "' ya está registrado.");
+        }
         Localidad localidad = localidadRepository.findById(contactoDto.getLocalidadId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Localidad no encontrada con ID: " + contactoDto.getLocalidadId()));
@@ -100,16 +105,14 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     public Usuario agregarUsuarioPorAdmin(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception {
-        // Validaciones de unicidad para el admin
         if (usuarioRepository.findByNombreUsuario(usuarioDto.getNombreUsuario()).isPresent()) {
-            throw new Exception("El nombre de usuario '" + usuarioDto.getNombreUsuario() + "' ya existe.");
+             throw new UsuarioYaExistenteException("El nombre de usuario '" + usuarioDto.getNombreUsuario() + "' ya existe.");
         }
-        // CAMBIO AQUÍ: findByDni ahora usa int
         if (usuarioRepository.findByDni(usuarioDto.getDni()).isPresent()) {
-            throw new Exception("El DNI '" + usuarioDto.getDni() + "' ya está registrado.");
+            throw new UsuarioYaExistenteException("El DNI '" + usuarioDto.getDni() + "' ya está registrado.");
         }
         if (usuarioRepository.findByContacto_Email(contactoDto.getEmail()).isPresent()) {
-            throw new Exception("El email '" + contactoDto.getEmail() + "' ya está registrado.");
+            throw new UsuarioYaExistenteException("El email '" + contactoDto.getEmail() + "' ya está registrado.");
         }
 
         Localidad localidad = localidadRepository.findById(contactoDto.getLocalidadId())
@@ -133,52 +136,6 @@ public class UsuarioService implements IUsuarioService {
 
         nuevoUsuario = usuarioRepository.save(nuevoUsuario);
         return nuevoUsuario;
-    }
-
-    @Override
-    public void modificar(Usuario usuario) {
-        Optional<Usuario> usuarioExistenteOptional = usuarioRepository.findById(usuario.getIdUsuario());
-        if (usuarioExistenteOptional.isEmpty()) {
-            throw new IllegalArgumentException("No existe un usuario con el ID proporcionado.");
-        }
-        Usuario usuarioExistente = usuarioExistenteOptional.get();
-
-        if (usuarioRepository
-                .findByNombreUsuarioAndIdUsuarioNotAndActivoTrue(usuario.getNombreUsuario(), usuario.getIdUsuario())
-                .isPresent()) {
-            throw new IllegalArgumentException("El nuevo nombre de usuario ya pertenece a otro usuario activo.");
-        }
-        if (usuarioRepository
-                .findByDniAndContacto_Usuario_IdUsuarioNotAndActivoTrue(usuario.getDni(), usuario.getIdUsuario())
-                .isPresent()) {
-            throw new IllegalArgumentException("El nuevo DNI ya pertenece a otro usuario activo.");
-        }
-        if (usuarioRepository.findByContacto_EmailAndContacto_Usuario_IdUsuarioNotAndActivoTrue(
-                usuario.getContacto().getEmail(), usuario.getIdUsuario()).isPresent()) {
-            throw new IllegalArgumentException("El nuevo email ya pertenece a otro usuario activo.");
-        }
-
-        usuarioExistente.setNombre(usuario.getNombre());
-        usuarioExistente.setApellido(usuario.getApellido());
-        usuarioExistente.setDni(usuario.getDni());
-        usuarioExistente.setNombreUsuario(usuario.getNombreUsuario());
-        usuarioExistente.setContrasenia(usuario.getContrasenia());
-        usuarioExistente.setRol(usuario.getRol());
-
-        Contacto contactoExistente = usuarioExistente.getContacto();
-        if (contactoExistente == null) {
-            contactoExistente = new Contacto();
-        }
-        contactoExistente.setEmail(usuario.getContacto().getEmail());
-        contactoExistente.setTelefono(usuario.getContacto().getTelefono());
-        contactoExistente.setDomicilio(usuario.getContacto().getDomicilio());
-        if (usuario.getContacto().getLocalidad() != null) {
-            contactoExistente.setLocalidad(usuario.getContacto().getLocalidad());
-        }
-        contactoRepository.save(contactoExistente);
-        usuarioExistente.setContacto(contactoExistente);
-
-        usuarioRepository.save(usuarioExistente);
     }
 
     @Override
@@ -303,55 +260,41 @@ public class UsuarioService implements IUsuarioService {
         return dto;
     }
 
-    public void actualizarUsuarioAdmin(UsuarioModificacionDTO usuarioModDto) throws Exception {
+    @Override
+    public void actualizarUsuarioAdmin(UsuarioModificacionDTO usuarioModDto) throws Exception{
         Long idUsuario = usuarioModDto.getIdUsuario();
         if (idUsuario == null) {
             throw new Exception("El ID del usuario es necesario para la modificación.");
         }
-        Usuario usuarioExistente = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + idUsuario));
-
-        Contacto contactoExistente = usuarioExistente.getContacto();
-        if (contactoExistente == null) {
-            throw new Exception("Contacto no encontrado para el usuario con ID: " + idUsuario
-                    + " y se esperaban datos de contacto.");
+        Usuario usuarioExistente = usuarioRepository.findById(idUsuario).orElseThrow(() -> new Exception("Usuario no encontrado con ID: " + idUsuario));
+        if (usuarioRepository.findByNombreUsuarioAndIdUsuarioNot(usuarioModDto.getNombreUsuario(), idUsuario).isPresent()) {
+            throw new UsuarioYaExistenteException("El nombre de usuario '" + usuarioModDto.getNombreUsuario() + "' ya pertenece a otro usuario.");
+        }
+        if (usuarioModDto.getDni() != null && usuarioModDto.getDni() != 0 && usuarioRepository.findByDniAndIdUsuarioNot(usuarioModDto.getDni(), idUsuario).isPresent()) {
+            throw new UsuarioYaExistenteException("El DNI '" + usuarioModDto.getDni() + "' ya pertenece a otro usuario.");
+        }
+        if (StringUtils.hasText(usuarioModDto.getEmail()) && usuarioRepository.findByEmailAndIdUsuarioNot(usuarioModDto.getEmail(), idUsuario).isPresent()) {
+            throw new UsuarioYaExistenteException("El email '" + usuarioModDto.getEmail() + "' ya pertenece a otro usuario.");
         }
         usuarioExistente.setNombre(usuarioModDto.getNombre());
         usuarioExistente.setApellido(usuarioModDto.getApellido());
-        if (usuarioModDto.getDni() != null) {
-            usuarioExistente.setDni(usuarioModDto.getDni()); 
-        } else {
-            usuarioExistente.setDni(0);
-        }
+        usuarioExistente.setDni(usuarioModDto.getDni());
         usuarioExistente.setNombreUsuario(usuarioModDto.getNombreUsuario());
-        if (usuarioModDto.getContrasenia() != null && !usuarioModDto.getContrasenia().isEmpty()) {
-            usuarioExistente.setContrasenia(passwordEncoder.encode(usuarioModDto.getContrasenia())); 
+        if (StringUtils.hasText(usuarioModDto.getContrasenia())) {
+            usuarioExistente.setContrasenia(passwordEncoder.encode(usuarioModDto.getContrasenia()));
         }
-
         if (usuarioModDto.getRolId() != null) {
-            Rol rol = rolRepository.findById(usuarioModDto.getRolId()) 
+            Rol rol = rolRepository.findById(usuarioModDto.getRolId())
                     .orElseThrow(() -> new Exception("Rol no encontrado con ID: " + usuarioModDto.getRolId()));
             usuarioExistente.setRol(rol);
-        } 
-        
-        if (contactoExistente != null) { 
-            contactoExistente.setEmail(usuarioModDto.getEmail());
-
-            
-            if (usuarioModDto.getTelefono() != null) {
-                contactoExistente.setTelefono(usuarioModDto.getTelefono());
-            } else {
-                contactoExistente.setTelefono(0);
-            }
-            contactoExistente.setDomicilio(usuarioModDto.getDomicilio());
-            if (usuarioModDto.getLocalidadId() != null) {
-                Localidad localidad = localidadRepository.findById(usuarioModDto.getLocalidadId()) 
-                                                                                                  
-                                                                                                  
-                        .orElseThrow(() -> new Exception(
-                                "Localidad no encontrada con ID: " + usuarioModDto.getLocalidadId()));
-                contactoExistente.setLocalidad(localidad);
-            } 
+        }
+        Contacto contactoExistente = usuarioExistente.getContacto();
+        contactoExistente.setEmail(usuarioModDto.getEmail());
+        contactoExistente.setTelefono(usuarioModDto.getTelefono());
+        contactoExistente.setDomicilio(usuarioModDto.getDomicilio());
+        if (usuarioModDto.getLocalidadId() != null) {
+            Localidad localidad = localidadRepository.findById(usuarioModDto.getLocalidadId()).orElseThrow(() -> new Exception("Localidad no encontrada con ID: " + usuarioModDto.getLocalidadId()));
+            contactoExistente.setLocalidad(localidad);
         }
         usuarioRepository.save(usuarioExistente);
     }

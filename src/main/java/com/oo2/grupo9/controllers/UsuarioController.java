@@ -28,7 +28,6 @@ import com.oo2.grupo9.services.ILocalidadService;
 import com.oo2.grupo9.services.IRolService;
 import com.oo2.grupo9.services.IUsuarioService;
 import com.oo2.grupo9.services.implementation.UsuarioService;
-import jakarta.servlet.http.HttpServletRequest; 
 
 import jakarta.validation.Valid;
 
@@ -61,42 +60,23 @@ public class UsuarioController {
     @PostMapping("/agregar")
     public ModelAndView agregarUsuario(
             @ModelAttribute("nuevoUsuario") @Valid UsuarioDTO usuarioDto,
-            BindingResult usuarioBindingResult, // Captura errores de validación para UsuarioDTO
+            BindingResult usuarioBindingResult,
             @ModelAttribute("nuevoContacto") @Valid ContactoDTO contactoDto,
-            BindingResult contactoBindingResult, // Captura errores de validación para ContactoDTO
-            HttpServletRequest request
-    ) {
-        // 1. Verificar si hay errores de validación en cualquiera de los DTOs
+            BindingResult contactoBindingResult) 
+    throws Exception {
         if (usuarioBindingResult.hasErrors() || contactoBindingResult.hasErrors()) {
-            // Si hay errores, volvemos al formulario de inscripción
             ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_INSCRIBIRSE);
-            // Volvemos a pasar los DTOs con los datos que el usuario ya ingresó (incluyendo los errores)
             mAV.addObject("nuevoUsuario", usuarioDto);
             mAV.addObject("nuevoContacto", contactoDto);
-            mAV.addObject("localidades", localidadService.traerTodas()); // Recargar localidades
-            mAV.addObject("error", "Por favor, corrige los errores en el formulario."); // Mensaje general de error
+            mAV.addObject("localidades", localidadService.traerTodas()); 
+            mAV.addObject("error", "Por favor, corrige los errores en el formulario.");
             return mAV;
         }
-        // 2. Si no hay errores de validación, intentar agregar el usuario
-        try {
-            // Si todo fue bien, redirigimos al índice (patrón POST-redirect-GET)
-            ModelAndView mAV = new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true));
-            // Los mensajes flash se añaden al ModelAndView para que RedirectView los envíe como flash attributes
-            mAV.addObject("success", "Usuario registrado exitosamente!");
-            // Mandamos el email de que se registro con ese usuario y para que inicie sesion
-            emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
-            return mAV;
-
-        } catch (Exception e) {
-            // 3. Si ocurre una excepción de negocio (ej. nombre de usuario duplicado)
-            ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_INSCRIBIRSE); // Volvemos al formulario
-            mAV.addObject("nuevoUsuario", usuarioDto);
-            mAV.addObject("nuevoContacto", contactoDto);
-            mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("error", "Error al registrar el usuario: " + e.getMessage()); // Muestra el mensaje de la excepción
-            return mAV;
-        }
-        
+        usuarioService.agregarDesdeDTO(usuarioDto, contactoDto);
+        ModelAndView mAV = new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true));
+        mAV.addObject("success", "Usuario registrado exitosamente!");
+        emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
+        return mAV;  
     }
 
     @PreAuthorize("hasRole('ROLE_Admin')") 
@@ -118,7 +98,7 @@ public class UsuarioController {
             @ModelAttribute("nuevoContacto") @Valid ContactoDTO contactoDto,
             BindingResult contactoBindingResult,
             RedirectAttributes redirectAttributes
-    ) {
+    ) throws Exception {
         if (usuarioBindingResult.hasErrors() || contactoBindingResult.hasErrors()) {
             ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_CREAR); // Vuelve a la vista admin
             mAV.addObject("nuevoUsuario", usuarioDto);
@@ -128,23 +108,10 @@ public class UsuarioController {
             mAV.addObject("error", "Por favor, corrige los errores en el formulario.");
             return mAV;
         }
-
-        try {
-           
-            usuarioService.agregarUsuarioPorAdmin(usuarioDto, contactoDto);
-            redirectAttributes.addFlashAttribute("successMessage", "Usuario creado exitosamente por el administrador!");
-            emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
-            return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
-
-        } catch (Exception e) {
-            ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_CREAR); // Vuelve a la vista admin
-            mAV.addObject("nuevoUsuario", usuarioDto);
-            mAV.addObject("nuevoContacto", contactoDto);
-            mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("roles", rolService.traerTodos());
-            mAV.addObject("errorMessage", "Error al crear el usuario (Admin): " + e.getMessage());
-            return mAV;
-        }
+        usuarioService.agregarUsuarioPorAdmin(usuarioDto, contactoDto);
+        redirectAttributes.addFlashAttribute("successMessage", "Usuario creado exitosamente por el administrador!");
+        emailService.prepareAndSendWelcomeEmail(contactoDto.getEmail(), usuarioDto.getNombreUsuario());
+        return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
     }
 
     @PreAuthorize("hasRole('ROLE_Admin')")
@@ -179,7 +146,8 @@ public class UsuarioController {
     public ModelAndView guardarModificacionUsuarioAdmin(
             @ModelAttribute("usuarioMod") @Valid UsuarioModificacionDTO usuarioModDto, 
             BindingResult bindingResult, 
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) 
+    throws Exception {
         if (bindingResult.hasErrors()) {
             ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR); 
             mAV.addObject("usuarioMod", usuarioModDto);
@@ -188,19 +156,9 @@ public class UsuarioController {
             mAV.addObject("errorMessage", "Error de validación. Por favor, corrige los campos marcados.");
             return mAV;
         }
-        try {
-            usuarioService.actualizarUsuarioAdmin(usuarioModDto);
-            redirectAttributes.addFlashAttribute("successMessage", "¡Usuario modificado exitosamente!");
-            return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
-
-        } catch (Exception e) {
-            ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_ADMIN_MODIFICAR);
-            mAV.addObject("usuarioMod", usuarioModDto); 
-            mAV.addObject("localidades", localidadService.traerTodas());
-            mAV.addObject("roles", rolService.traerTodos());
-            mAV.addObject("errorMessage", "Error al modificar el usuario: " + e.getMessage());
-            return mAV;
-        }
+        usuarioService.actualizarUsuarioAdmin(usuarioModDto);
+        redirectAttributes.addFlashAttribute("successMessage", "¡Usuario modificado exitosamente!");
+        return new ModelAndView(new RedirectView(ViewRouteHelper.ROUTE_INDEX, true)); 
     }
 
 

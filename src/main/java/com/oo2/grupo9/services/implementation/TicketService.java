@@ -188,7 +188,9 @@ public class TicketService implements ITicketService {
     }
     
     @Override
-    public List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad, LocalDate fechaCreacion, LocalDate fechaCierre, Long idEstado, Long idTipo, Usuario usuario) {
+    public List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad, Long idEstado, Long idTipo,
+    		LocalDate fechaCreacionDesde, LocalDate fechaCreacionHasta, LocalDate fechaCierreDesde, LocalDate fechaCierreHasta,
+    		Usuario usuario) {
         List<Ticket> tickets = ticketRepository.findAll();
 
         if (titulo != null && !titulo.isEmpty()) {
@@ -203,15 +205,7 @@ public class TicketService implements ITicketService {
         if (idPrioridad != null ) {
             tickets.removeIf(ticket -> ticket.getPrioridad() == null || !ticket.getPrioridad().getIdPrioridad().equals(idPrioridad));
         }
-
-        if (fechaCreacion != null) {
-            tickets.removeIf(ticket -> !fechaCreacion.equals(ticket.getFechaCreacion()));
-        }
-
-        if (fechaCierre != null) {
-            tickets.removeIf(ticket -> ticket.getFechaCierre() == null || !fechaCierre.equals(ticket.getFechaCierre()));
-        }
-
+        
         if (idEstado != null ) {
             tickets.removeIf(ticket -> ticket.getEstado() == null || !ticket.getEstado().getIdEstado().equals(idEstado));
         }
@@ -220,7 +214,25 @@ public class TicketService implements ITicketService {
             tickets.removeIf(ticket -> ticket.getTipo() == null || !ticket.getTipo().getIdTipo().equals(idTipo));
         }
 
+        if (fechaCreacionDesde != null) {
+            tickets.removeIf(ticket -> ticket.getFechaCreacion() == null || ticket.getFechaCreacion().toLocalDate().isBefore(fechaCreacionDesde));
+        }
+        if (fechaCreacionHasta != null) {
+            tickets.removeIf(ticket -> ticket.getFechaCreacion() == null || ticket.getFechaCreacion().toLocalDate().isAfter(fechaCreacionHasta));
+        }
+
+        if (fechaCierreDesde != null) {
+            tickets.removeIf(ticket -> ticket.getFechaCierre() == null || ticket.getFechaCierre().toLocalDate().isBefore(fechaCierreDesde));
+        }
+        if (fechaCierreHasta != null) {
+            tickets.removeIf(ticket -> ticket.getFechaCierre() == null || ticket.getFechaCierre().toLocalDate().isAfter(fechaCierreHasta));
+        }
+
+        if (usuario != null && usuario.getIdUsuario() != null) {
+            tickets.removeIf(ticket -> ticket.getUsuarioCliente() == null || ticket.getUsuarioCliente().getIdUsuario() == null || !ticket.getUsuarioCliente().getIdUsuario().equals(usuario.getIdUsuario()));
+        }
+
         return tickets;
-    }
+    } 
 }
 

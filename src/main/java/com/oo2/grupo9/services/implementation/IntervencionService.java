@@ -35,4 +35,8 @@ public class IntervencionService implements IIntervencionService{
     public List<Intervencion> traerPorFechas(LocalDate desde, LocalDate hasta) {
         return intervencionRepository.findByfechaIntervencionBetween(desde.atStartOfDay(), hasta.atTime(LocalTime.MAX));
     }
+    @Override
+    public void eliminar(Long idIntervencion) {
+        intervencionRepository.deleteById(idIntervencion);
+    }
 }

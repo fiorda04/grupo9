@@ -3,7 +3,8 @@ package com.oo2.grupo9.repositories;
 
 import com.oo2.grupo9.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,8 +31,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
 
     // Para las validaciones en modificar 
-    Optional<Usuario> findByNombreUsuarioAndIdUsuarioNotAndActivoTrue(String nombreUsuario, Long idUsuario);
-    Optional<Usuario> findByDniAndContacto_Usuario_IdUsuarioNotAndActivoTrue(int dni, Long idUsuario);
-    Optional<Usuario> findByContacto_EmailAndContacto_Usuario_IdUsuarioNotAndActivoTrue(String email, Long idUsuario);
+    Optional<Usuario> findByNombreUsuarioAndIdUsuarioNot(String nombreUsuario, Long idUsuario);
+    Optional<Usuario> findByDniAndIdUsuarioNot(int dni, Long idUsuario);
     Optional<Usuario> findByIdUsuario(Long idUsuario); 
+    @Query("SELECT u FROM Usuario u JOIN u.contacto c WHERE c.email = :email AND u.idUsuario != :idUsuario")
+    Optional<Usuario> findByEmailAndIdUsuarioNot(@Param("email") String email, @Param("idUsuario") Long idUsuario);
+    
 }
