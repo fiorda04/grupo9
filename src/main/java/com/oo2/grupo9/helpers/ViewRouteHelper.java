@@ -10,6 +10,9 @@ public class ViewRouteHelper {
     public final static String USUARIO_ADMIN_MODIFICAR = "admin/modificar-usuario";
     public final static String ADMIN_USER_SEARCH_RESULTS = "admin/resultados-busqueda-usuarios";
     
+    //Errores
+    public final static String USUARIO_YA_EXISTENTE_ERROR ="error/usuario-ya-existente";
+
     //Tickets
     public final static String TICKET_CREAR = "tickets/CrearTicket";
     public final static String LISTA_TICKETS = "tickets/ListaTickets";

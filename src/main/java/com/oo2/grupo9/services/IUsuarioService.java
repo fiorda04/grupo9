@@ -12,8 +12,6 @@ public interface IUsuarioService {
     Usuario agregarDesdeDTO(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception;
 
     Usuario agregarUsuarioPorAdmin(UsuarioDTO usuarioDto, ContactoDTO contactoDto) throws Exception;
-    
-    void modificar(Usuario usuario);
 
     void eliminar(Long id); 
 

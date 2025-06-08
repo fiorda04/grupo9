@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security6">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error en el Registro</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f2f5; /* Un fondo gris claro para la página */
+            display: flex;
+            flex-direction: column; /* Alinea los elementos verticalmente */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .global-title-bar {
+            background-color: #343a40; /* Barra superior oscura */
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            width: 100%; /* Ocupa todo el ancho */
+            position: absolute; /* La fija en la parte superior */
+            top: 0;
+        }
+        .global-title-bar h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .error-container {
+            text-align: center;
+            margin-top: 80px; /* Espacio para no quedar debajo de la barra superior */
+            padding: 40px 50px;
+            max-width: 600px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-container h1 {
+            margin-top: 0;
+            font-size: 2.2em;
+            color: #dc3545; /* Color rojo para el título del error */
+        }
+
+        .error-container p {
+            font-size: 1.1em;
+            color: #495057; /* Un gris oscuro para el mensaje */
+            line-height: 1.6;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 28px;
+            background-color: #0d6efd; /* Color celeste/azul */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1em;
+            border: none; /* Asegurarse de que no tenga borde de enlace */
+            transition: background-color 0.2s ease-in-out;
+        }
+        .btn-back:hover {
+            background-color: #0b5ed7; /* Un azul más oscuro al pasar el ratón */
+        }
+    </style>
+</head>
+<body>
+    <div class="global-title-bar">
+        <h1>Gestión de Tickets Spring Grupo 9</h1>
+    </div>
+
+    <div class="error-container">
+        <h1>Error en el Registro</h1>
+        
+        <p th:text="${mensaje}">Ha ocurrido un error inesperado.</p>
+        
+        <button onclick="history.back()" class="btn-back">Volver al Formulario</button>
+
+    </div>
+</body>
+</html>

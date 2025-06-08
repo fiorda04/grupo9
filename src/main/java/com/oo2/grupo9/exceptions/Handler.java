@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.oo2.grupo9.helpers.ViewRouteHelper;
+
 import org.springframework.ui.Model;
 
 @ControllerAdvice
@@ -22,4 +24,12 @@ public class Handler{
         return "error/ticket-cerrado";
     }
 
+    @ExceptionHandler(UsuarioYaExistenteException.class)
+    public ModelAndView manejarUsuarioYaExistente(UsuarioYaExistenteException ex) {
+        ModelAndView mAV = new ModelAndView(ViewRouteHelper.USUARIO_YA_EXISTENTE_ERROR); 
+        mAV.addObject("mensaje", ex.getMessage()); 
+        mAV.addObject("volverUrl", "/usuarios/inscribirse");
+        mAV.addObject("volverUrlAdmin", "/usuarios/admin/crear"); 
+        return mAV;
+    }
 }
