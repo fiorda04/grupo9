@@ -1,6 +1,7 @@
 package com.oo2.grupo9.services.implementation;
 
 import com.oo2.grupo9.helpers.MailConfigHelper;
+import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.IEmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
