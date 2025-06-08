@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("userService") // Renombramos el bean a "userService" para coincidir con la guía
+@Service("userService") 
 public class UserService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().getNombreRol()));
 
-        return new org.springframework.security.core.userdetails.User( // Usamos el nombre completo de la clase User
+        return new org.springframework.security.core.userdetails.User( 
                 usuario.getNombreUsuario(),
                 usuario.getContrasenia(),
                 usuario.isActivo(),

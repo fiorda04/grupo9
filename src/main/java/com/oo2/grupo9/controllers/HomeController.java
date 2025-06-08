@@ -132,7 +132,6 @@ public class HomeController {
                 return ViewRouteHelper.INDEX;
             }
         } else {
-            // Usuario no autenticado (anónimo)
             return ViewRouteHelper.INDEX; 
         }
     }

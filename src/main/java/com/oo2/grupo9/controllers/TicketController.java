@@ -30,6 +30,10 @@ import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Tipo;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.CategoriaNoValidaException;
+import com.oo2.grupo9.exceptions.ClienteNoEncontradoException;
+import com.oo2.grupo9.exceptions.EmpleadoNoEncontradoException;
+import com.oo2.grupo9.exceptions.RangoDeFechasInvalidoException;
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.ICategoriaService;
 import com.oo2.grupo9.services.IEstadoService;
@@ -131,15 +135,6 @@ public class TicketController {
         }
     }
     
-//    @GetMapping("tickets/VerTicket/{id}")
-//	public ModelAndView verTicket(@PathVariable("id") Long id) {
-//		ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
-////	    TicketDTO ticketDTO = modelMapper.map(ticketService.traer(id).get(), TicketDTO.class);
-//	    Ticket ticket = ticketService.traer(id).get();
-//	    mAV.addObject("ticket", ticket);
-//	    return mAV;
-//	}
-    
     
     @GetMapping("tickets/VerTicket/{id}")
     public ModelAndView verTicket(@PathVariable("id") Long id) {
@@ -184,13 +179,6 @@ public class TicketController {
     	}else {
     		nombreTipoBuscado = "ID de Tipo " + idTipo + " (desconocido)";
     	}
-    	
-//        if(idTipo != null) {
-//        	(aca va todo el desarrollo de arriba si puede estar vacio)
-//        }else {
-//        	nombreTipoBuscado = "Ningún tipo seleccionado";
-//        }
-        
         mAV.addObject("resultadosTickets", resultados);
         mAV.addObject("criterioBusqueda", "Tipo: " + nombreTipoBuscado);
         return mAV;
@@ -199,6 +187,7 @@ public class TicketController {
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/tickets/buscar/cliente")
     public ModelAndView buscarTicketsPorCliente(@RequestParam("valor") Long idUsuario) {
+    	if(usuarioService.traer(idUsuario) == null)throw new ClienteNoEncontradoException("No se encontró el usuario con ID: " + idUsuario);
     	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = ticketService.traerPorCliente(idUsuario);
         mAV.addObject("resultadosTickets", resultados);
@@ -209,6 +198,7 @@ public class TicketController {
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/tickets/buscar/categoria")
     public ModelAndView buscarTicketsPorCategoria(@RequestParam("valor") Long idCategoria) {
+    	if(categoriaService.traer(idCategoria) == null) throw new CategoriaNoValidaException("La categoria: " + categoriaService.traer(idCategoria).getNombreCategoria() + "no es valida.");
     	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = ticketService.traerPorCategoria(idCategoria);
         mAV.addObject("resultadosTickets", resultados);
@@ -219,6 +209,7 @@ public class TicketController {
     @PreAuthorize("hasRole('ROLE_Admin')")
     @GetMapping("/tickets/buscar/empleado")
     public ModelAndView buscarTicketsPorEmpleado(@RequestParam("valor") Long idAutor) {
+    	if(usuarioService.traer(idAutor) == null)throw new EmpleadoNoEncontradoException("No se encontró el usuario con ID: " + idAutor);
     	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
         List<Ticket> resultados = ticketService.traerPorEmpleado(idAutor);
         mAV.addObject("resultadosTickets", resultados);
@@ -240,13 +231,6 @@ public class TicketController {
     	else {
     		nombreEstadoBuscado = "ID de Estado " + idEstado + " (desconocido)";
     	}
-    	
-//        if(idEstado != null) {
-//        	(aca va todo el desarrollo de arriba si puede estar vacio)
-//        }else {
-//        	nombreEstadoBuscado = "Ningún estado seleccionado";
-//        }
-    	
         mAV.addObject("resultadosTickets", resultados);
         mAV.addObject("criterioBusqueda", "Estado: " + nombreEstadoBuscado);
         return mAV;
@@ -266,13 +250,6 @@ public class TicketController {
     	else {
     		nombrePrioridadBuscado = "ID de Prioridad " + idPrioridad + " (desconocido)";
     	}
-    	
-//        if(idPrioridad != null) {
-//        	(aca va todo el desarrollo de arriba si puede estar vacio)
-//        }else {
-//        	nombrePrioridadBuscado = "Ningún Prioridad seleccionado";
-//        }
-    	
         mAV.addObject("resultadosTickets", resultados);
         mAV.addObject("criterioBusqueda", "Prioridad: " + nombrePrioridadBuscado);
         return mAV;
@@ -293,6 +270,8 @@ public class TicketController {
     public ModelAndView buscarTicketsEntreFechas(
             @RequestParam("fechaDesde") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaDesde,
             @RequestParam("fechaHasta") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaHasta) {
+    	if (fechaDesde != null && fechaHasta != null && fechaDesde.isAfter(fechaHasta))
+    	    throw new RangoDeFechasInvalidoException("La fecha inicial no puede ser posterior a la final.");
     	ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKETS_SEARCH_RESULTS);
 
     	LocalDateTime desdeInicio = fechaDesde.atStartOfDay();

@@ -7,7 +7,6 @@
     <title>Modificar Usuario - Gestión de Usuarios</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <style>
-        /* Idealmente, mueve todos estos estilos a tu styles.css global */
         .full-width-button {
             display: block;
             width: 100%;
@@ -61,13 +60,13 @@
         }
 
         .form-group label {
-            flex: 0 0 150px; /* Ajustado un poco para etiquetas más largas como "Nombre de Usuario" */
+            flex: 0 0 150px;
             padding-right: 15px;
             text-align: right;
             color: #555;
         }
 
-        .form-group .col-sm-10 { /* Esta clase no se usa directamente si label tiene flex fijo */
+        .form-group .col-sm-10 {
             flex-grow: 1;
         }
 
@@ -101,7 +100,7 @@
             text-align: center;
         }
 
-        .general-error-message { /* Renombrado para evitar conflicto con .error-message de campo */
+        .general-error-message {
             color: #d9534f;
             background-color: #f2dede;
             border: 1px solid #ebccd1;

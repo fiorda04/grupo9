@@ -15,24 +15,15 @@ import com.oo2.grupo9.entities.Ticket;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-	// 17. +traer(long idTicket): Ticket
+
 	Optional<Ticket> findByIdTicket(Long idTicket);
 
-	// 18. +traerTicketsPorTipo(Tipo t): List<Ticket>
+
 	List<Ticket> findByTipo_IdTipo(Long idTipo);
-
-	// 27. +traerPorCliente(Usuario cliente): List<Ticket>
 	List<Ticket> findByUsuarioCliente_IdUsuario(Long idUsuario);
-
-	// 28. +traerPorEmpleado(Usuario empleado): List<Ticket>
 	List<Ticket> findDistinctByLstIntervenciones_Autor_idUsuario(Long idEmpleado);// se fija en las intervenciones y solo agarra un ticket por intervencion
-
-	// 29. +traerTicketPorEstado(Estado estado): List<Ticket>
 	List<Ticket> findByEstado_IdEstado(Long idEstado);
-	
 	List<Ticket> findByLstCategorias_idCategoria(Long idCategoria);
-
-	// 30. +traerTicketPorPrioridad(Prioridad prioridad): List<Ticket>
 	List<Ticket> findByPrioridad_IdPrioridad(Long idPrioridad);
 
     @Query("SELECT t FROM Ticket t WHERE t.fechaCreacion = :fecha")
@@ -43,12 +34,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("SELECT t FROM Ticket t WHERE t.fechaCierre BETWEEN :fechaInicio AND :fechaFin")
     List<Ticket> findByFechaCierreBetween(@Param("fechaInicio") LocalDateTime fechaInicio, @Param("fechaFin") LocalDateTime fechaFin);
-    
-	// 31. +traerPorFecha(LocalDate fecha): List<Ticket>
-	//List<Ticket> findByFechaCreacion(LocalDate fecha);
-	
-	//32. +traerTicketEntreFechas(LocalDate fechaInicio, LocalDate fechaFin): List<Ticket> 
-	//List<Ticket> findByFechaCreacion1AndFechaCreacion2(LocalDate fechaCreacion1, LocalDate fechaCreacion2);
     
     List<Ticket> findByTituloContainingIgnoreCase(String titulo);
 

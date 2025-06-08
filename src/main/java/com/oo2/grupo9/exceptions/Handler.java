@@ -11,7 +11,7 @@ public class Handler{
 	
 	@ExceptionHandler(TicketNoEncontradoException.class)
     public ModelAndView manejarTicketNoEncontrado(TicketNoEncontradoException ex) {
-        ModelAndView mAV = new ModelAndView("error/ticket-no-encontrado");
+        ModelAndView mAV = new ModelAndView("error/vista-general-exception");
         mAV.addObject("mensaje", ex.getMessage());
         return mAV;
     }
@@ -20,6 +20,34 @@ public class Handler{
     public String manejarTicketCerrado(TicketCerradoException ex, Model model) {
         model.addAttribute("mensajeError", ex.getMessage());
         return "error/ticket-cerrado";
+    }
+	
+	@ExceptionHandler(RangoDeFechasInvalidoException.class)
+    public ModelAndView manejarRangoDeFechasInvalido(RangoDeFechasInvalidoException ex) {
+        ModelAndView mav = new ModelAndView("error/vista-general-exception");
+        mav.addObject("mensaje", ex.getMessage());
+        return mav;
+    }
+
+    @ExceptionHandler(ClienteNoEncontradoException.class)
+    public ModelAndView manejarClienteNoEncontrado(ClienteNoEncontradoException ex) {
+        ModelAndView mav = new ModelAndView("error/vista-general-exception");
+        mav.addObject("mensaje", ex.getMessage());
+        return mav;
+    }
+
+    @ExceptionHandler(EmpleadoNoEncontradoException.class)
+    public ModelAndView manejarEmpleadoNoEncontrado(EmpleadoNoEncontradoException ex) {
+        ModelAndView mav = new ModelAndView("error/vista-general-exception");
+        mav.addObject("mensaje", ex.getMessage());
+        return mav;
+    }
+
+    @ExceptionHandler(CategoriaNoValidaException.class)
+    public ModelAndView manejarCategoriaNoValida(CategoriaNoValidaException ex) {
+        ModelAndView mav = new ModelAndView("error/vista-general-exception");
+        mav.addObject("mensaje", ex.getMessage());
+        return mav;
     }
 
 }

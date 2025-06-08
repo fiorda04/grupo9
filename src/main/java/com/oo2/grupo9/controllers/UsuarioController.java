@@ -99,8 +99,6 @@ public class UsuarioController {
         
     }
 
-
-    //MOSTRAR EL FORMULARIO DE CREACIÓN POR ADMINISTRADOR! 
     @PreAuthorize("hasRole('ROLE_Admin')") 
     @GetMapping("/admin/crear")
     public ModelAndView mostrarFormularioCreacionUsuarioAdmin() {
@@ -112,7 +110,6 @@ public class UsuarioController {
         return mAV;
     }
 
-    // CREACIÓN DE USUARIOS POR ADMINISTRADOR! 
     @PreAuthorize("hasRole('ROLE_Admin')") 
     @PostMapping("/admin/agregar")
     public ModelAndView agregarUsuarioAdmin(

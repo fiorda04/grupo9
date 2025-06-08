@@ -1,7 +1,6 @@
 package com.oo2.grupo9.services.implementation;
 
 import com.oo2.grupo9.helpers.MailConfigHelper;
-import com.oo2.grupo9.helpers.ViewRouteHelper;
 import com.oo2.grupo9.services.IEmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -57,7 +56,7 @@ public class EmailService implements IEmailService {
 
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            throw new MessagingException(e.getMessage()); // Relanza la excepción para que sea manejada por el que llama
+            throw new MessagingException(e.getMessage()); 
         }
     }
 }
