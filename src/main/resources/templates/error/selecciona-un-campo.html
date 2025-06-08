@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error en la Búsqueda</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/fontawesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/solid.min.css}">
+    <style>
+        .error-container {
+            max-width: 600px;
+            margin: 80px auto;
+            padding: 30px;
+            border-radius: 15px;
+            background-color: #fff3f3;
+            border: 1px solid #f5c2c2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 20px;
+            color: #b02a37;
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #fff;
+            background-color: #dc3545;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="error-message" th:text="${mensaje}">
+            Ocurrió un error inesperado.
+        </div>
+        <a class="back-link" th:href="@{/tickets/mis-tickets}">
+            <i class="fas fa-arrow-left"></i> Volver a Buscar
+        </a>
+    </div>
+</body>
+</html>

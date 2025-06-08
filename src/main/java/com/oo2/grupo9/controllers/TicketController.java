@@ -377,6 +377,16 @@ public class TicketController {
     ) {
         ModelAndView mAV = new ModelAndView("/tickets/ResultadosBusquedaTicketsCliente"); 
 
+        if ((titulo == null || titulo.isBlank()) && categoriaId == null && prioridadId == null &&
+                estadoId == null && tipoId == null &&
+                fechaCreacionDesde == null && fechaCreacionHasta == null &&
+                fechaCierreDesde == null && fechaCierreHasta == null) {
+                
+                ModelAndView errorView = new ModelAndView("/error/selecciona-un-campo");
+                errorView.addObject("mensaje", "Debes seleccionar al menos un filtro para buscar");
+                return errorView;
+            }
+        
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Usuario cliente = usuarioService.traer(username);
