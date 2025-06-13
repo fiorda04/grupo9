@@ -1,15 +1,13 @@
 package com.oo2.grupo9.dtos;
 
-import java.util.List;
+public record CrearTicketRequest(
 
-public class CrearTicketRequest {
-
-	private String titulo;
-	private String descripcion;
-	private Long tipoId;
-	private Long estadoId;
-	private Long prioridadId;
-	private List<Long> categoriaId;
+	String titulo,
+	String descripcion,
+	Long idCategoria,
+	Long idTipo,
+	Long idPrioridad,
+	Long idUsuario
 	
 	
-}
+) {}

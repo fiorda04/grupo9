@@ -19,6 +19,7 @@ import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.exceptions.TicketCerradoException;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
+import com.oo2.grupo9.exceptions.TicketNoEncontradoRestException;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
@@ -234,5 +235,12 @@ public class TicketService implements ITicketService {
 
         return tickets;
     } 
+    
+    @Override
+    public void eliminar(Long id) {
+    	Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new TicketNoEncontradoRestException("ID de ticket inexistente"));
+    	
+    	ticketRepository.delete(ticket);
+    }
 }
 

@@ -57,4 +57,6 @@ public interface ITicketService {
 	List<Ticket> buscarTicketsConFiltros(String titulo, Long categoriaId, Long idPrioridad, Long idEstado, Long idTipo,
             LocalDate fechaCreacionDesde, LocalDate fechaCreacionHasta, LocalDate fechaCierreDesde, LocalDate fechaCierreHasta,
             Usuario usuario);
+	
+	void eliminar(Long id);
 }
