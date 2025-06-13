@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.oo2.grupo9.dtos.ContactoDTO;
 import com.oo2.grupo9.dtos.CrearUsuarioRequest;
 import com.oo2.grupo9.dtos.CrearUsuarioResponse;
+import com.oo2.grupo9.dtos.TraerUsuarioResponse;
 import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Contacto;
@@ -361,7 +362,6 @@ public class UsuarioService implements IUsuarioService {
         nuevoUsuario.setContrasenia(passwordEncoder.encode(request.contrasenia()));
         nuevoUsuario.setActivo(true);
         nuevoUsuario.setRol(rol);
-        
         nuevoUsuario.setContacto(nuevoContacto);
         nuevoContacto.setUsuario(nuevoUsuario);
 
@@ -382,5 +382,27 @@ public class UsuarioService implements IUsuarioService {
             usuarioGuardado.getContacto().getDomicilio(),
             usuarioGuardado.getContacto().getLocalidad().getNombreLocalidad() // Obtenemos el nombre de la localidad
         );
+    }
+
+    private TraerUsuarioResponse convertirADTO(Usuario usuario) {
+        return new TraerUsuarioResponse(
+                usuario.getIdUsuario(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getDni(),
+                usuario.getContacto().getEmail(),  
+                usuario.getUsername(),
+                usuario.getRol().getNombreRol(),     
+                usuario.isEnabled(),
+                usuario.getFechaCreacion()
+        );
+    }
+
+    @Override
+    public List<TraerUsuarioResponse> traerTodosLosUsuarios() {
+    return usuarioRepository.findAll()
+            .stream()
+            .map(this::convertirADTO)
+            .collect(Collectors.toList());
     }
 }
