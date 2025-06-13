@@ -3,7 +3,6 @@ package com.oo2.grupo9.services.implementation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +10,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.oo2.grupo9.dtos.CrearTicketRequest;
-import com.oo2.grupo9.dtos.CrearTicketResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Estado;
 import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
-import com.oo2.grupo9.entities.Tipo;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.exceptions.CategoriaNoEncontradaRestException;
 import com.oo2.grupo9.exceptions.ClienteNoEncontradoException;
@@ -27,11 +23,13 @@ import com.oo2.grupo9.exceptions.TicketCerradoException;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
 import com.oo2.grupo9.exceptions.TipoNoEncontradoRestException;
 import com.oo2.grupo9.repositories.CategoriaRepository;
+import com.oo2.grupo9.exceptions.TicketCerradoException;
+import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
+import com.oo2.grupo9.exceptions.TicketNoEncontradoRestException;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
 import com.oo2.grupo9.repositories.TicketRepository;
-import com.oo2.grupo9.repositories.TipoRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.services.ITicketService;
 
@@ -42,18 +40,9 @@ public class TicketService implements ITicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
+
     @Autowired
     private IntervencionRepository intervencionRepository;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private EstadoRepository estadoRepository;
-    @Autowired
-    private TipoRepository tipoRepository;
-    @Autowired
-    private PrioridadRepository prioridadRepository;
-    @Autowired
-    private CategoriaRepository categoriaRepository;
 
     
     @Override 
@@ -81,6 +70,8 @@ public class TicketService implements ITicketService {
 
     @Override
     public void eliminar(long idTicket) {
+    	Ticket ticket = ticketRepository.findById(idTicket).orElseThrow(() -> new TicketNoEncontradoRestException("ID de ticket inexistente"));
+
         ticketRepository.deleteById(idTicket);
     }
 
@@ -165,6 +156,13 @@ public class TicketService implements ITicketService {
             .collect(Collectors.toList());
     }
     
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private EstadoRepository estadoRepository;
+    @Autowired
+    private PrioridadRepository prioridadRepository;
+    
     public void realizarIntervencion(IntervencionDTO dto) {
         Ticket ticket = ticketRepository.findById(dto.getTicketId())
                 .orElseThrow(() -> new TicketNoEncontradoException("Ticket no encontrado"));
@@ -248,7 +246,6 @@ public class TicketService implements ITicketService {
     
     @Override
 	public Ticket insertOrUpdate(Ticket ticket) {
-		return ticketRepository.save(ticket);
 	}
     
     @Override
@@ -293,4 +290,3 @@ public class TicketService implements ITicketService {
         );
     }
 }
-
