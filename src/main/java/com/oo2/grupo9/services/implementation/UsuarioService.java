@@ -20,7 +20,9 @@ import com.oo2.grupo9.entities.Contacto;
 import com.oo2.grupo9.entities.Localidad;
 import com.oo2.grupo9.entities.Rol;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.RolyLocalidadException;
 import com.oo2.grupo9.exceptions.UsuarioYaExistenteException;
+import com.oo2.grupo9.exceptions.UsuarioYaExistenteResException;
 import com.oo2.grupo9.repositories.ContactoRepository;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
@@ -330,23 +332,24 @@ public class UsuarioService implements IUsuarioService {
 
     //Crear usuario Rest
     @Override
-    public CrearUsuarioResponse crearUsuarioRest(CrearUsuarioRequest request) throws Exception {
-        //validaciones para Nombre de usuario, mail y dni
+    public CrearUsuarioResponse crearUsuarioRest(CrearUsuarioRequest request) {
+        // Validaciones (se quedan igual)
         if (usuarioRepository.findByNombreUsuario(request.nombreUsuario()).isPresent()) {
-            throw new UsuarioYaExistenteException("El nombre de usuario '" + request.nombreUsuario() + "' ya existe.");
+            throw new UsuarioYaExistenteResException("El nombre de usuario '" + request.nombreUsuario() + "' ya existe.");
         }
         if (usuarioRepository.findByDni(request.dni()).isPresent()) {
-            throw new UsuarioYaExistenteException("El DNI '" + request.dni() + "' ya está registrado.");
+            throw new UsuarioYaExistenteResException("El DNI '" + request.dni() + "' ya está registrado.");
         }
         if (usuarioRepository.findByContacto_Email(request.email()).isPresent()) {
-            throw new UsuarioYaExistenteException("El email '" + request.email() + "' ya está registrado.");
+            throw new UsuarioYaExistenteResException("El email '" + request.email() + "' ya está registrado.");
         }
+
         //entidades
         Rol rol = rolRepository.findById(request.rolId())
-                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + request.rolId()));
+                .orElseThrow(() -> new RolyLocalidadException("Rol no encontrado con ID: " + request.rolId()));
         
         Localidad localidad = localidadRepository.findById(request.localidadId())
-                .orElseThrow(() -> new IllegalArgumentException("Localidad no encontrada con ID: " + request.localidadId()));
+                .orElseThrow(() -> new RolyLocalidadException("Localidad no encontrada con ID: " + request.localidadId()));
 
         Contacto nuevoContacto = new Contacto();
         nuevoContacto.setEmail(request.email());
