@@ -21,4 +21,16 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ex.getMessage()));
     }
+    @ExceptionHandler(TipoNoEncontradoRestException.class)
+    public ResponseEntity<Map<String, String>> tipoNoEncontrado(TipoNoEncontradoRestException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
+    @ExceptionHandler(CategoriaNoEncontradaRestException.class)
+    public ResponseEntity<Map<String, String>> categoriaNoEncontrada(CategoriaNoEncontradaRestException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
 }

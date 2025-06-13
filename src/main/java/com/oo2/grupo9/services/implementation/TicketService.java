@@ -21,9 +21,11 @@ import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Tipo;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.CategoriaNoEncontradaRestException;
 import com.oo2.grupo9.exceptions.ClienteNoEncontradoException;
 import com.oo2.grupo9.exceptions.TicketCerradoException;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
+import com.oo2.grupo9.exceptions.TipoNoEncontradoRestException;
 import com.oo2.grupo9.repositories.CategoriaRepository;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
@@ -251,32 +253,23 @@ public class TicketService implements ITicketService {
     
     @Override
     public CrearTicketResponse crearTicketDesdeRequest(CrearTicketRequest request, String nombreUsuario)throws Exception {
-    	
-    	Usuario cliente = usuarioRepository.findByNombreUsuario(nombreUsuario)
-    			.orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
-
-        Tipo tipo = tipoRepository.findById(request.tipoId())
-                .orElseThrow(() -> new IllegalArgumentException("Tipo no encontrado con ID: " + request.tipoId()));
+        if(tipoRepository.findById(request.tipoId()).isEmpty())throw new TipoNoEncontradoRestException("Tipo no encontrado: " + request.tipoId());
 
         List<Categoria> categorias = request.categoriasId().stream()
-        	    .map(categoriaRepository::findById) // Stream<Optional<Categoria>>
-        	    .filter(Optional::isPresent)        // Filtra los Optional vacíos
-        	    .map(Optional::get)                 // Obtiene el valor de los Optional presentes
-        	    .toList();
+        	    .map(id -> categoriaRepository.findById(id)
+        	        .orElseThrow(() -> new CategoriaNoEncontradaRestException("Categoría con ID " + id + " no encontrada")))
+        	    .toList(); 
 
-        Estado estadoPorDefecto = estadoRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("Estado por defecto no encontrado."));
+        Estado estadoPorDefecto = estadoRepository.findById(1L).get();
+        Prioridad prioridadPorDefecto = prioridadRepository.findById(1L).get();
 
-        Prioridad prioridadPorDefecto = prioridadRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("Prioridad por defecto no encontrada."));
-
-        // Crear y poblar entidad Ticket
+        // Crear 
         Ticket nuevoTicket = new Ticket();
         nuevoTicket.setTitulo(request.titulo());
         nuevoTicket.setDescripcion(request.descripcion());
         nuevoTicket.setFechaCreacion(LocalDateTime.now());
-        nuevoTicket.setUsuarioCliente(cliente);
-        nuevoTicket.setTipo(tipo);
+        nuevoTicket.setUsuarioCliente(usuarioRepository.findByNombreUsuario(nombreUsuario).get());
+        nuevoTicket.setTipo(tipoRepository.findById(request.tipoId()).get());
         nuevoTicket.setLstCategorias(categorias);
         nuevoTicket.setEstado(estadoPorDefecto);
         nuevoTicket.setPrioridad(prioridadPorDefecto);
@@ -284,9 +277,8 @@ public class TicketService implements ITicketService {
         // Guardar en la base
         Ticket ticketGuardado = ticketRepository.save(nuevoTicket);
 
-        // Construir response a mano
         List<String> nombresCategorias = ticketGuardado.getLstCategorias().stream()
-                .map(categoria -> categoria.getNombreCategoria()) // <-- ¡Cambio aquí!
+                .map(categoria -> categoria.getNombreCategoria()) 
                 .toList();
 
         return new CrearTicketResponse(
