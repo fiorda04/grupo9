@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.oo2.grupo9.dtos.CrearTicketRequest;
+import com.oo2.grupo9.dtos.CrearTicketResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Estado;
@@ -23,13 +25,12 @@ import com.oo2.grupo9.exceptions.TicketCerradoException;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
 import com.oo2.grupo9.exceptions.TipoNoEncontradoRestException;
 import com.oo2.grupo9.repositories.CategoriaRepository;
-import com.oo2.grupo9.exceptions.TicketCerradoException;
-import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoRestException;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
 import com.oo2.grupo9.repositories.TicketRepository;
+import com.oo2.grupo9.repositories.TipoRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.services.ITicketService;
 
@@ -40,9 +41,12 @@ public class TicketService implements ITicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
-
     @Autowired
     private IntervencionRepository intervencionRepository;
+    @Autowired
+    private TipoRepository tipoRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     
     @Override 
@@ -243,19 +247,19 @@ public class TicketService implements ITicketService {
 
         return tickets;
     } 
-    
-    @Override
-	public Ticket insertOrUpdate(Ticket ticket) {
-	}
+
     
     @Override
     public CrearTicketResponse crearTicketDesdeRequest(CrearTicketRequest request, String nombreUsuario)throws Exception {
         if(tipoRepository.findById(request.tipoId()).isEmpty())throw new TipoNoEncontradoRestException("Tipo no encontrado: " + request.tipoId());
 
         List<Categoria> categorias = request.categoriasId().stream()
-        	    .map(id -> categoriaRepository.findById(id)
-        	        .orElseThrow(() -> new CategoriaNoEncontradaRestException("Categoría con ID " + id + " no encontrada")))
-        	    .toList(); 
+        	    .map(id -> {
+        	        Categoria categoria = categoriaRepository.findById(id)
+        	            .orElseThrow(() -> new CategoriaNoEncontradaRestException("Categoría con ID " + id + " no encontrada"));
+        	        return categoria;
+        	    })
+        	    .toList();
 
         Estado estadoPorDefecto = estadoRepository.findById(1L).get();
         Prioridad prioridadPorDefecto = prioridadRepository.findById(1L).get();
