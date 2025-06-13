@@ -3,6 +3,7 @@ package com.oo2.grupo9.services.implementation;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +11,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.oo2.grupo9.dtos.CrearTicketRequest;
+import com.oo2.grupo9.dtos.CrearTicketResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Estado;
 import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
+import com.oo2.grupo9.entities.Tipo;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.ClienteNoEncontradoException;
 import com.oo2.grupo9.exceptions.TicketCerradoException;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
+import com.oo2.grupo9.repositories.CategoriaRepository;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
 import com.oo2.grupo9.repositories.TicketRepository;
+import com.oo2.grupo9.repositories.TipoRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
 import com.oo2.grupo9.services.ITicketService;
 
@@ -33,9 +40,18 @@ public class TicketService implements ITicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
-
     @Autowired
     private IntervencionRepository intervencionRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private EstadoRepository estadoRepository;
+    @Autowired
+    private TipoRepository tipoRepository;
+    @Autowired
+    private PrioridadRepository prioridadRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     
     @Override 
@@ -147,13 +163,6 @@ public class TicketService implements ITicketService {
             .collect(Collectors.toList());
     }
     
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
-    private EstadoRepository estadoRepository;
-    @Autowired
-    private PrioridadRepository prioridadRepository;
-    
     public void realizarIntervencion(IntervencionDTO dto) {
         Ticket ticket = ticketRepository.findById(dto.getTicketId())
                 .orElseThrow(() -> new TicketNoEncontradoException("Ticket no encontrado"));
@@ -234,5 +243,62 @@ public class TicketService implements ITicketService {
 
         return tickets;
     } 
+    
+    @Override
+	public Ticket insertOrUpdate(Ticket ticket) {
+		return ticketRepository.save(ticket);
+	}
+    
+    @Override
+    public CrearTicketResponse crearTicketDesdeRequest(CrearTicketRequest request, String nombreUsuario)throws Exception {
+    	
+    	Usuario cliente = usuarioRepository.findByNombreUsuario(nombreUsuario)
+    			.orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+
+        Tipo tipo = tipoRepository.findById(request.tipoId())
+                .orElseThrow(() -> new IllegalArgumentException("Tipo no encontrado con ID: " + request.tipoId()));
+
+        List<Categoria> categorias = request.categoriasId().stream()
+        	    .map(categoriaRepository::findById) // Stream<Optional<Categoria>>
+        	    .filter(Optional::isPresent)        // Filtra los Optional vacíos
+        	    .map(Optional::get)                 // Obtiene el valor de los Optional presentes
+        	    .toList();
+
+        Estado estadoPorDefecto = estadoRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Estado por defecto no encontrado."));
+
+        Prioridad prioridadPorDefecto = prioridadRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Prioridad por defecto no encontrada."));
+
+        // Crear y poblar entidad Ticket
+        Ticket nuevoTicket = new Ticket();
+        nuevoTicket.setTitulo(request.titulo());
+        nuevoTicket.setDescripcion(request.descripcion());
+        nuevoTicket.setFechaCreacion(LocalDateTime.now());
+        nuevoTicket.setUsuarioCliente(cliente);
+        nuevoTicket.setTipo(tipo);
+        nuevoTicket.setLstCategorias(categorias);
+        nuevoTicket.setEstado(estadoPorDefecto);
+        nuevoTicket.setPrioridad(prioridadPorDefecto);
+
+        // Guardar en la base
+        Ticket ticketGuardado = ticketRepository.save(nuevoTicket);
+
+        // Construir response a mano
+        List<String> nombresCategorias = ticketGuardado.getLstCategorias().stream()
+                .map(categoria -> categoria.getNombreCategoria()) // <-- ¡Cambio aquí!
+                .toList();
+
+        return new CrearTicketResponse(
+            ticketGuardado.getIdTicket(),
+            ticketGuardado.getTitulo(),
+            ticketGuardado.getDescripcion(),
+            nombresCategorias,
+            ticketGuardado.getTipo().getIdTipo(),
+            ticketGuardado.getEstado().getNombreEstado(),
+            ticketGuardado.getPrioridad().getNombrePrioridad(),
+            ticketGuardado.getFechaCreacion()
+        );
+    }
 }
 
