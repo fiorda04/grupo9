@@ -8,16 +8,15 @@ spring:
     hibernate:
       ddl-auto: update
     properties:
-      dialect: org.hibernate.dialect.MySQL5Dialect
+      dialect: org.hibernate.dialect.MySQLDialect 
     defer-datasource-initialization: true
   thymeleaf:
     cache: false
-  # --- Configuración de Mail Sender ---
   mail:
     host: smtp.gmail.com
     port: 587
     username: ${EMAIL_USERNAME}
-    password: ${EMAIL_PASSWORD} 
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -25,8 +24,12 @@ spring:
           starttls:
             enable: true
           ssl:
-            trust: smtp.gmail.com 
-
+            trust: smtp.gmail.com
+application:
+  security:
+    jwt:
+      secret-key: HI5mQn6Yo5pqDCBbwAm/6g5Rh+0UgMMpNYAKfdFr1iA=
+      expiration: 86400000
 logging:
   level:
     org:
