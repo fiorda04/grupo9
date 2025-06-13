@@ -34,10 +34,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 @RestController
-@RequestMapping("/api/v1/tickets")
-@Tag(name = "3. Gestion de Tickets", description = "Endpoints para administrar tickets.")
+@RequestMapping("/api/tickets")
+@Tag(name = "3. Gestion de Tickets", description = "Endpoints para crear, buscar o eliminar tickets")
 public class TicketRestController {
 
 	@Autowired
@@ -53,8 +55,9 @@ public class TicketRestController {
         this.usuarioService = usuarioService;
     }
 	
+	@PostMapping("/eliminar/{id}")
 	@PreAuthorize("hasRole('ROLE_Admin')")
-	public ResponseEntity<String> eliminarTicket(@PathVariable Long id){
+	public ResponseEntity<String> eliminarTicketPorId(@PathVariable Long id){
 		ticketService.eliminar(id);
 		return ResponseEntity.ok("Ticket eliminado correctamente");
 	}

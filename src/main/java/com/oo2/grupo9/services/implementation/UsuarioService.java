@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -13,13 +13,16 @@ import org.springframework.stereotype.Service;
 import com.oo2.grupo9.dtos.ContactoDTO;
 import com.oo2.grupo9.dtos.CrearUsuarioRequest;
 import com.oo2.grupo9.dtos.CrearUsuarioResponse;
+import com.oo2.grupo9.dtos.TraerUsuarioResponse;
 import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Contacto;
 import com.oo2.grupo9.entities.Localidad;
 import com.oo2.grupo9.entities.Rol;
 import com.oo2.grupo9.entities.Usuario;
+import com.oo2.grupo9.exceptions.RolyLocalidadException;
 import com.oo2.grupo9.exceptions.UsuarioYaExistenteException;
+import com.oo2.grupo9.exceptions.UsuarioYaExistenteResException;
 import com.oo2.grupo9.repositories.ContactoRepository;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
@@ -329,23 +332,24 @@ public class UsuarioService implements IUsuarioService {
 
     //Crear usuario Rest
     @Override
-    public CrearUsuarioResponse crearUsuarioRest(CrearUsuarioRequest request) throws Exception {
-        //validaciones para Nombre de usuario, mail y dni
+    public CrearUsuarioResponse crearUsuarioRest(CrearUsuarioRequest request) {
+        // Validaciones (se quedan igual)
         if (usuarioRepository.findByNombreUsuario(request.nombreUsuario()).isPresent()) {
-            throw new UsuarioYaExistenteException("El nombre de usuario '" + request.nombreUsuario() + "' ya existe.");
+            throw new UsuarioYaExistenteResException("El nombre de usuario '" + request.nombreUsuario() + "' ya existe.");
         }
         if (usuarioRepository.findByDni(request.dni()).isPresent()) {
-            throw new UsuarioYaExistenteException("El DNI '" + request.dni() + "' ya está registrado.");
+            throw new UsuarioYaExistenteResException("El DNI '" + request.dni() + "' ya está registrado.");
         }
         if (usuarioRepository.findByContacto_Email(request.email()).isPresent()) {
-            throw new UsuarioYaExistenteException("El email '" + request.email() + "' ya está registrado.");
+            throw new UsuarioYaExistenteResException("El email '" + request.email() + "' ya está registrado.");
         }
+
         //entidades
         Rol rol = rolRepository.findById(request.rolId())
-                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + request.rolId()));
+                .orElseThrow(() -> new RolyLocalidadException("Rol no encontrado con ID: " + request.rolId()));
         
         Localidad localidad = localidadRepository.findById(request.localidadId())
-                .orElseThrow(() -> new IllegalArgumentException("Localidad no encontrada con ID: " + request.localidadId()));
+                .orElseThrow(() -> new RolyLocalidadException("Localidad no encontrada con ID: " + request.localidadId()));
 
         Contacto nuevoContacto = new Contacto();
         nuevoContacto.setEmail(request.email());
@@ -361,7 +365,6 @@ public class UsuarioService implements IUsuarioService {
         nuevoUsuario.setContrasenia(passwordEncoder.encode(request.contrasenia()));
         nuevoUsuario.setActivo(true);
         nuevoUsuario.setRol(rol);
-        
         nuevoUsuario.setContacto(nuevoContacto);
         nuevoContacto.setUsuario(nuevoUsuario);
 
@@ -382,5 +385,27 @@ public class UsuarioService implements IUsuarioService {
             usuarioGuardado.getContacto().getDomicilio(),
             usuarioGuardado.getContacto().getLocalidad().getNombreLocalidad() // Obtenemos el nombre de la localidad
         );
+    }
+
+    private TraerUsuarioResponse convertirADTO(Usuario usuario) {
+        return new TraerUsuarioResponse(
+                usuario.getIdUsuario(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getDni(),
+                usuario.getContacto().getEmail(),  
+                usuario.getUsername(),
+                usuario.getRol().getNombreRol(),     
+                usuario.isEnabled(),
+                usuario.getFechaCreacion()
+        );
+    }
+
+    @Override
+    public List<TraerUsuarioResponse> traerTodosLosUsuarios() {
+    return usuarioRepository.findAll()
+            .stream()
+            .map(this::convertirADTO)
+            .collect(Collectors.toList());
     }
 }
