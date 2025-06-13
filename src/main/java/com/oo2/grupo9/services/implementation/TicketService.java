@@ -64,6 +64,8 @@ public class TicketService implements ITicketService {
 
     @Override
     public void eliminar(long idTicket) {
+    	Ticket ticket = ticketRepository.findById(idTicket).orElseThrow(() -> new TicketNoEncontradoRestException("ID de ticket inexistente"));
+
         ticketRepository.deleteById(idTicket);
     }
 
@@ -236,11 +238,5 @@ public class TicketService implements ITicketService {
         return tickets;
     } 
     
-    @Override
-    public void eliminar(Long id) {
-    	Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new TicketNoEncontradoRestException("ID de ticket inexistente"));
-    	
-    	ticketRepository.delete(ticket);
-    }
 }
 

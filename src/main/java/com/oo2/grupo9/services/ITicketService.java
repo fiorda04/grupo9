@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.oo2.grupo9.dtos.CrearTicketRequest;
+import com.oo2.grupo9.dtos.CrearTicketResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Intervencion;
@@ -58,5 +60,8 @@ public interface ITicketService {
             LocalDate fechaCreacionDesde, LocalDate fechaCreacionHasta, LocalDate fechaCierreDesde, LocalDate fechaCierreHasta,
             Usuario usuario);
 	
-	void eliminar(Long id);
+	Ticket insertOrUpdate(Ticket ticket);
+	
+	public CrearTicketResponse crearTicketDesdeRequest(CrearTicketRequest request, String nombreUsuario)throws Exception;
+
 }
