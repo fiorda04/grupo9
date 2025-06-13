@@ -7,8 +7,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.oo2.grupo9.helpers.ViewRouteHelper;
 
-import org.springframework.ui.Model;
-
 @ControllerAdvice
 public class Handler{
 	

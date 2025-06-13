@@ -11,6 +11,8 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.oo2.grupo9.dtos.ContactoDTO;
+import com.oo2.grupo9.dtos.CrearUsuarioRequest;
+import com.oo2.grupo9.dtos.CrearUsuarioResponse;
 import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Contacto;
@@ -323,5 +325,62 @@ public class UsuarioService implements IUsuarioService {
             return Collections.emptyList(); 
         }
         return usuarioRepository.findByNombreUsuarioContainingIgnoreCase(email.trim());
+    }
+
+    //Crear usuario Rest
+    @Override
+    public CrearUsuarioResponse crearUsuarioRest(CrearUsuarioRequest request) throws Exception {
+        //validaciones para Nombre de usuario, mail y dni
+        if (usuarioRepository.findByNombreUsuario(request.nombreUsuario()).isPresent()) {
+            throw new UsuarioYaExistenteException("El nombre de usuario '" + request.nombreUsuario() + "' ya existe.");
+        }
+        if (usuarioRepository.findByDni(request.dni()).isPresent()) {
+            throw new UsuarioYaExistenteException("El DNI '" + request.dni() + "' ya está registrado.");
+        }
+        if (usuarioRepository.findByContacto_Email(request.email()).isPresent()) {
+            throw new UsuarioYaExistenteException("El email '" + request.email() + "' ya está registrado.");
+        }
+        //entidades
+        Rol rol = rolRepository.findById(request.rolId())
+                .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado con ID: " + request.rolId()));
+        
+        Localidad localidad = localidadRepository.findById(request.localidadId())
+                .orElseThrow(() -> new IllegalArgumentException("Localidad no encontrada con ID: " + request.localidadId()));
+
+        Contacto nuevoContacto = new Contacto();
+        nuevoContacto.setEmail(request.email());
+        nuevoContacto.setTelefono(request.telefono());
+        nuevoContacto.setDomicilio(request.domicilio());
+        nuevoContacto.setLocalidad(localidad);
+
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setNombre(request.nombre());
+        nuevoUsuario.setApellido(request.apellido());
+        nuevoUsuario.setDni(request.dni());
+        nuevoUsuario.setNombreUsuario(request.nombreUsuario());
+        nuevoUsuario.setContrasenia(passwordEncoder.encode(request.contrasenia()));
+        nuevoUsuario.setActivo(true);
+        nuevoUsuario.setRol(rol);
+        
+        nuevoUsuario.setContacto(nuevoContacto);
+        nuevoContacto.setUsuario(nuevoUsuario);
+
+        Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
+        
+        // 4. Mapear la entidad guardada al DTO de respuesta COMPLETO y devolverlo
+        return new CrearUsuarioResponse(
+            usuarioGuardado.getIdUsuario(),
+            usuarioGuardado.getNombre(),
+            usuarioGuardado.getApellido(),
+            usuarioGuardado.getDni(),
+            usuarioGuardado.getNombreUsuario(),
+            usuarioGuardado.getRol().getNombreRol(),
+            usuarioGuardado.isActivo(),
+            usuarioGuardado.getFechaCreacion(),
+            usuarioGuardado.getContacto().getEmail(),
+            usuarioGuardado.getContacto().getTelefono(),
+            usuarioGuardado.getContacto().getDomicilio(),
+            usuarioGuardado.getContacto().getLocalidad().getNombreLocalidad() // Obtenemos el nombre de la localidad
+        );
     }
 }

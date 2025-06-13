@@ -1,6 +1,8 @@
 package com.oo2.grupo9.services;
 
 import com.oo2.grupo9.dtos.ContactoDTO;
+import com.oo2.grupo9.dtos.CrearUsuarioRequest;
+import com.oo2.grupo9.dtos.CrearUsuarioResponse;
 import com.oo2.grupo9.dtos.UsuarioDTO;
 import com.oo2.grupo9.dtos.UsuarioModificacionDTO;
 import com.oo2.grupo9.entities.Usuario;
@@ -44,4 +46,6 @@ public interface IUsuarioService {
     List<Usuario> traerPorDniExacto(int dni);
 
     List<Usuario> traerPorEmailConteniendo(String email);
+
+    public CrearUsuarioResponse crearUsuarioRest(CrearUsuarioRequest request) throws Exception;
 }

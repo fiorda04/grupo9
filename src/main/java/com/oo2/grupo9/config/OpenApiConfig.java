@@ -1,7 +1,10 @@
 package com.oo2.grupo9.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,10 +12,26 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI gestionDeTicketsOpenAPI() {
+    public OpenAPI customOpenAPI() {
+        final String securitySchemeName = "Bearer Authentication";
+        
         return new OpenAPI()
-                .info(new Info().title("API de Gestión de Tickets")
-                        .description("API para la gestión de tickets de soporte")
-                        .version("v1.0"));
+                
+                .info(new Info()
+                        .title("API de Gestión de Tickets")
+                        .version("v1.0")
+                        .description("API REST para gestionar tickets, usuarios e intervenciones del sistema del Grupo 9."))
+                
+                
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName,
+                            new SecurityScheme()
+                                .name(securitySchemeName)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                        )
+                );
     }
 }
