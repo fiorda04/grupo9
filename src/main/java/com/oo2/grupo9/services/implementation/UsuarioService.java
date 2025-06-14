@@ -10,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.oo2.grupo9.dtos.ContactoDTO;
 import com.oo2.grupo9.dtos.CrearUsuarioRequest;
 import com.oo2.grupo9.dtos.CrearUsuarioResponse;
@@ -24,12 +26,12 @@ import com.oo2.grupo9.exceptions.RolyLocalidadException;
 import com.oo2.grupo9.exceptions.UsuarioYaExistenteException;
 import com.oo2.grupo9.exceptions.UsuarioYaExistenteResException;
 import com.oo2.grupo9.repositories.ContactoRepository;
+import com.oo2.grupo9.repositories.LocalidadRepository;
 import com.oo2.grupo9.repositories.RolRepository;
 import com.oo2.grupo9.repositories.UsuarioRepository;
-import com.oo2.grupo9.repositories.LocalidadRepository;
 import com.oo2.grupo9.services.IUsuarioService;
+
 import jakarta.transaction.Transactional;
-import org.springframework.util.StringUtils;
 
 
 
@@ -386,7 +388,7 @@ public class UsuarioService implements IUsuarioService {
             usuarioGuardado.getContacto().getLocalidad().getNombreLocalidad() // Obtenemos el nombre de la localidad
         );
     }
-
+    
     private TraerUsuarioResponse convertirADTO(Usuario usuario) {
         return new TraerUsuarioResponse(
                 usuario.getIdUsuario(),
@@ -408,4 +410,5 @@ public class UsuarioService implements IUsuarioService {
             .map(this::convertirADTO)
             .collect(Collectors.toList());
     }
+    
 }

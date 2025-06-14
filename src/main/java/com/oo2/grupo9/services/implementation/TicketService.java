@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.oo2.grupo9.dtos.CrearTicketRequest;
 import com.oo2.grupo9.dtos.CrearTicketResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
+import com.oo2.grupo9.dtos.TicketResponseDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Estado;
 import com.oo2.grupo9.entities.Intervencion;
@@ -21,12 +22,11 @@ import com.oo2.grupo9.entities.Prioridad;
 import com.oo2.grupo9.entities.Ticket;
 import com.oo2.grupo9.entities.Usuario;
 import com.oo2.grupo9.exceptions.CategoriaNoEncontradaRestException;
-import com.oo2.grupo9.exceptions.ClienteNoEncontradoException;
 import com.oo2.grupo9.exceptions.TicketCerradoException;
 import com.oo2.grupo9.exceptions.TicketNoEncontradoException;
+import com.oo2.grupo9.exceptions.TicketNoEncontradoRestException;
 import com.oo2.grupo9.exceptions.TipoNoEncontradoRestException;
 import com.oo2.grupo9.repositories.CategoriaRepository;
-import com.oo2.grupo9.exceptions.TicketNoEncontradoRestException;
 import com.oo2.grupo9.repositories.EstadoRepository;
 import com.oo2.grupo9.repositories.IntervencionRepository;
 import com.oo2.grupo9.repositories.PrioridadRepository;
@@ -321,4 +321,25 @@ public class TicketService implements ITicketService {
                 ticketEncontrado.getFechaCreacion()
         );
     }
+    
+
+    @Override
+    public TicketResponseDTO convertirADTO(Ticket ticket) {
+        return new TicketResponseDTO(
+            ticket.getIdTicket(),
+            ticket.getTitulo(),
+            ticket.getDescripcion(),
+            ticket.getFechaCreacion() != null ? ticket.getFechaCreacion().toLocalDate() : null,
+            ticket.getFechaCierre() != null ? ticket.getFechaCierre().toLocalDate() : null,
+            ticket.getEstado() != null ? ticket.getEstado().getNombreEstado() : null,
+            ticket.getTipo() != null ? ticket.getTipo().getNombreTipo() : null,
+            ticket.getPrioridad() != null ? ticket.getPrioridad().getNombrePrioridad() : null,
+            ticket.getLstCategorias() != null
+                ? ticket.getLstCategorias().stream()
+                    .map(cat -> cat.getNombreCategoria())
+                    .toList()
+                : null,
+            ticket.getUsuarioCliente() != null ? ticket.getUsuarioCliente().getNombreUsuario() : null
+        );
+    } 
 }

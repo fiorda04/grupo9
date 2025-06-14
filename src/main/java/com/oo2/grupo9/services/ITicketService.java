@@ -7,6 +7,7 @@ import java.util.List;
 import com.oo2.grupo9.dtos.CrearTicketRequest;
 import com.oo2.grupo9.dtos.CrearTicketResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
+import com.oo2.grupo9.dtos.TicketResponseDTO;
 import com.oo2.grupo9.entities.Categoria;
 import com.oo2.grupo9.entities.Intervencion;
 import com.oo2.grupo9.entities.Ticket;
@@ -64,4 +65,5 @@ public interface ITicketService {
 	
 	CrearTicketResponse traerResponse(Long id) throws Exception;
 
+	TicketResponseDTO convertirADTO(Ticket ticket);
 }
