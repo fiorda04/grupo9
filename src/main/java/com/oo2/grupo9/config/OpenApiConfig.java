@@ -13,7 +13,7 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        final String securitySchemeName = "Bearer Authentication";
+        final String securitySchemeName = "Bearer Authentication"; //esto es para el boton autorizer de swagger para usar el token JWT y probar los endpoint protegidos
         
         return new OpenAPI()
                 

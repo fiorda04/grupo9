@@ -19,14 +19,14 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final JwtService jwtService; //esto es para leer y validar el token
+    private final UserDetailsService userDetailsService; 
 
     public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
-
+    //Este metodo principal se va a ejecutar en cada peticion
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -36,26 +36,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) { //si la cabecera no empieza con Bearer no verifica el token como lo login basicamente esta publico
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7);
-        final String username = jwtService.extractUsername(jwt);
+        final String jwt = authHeader.substring(7); //se extrae el token
+        final String username = jwtService.extractUsername(jwt); //con el token que se pasa se trae el nombre de usuario
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) { //consultamos si pudimoss leer un nusuarion valido del token y ademas si no se autentio todavia el usuario en la peticion
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username); //traemos los datos de esto importante la contraseña hasgeada y los roles
+            if (jwtService.isTokenValid(jwt, userDetails)) { //compara si el token es valido para este usuario y obvio si no expiro
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                        null, //se pone null porque esta aautenticado por token no por contrasenia
+                        userDetails.getAuthorities() //rolesss
                 );
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken); //a partir de aca spring sabe que el usuario esta autenticado. Espo permite que fuinones los @preautorize
             }
         }
         filterChain.doFilter(request, response);
