@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oo2.grupo9.dtos.CrearIntervencionRequest;
 import com.oo2.grupo9.dtos.CrearIntervencionResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
 import com.oo2.grupo9.dtos.TraerIntervencionResponse;
@@ -43,14 +44,16 @@ public class IntervencionRestController {
     )
     @PreAuthorize("hasRole('ROLE_Empleado')")
     @PostMapping
-    public ResponseEntity<CrearIntervencionResponse> agregarIntervencion(@Valid @RequestBody IntervencionDTO dto) {
-        ticketService.realizarIntervencion(dto);
+    public ResponseEntity<CrearIntervencionResponse> agregarIntervencion(
+            @Valid @RequestBody CrearIntervencionRequest request
+    ) {
+        Intervencion nueva = ticketService.realizarIntervencionDesdeRequest(request);
 
         CrearIntervencionResponse response = new CrearIntervencionResponse(
-            dto.getTicketId(),
-            SecurityContextHolder.getContext().getAuthentication().getName(),
-            dto.getContenido(),
-            LocalDateTime.now()
+                nueva.getTicket().getIdTicket(),
+                nueva.getAutor().getNombreUsuario(),
+                nueva.getContenido(),
+                nueva.getFechaIntervencion()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

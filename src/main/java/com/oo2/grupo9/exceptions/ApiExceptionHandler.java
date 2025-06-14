@@ -1,5 +1,6 @@
 package com.oo2.grupo9.exceptions;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -51,5 +52,15 @@ public class ApiExceptionHandler {
     	return ResponseEntity
     			.status(HttpStatus.NOT_FOUND)
     			.body(Map.of("error", ex.getMessage()));
+    }
+    @ExceptionHandler(TicketCerradoException.class)
+    public ResponseEntity<?> handleTicketCerrado(TicketCerradoException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                    "timestamp", LocalDateTime.now(),
+                    "error", "Ticket Cerrado",
+                    "message", ex.getMessage()
+                ));
     }
 }

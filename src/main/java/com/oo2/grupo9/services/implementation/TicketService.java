@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.oo2.grupo9.dtos.CrearIntervencionRequest;
 import com.oo2.grupo9.dtos.CrearTicketRequest;
 import com.oo2.grupo9.dtos.CrearTicketResponse;
 import com.oo2.grupo9.dtos.IntervencionDTO;
@@ -204,6 +205,39 @@ public class TicketService implements ITicketService {
 		}
 		intervencionRepository.save(intervencion);
 		ticketRepository.save(ticket);
+	}
+	
+	public Intervencion realizarIntervencionDesdeRequest(CrearIntervencionRequest request) {
+	    Ticket ticket = ticketRepository.findById(request.ticketId())
+	            .orElse(null); // No lanza excepción
+
+	    // Verificar si el ticket existe y si está cerrado
+	    if (ticket == null || ticket.getEstado().getIdEstado().equals(Estado.ID_ESTADO_CERRADO)) {
+	        throw new TicketCerradoException("No se puede intervenir un ticket que ya está cerrado.");
+	    }
+
+	    Intervencion intervencion = new Intervencion();
+	    intervencion.setTicket(ticket);
+	    intervencion.setContenido(request.contenido());
+	    intervencion.setFechaIntervencion(LocalDateTime.now());
+
+	    // Obtener usuario autenticado, si falla simplemente no se setea autor
+	    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+	    usuarioRepository.findByNombreUsuario(username).ifPresent(intervencion::setAutor);
+
+	    // Buscar estado y prioridad, si no se encuentran se omiten
+	    estadoRepository.findById(request.estadoId()).ifPresent(ticket::setEstado);
+	    prioridadRepository.findById(request.prioridadId()).ifPresent(ticket::setPrioridad);
+
+	    // Si el estado fue cambiado a CERRADO, actualizar fecha cierre
+	    if (ticket.getEstado().getIdEstado().equals(Estado.ID_ESTADO_CERRADO)) {
+	        ticket.setFechaCierre(LocalDateTime.now());
+	    }
+
+	    intervencionRepository.save(intervencion);
+	    ticketRepository.save(ticket);
+
+	    return intervencion;
 	}
 
 	@Override
