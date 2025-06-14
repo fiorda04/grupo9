@@ -32,6 +32,7 @@ public class ApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ex.getMessage()));
+    }
     @ExceptionHandler(TicketNoEncontradoRestException.class)
     public ResponseEntity<Map<String, String>> handleTicketNoEncontradoRestException(TicketNoEncontradoRestException ex) {
     	return ResponseEntity

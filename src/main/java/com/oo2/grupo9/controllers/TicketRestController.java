@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,21 +43,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @RestController
-@RequestMapping("/api/tickets")
-@Tag(name = "3. Gestión de Tickets", description = "Endpoints para crear, buscar o eliminar tickets")
+@RequestMapping("/api/v1/tickets")
+@Tag(name = "3-A. Gestión de Tickets", description = "Endpoints para crear, buscar o eliminar tickets")
 public class TicketRestController {
 
 	@Autowired
 	private ITicketService ticketService;
-	@Autowired
-	private IUsuarioService usuarioService;
 
-	
-	private ModelMapper modelMapper = new ModelMapper();
 
-    public TicketRestController(ITicketService ticketService, IUsuarioService usuarioService){
+
+    public TicketRestController(ITicketService ticketService){
         this.ticketService = ticketService;
-        this.usuarioService = usuarioService;
     }
 	
 	@Operation(
@@ -72,6 +69,7 @@ public class TicketRestController {
 		return ResponseEntity.ok(Map.of("mensaje", "Ticket eliminado correctamente"));
 	}
 	
+	//Franco Romay
 	@Operation(
 	        summary = "Crear un nuevo ticket (Cliente)",
 	        description = "Crea un nuevo ticket en el sistema. Requiere rol de Cliente.",
@@ -83,6 +81,19 @@ public class TicketRestController {
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
 		CrearTicketResponse nuevoTicket = ticketService.crearTicketDesdeRequest(request, username);
 		return ResponseEntity.status(HttpStatus.CREATED).body(nuevoTicket);
+	}
+	
+	//Franco Romay
+	@Operation(
+	        summary = "Ver un ticket desde un id (Cliente)",
+	        description = "Ve el detalle de un ticket en el sistema. Requiere rol de Cliente.",
+	        security = @SecurityRequirement(name = "Bearer Authentication") 
+	)
+	@PreAuthorize("hasRole('ROLE_Cliente')")
+	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CrearTicketResponse> verTicket(@PathVariable Long id) throws Exception {
+		CrearTicketResponse ticketEncontrado = ticketService.traerResponse(id);
+		return ResponseEntity.ok(ticketEncontrado);
 	}
 	
 }

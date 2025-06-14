@@ -68,7 +68,7 @@ public class TicketController {
     private ITicketService ticketService;
     
 
-
+    //Franco Romay
     @GetMapping("/tickets/crear")
     public ModelAndView mostrarFormularioCrearTicket() {
         ModelAndView mAV = new ModelAndView(ViewRouteHelper.TICKET_CREAR);
@@ -78,6 +78,7 @@ public class TicketController {
         return mAV;
     }
 
+    //Franco Romay
     @PostMapping("/tickets/guardar")
     public ModelAndView guardarNuevoTicket(@ModelAttribute("nuevoTicketDTO") @Valid TicketCreacionDTO nuevoTicketDTO,
                                              BindingResult bindingResult) {
@@ -136,7 +137,7 @@ public class TicketController {
         }
     }
     
-    
+    //Franco Romay
     @GetMapping("tickets/VerTicket/{id}")
     public ModelAndView verTicket(@PathVariable("id") Long id) {
         ModelAndView mAV = new ModelAndView(ViewRouteHelper.VER_TICKET);
@@ -160,6 +161,7 @@ public class TicketController {
         return "redirect:/tickets/VerTicket/" + dto.getTicketId();
     }
     
+    //Franco Romay
     @PreAuthorize("hasRole('ROLE_Admin')")
     @PostMapping("tickets/eliminar/{id}")
     public String eliminarTicket(@PathVariable("id") Long id) {

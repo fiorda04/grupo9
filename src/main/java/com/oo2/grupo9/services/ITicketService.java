@@ -60,6 +60,8 @@ public interface ITicketService {
             LocalDate fechaCreacionDesde, LocalDate fechaCreacionHasta, LocalDate fechaCierreDesde, LocalDate fechaCierreHasta,
             Usuario usuario);
 	
-	public CrearTicketResponse crearTicketDesdeRequest(CrearTicketRequest request, String nombreUsuario)throws Exception;
+	CrearTicketResponse crearTicketDesdeRequest(CrearTicketRequest request, String nombreUsuario) throws Exception;
+	
+	CrearTicketResponse traerResponse(Long id) throws Exception;
 
 }
