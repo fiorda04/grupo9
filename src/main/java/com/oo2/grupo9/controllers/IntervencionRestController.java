@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/intervenciones")
-@Tag(name = "4. Gestion de Intervenciones", description = "Endpoints para administrar intervenciones.")
+@Tag(name = "5. Gestion de Intervenciones", description = "Endpoints para administrar intervenciones.")
 public class IntervencionRestController {
 
     

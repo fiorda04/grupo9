@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
-@Tag(name = "2. Gestion de Usuarios", description = "Endpoints para administrar usuarios.")
+@Tag(name = "2. Gestion de Usuario", description = "Endpoints para administrar usuarios.")
 public class UsuarioRestController {
 
     @Autowired

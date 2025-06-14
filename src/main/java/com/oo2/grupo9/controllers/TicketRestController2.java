@@ -32,7 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/tickets")
-@Tag(name = "3-B. Gestión de Tickets", description = "Endpoints para crear, buscar o eliminar tickets")
+@Tag(name = "4. Gestion de Tickets B", description = "Endpoints para buscar o eliminar tickets")
 public class TicketRestController2 {
 
 	@Autowired

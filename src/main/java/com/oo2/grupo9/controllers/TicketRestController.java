@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/tickets")
-@Tag(name = "3-A. Gestión de Tickets", description = "Endpoints para crear, buscar o eliminar tickets")
+@Tag(name = "3. Gestión de Tickets", description = "Endpoints para crear y ver Tickets")
 public class TicketRestController {
 
 	@Autowired
