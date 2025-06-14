@@ -46,4 +46,10 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED) 
                 .body(Map.of("error", "Credenciales invalidas. Por favor, verifique el usuario y la contraseña."));
     }
+    @ExceptionHandler(TicketNoEncontradoConFiltrosRestException.class)
+    public ResponseEntity<Map<String, String>> handleTicketNoEncontradoConFiltrosRestException(TicketNoEncontradoConFiltrosRestException ex){
+    	return ResponseEntity
+    			.status(HttpStatus.NOT_FOUND)
+    			.body(Map.of("error", ex.getMessage()));
+    }
 }
